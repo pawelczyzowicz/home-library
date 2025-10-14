@@ -1,0 +1,7 @@
+# Files with shouldn't be copied to Docker image
+/vendor/
+/prod.dockerfile
+/dev.dockerfile
+/docker-compose.yml
+/var/
+/auth.json

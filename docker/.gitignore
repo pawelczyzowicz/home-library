@@ -1,0 +1,5 @@
+# docker .gitignore
+keys/*
+!keys/.gitignore
+/data/
+/etc/composer/auth.json

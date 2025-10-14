@@ -1,0 +1,48 @@
+services:
+  home-library-postgres:
+    image: postgres:16.9-alpine
+    container_name: home-library-postgres
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - '${DOCKER_POSTGRES_PORT}:5432'
+    networks:
+      - local-network
+
+  home-library-backend:
+    image: home-library:2.0
+    container_name: home-library-backend
+    depends_on:
+      - home-library-postgres
+    restart: on-failure
+    ports:
+      - '${DOCKER_NGINX_PORT}:80'
+    environment:
+      - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@home-library-postgres:5432/${DATABASE_NAME}
+    dns:
+      - 8.8.8.8
+    volumes:
+      - .:/var/www/html
+    networks:
+      - local-network
+
+  home-library-postgres-test:
+    image: postgres:16.9-alpine
+    container_name: home-library-postgres-test
+    restart: "no"
+    environment:
+      POSTGRES_USER: ${DOCKER_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${DOCKER_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DOCKER_POSTGRES_TEST_DB}
+    ports:
+      - '${DOCKER_POSTGRES_TEST_PORT}:5432'
+    networks:
+      - local-network
+
+networks:
+  local-network:
+    external: true
+
