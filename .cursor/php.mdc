@@ -1,0 +1,37 @@
+---
+globs: **/*.php
+alwaysApply: false
+---
+
+## Ogólne
+- **Separacja warstw:** Stosuj architekturę warstwową (np. Domain, Application, Infrastructure, UI) z wyraźnym podziałem odpowiedzialności.
+- **Logika w serwisach:** Logika biznesowa musi znajdować się w dedykowanych serwisach, a nie w klasach wejścia/wyjścia (kontrolery, komendy CLI). Kontrolery powinny być "chude" i delegować zadania.
+
+## Domain Driven Development (DDD)
+- **Rozmieszczenie komponentów:**
+    - **Domain:** Encje, Value Objecty.
+    - **Application:** Serwisy aplikacyjne, DTO, interfejsy repozytoriów, walidatory (kompromis ze względu na sprzężenie z Symfony).
+    - **Infrastructure:** Implementacje repozytoriów, `MessageHandler`, `StateProvider`, `StateProcessor`, rozszerzenia Doctrine (np. filtry).
+- **Agregaty:** Dąż do implementacji agregatów, które chronią swoje niezmienniki. Operacje na agregacie powinny odbywać się tylko przez jego korzeń.
+
+# Standardy Kodu
+
+## Jakość i Czystość Kodu
+- **Ścisłe typowanie:** Każdy plik PHP musi zaczynać się od `declare(strict_types=1);`.
+- **Niemutowalność (Immutability):** Zawsze używaj `DateTimeImmutable` zamiast `DateTime`. Projektuj własne klasy (np. Value Objects) jako niemutowalne.
+- **Unikanie `null`:** Unikaj pól, parametrów i typów zwrotnych, które mogą być `null`, jeśli logika biznesowa tego nie wymaga. Zamiast zwracać `null` z gettera dla niezainicjowanej właściwości, rzuć `DomainException`.
+- **Value Objects:** Używaj Obiektów Wartości (Value Objects) lub typu Enum (wbudowany typ w PHP) zamiast typów prostych do reprezentowania pojęć domenowych (np. `Email`, `Money`, `Status`). Walidacja powinna odbywać się w konstruktorze VO.
+- **Czytelność:** Staraj się ograniczyć długość linii kodu do 120 znaków. Używaj `sprintf` lub interpolacji stringów zamiast konkatenacji dla lepszej czytelności.
+- **Struktury kontrolne:** Preferuj `match` nad `switch` (w PHP 8.0+).
+- **Narzędzia:** Używaj `Rector` do automatycznej modernizacji kodu (np. konwersja adnotacji na atrybuty). Regularnie uruchamiaj analizę statyczną (`PHPStan`, `phpmd`) i stosuj się do zdefiniowanych rulesets `PHP-CS-Fixer`.
+- **Czystość repozytorium:** Nie zostawiaj w kodzie zakomentowanych fragmentów. Jeśli kod jest tymczasowo wyłączony, musi to być uzasadnione w komentarzu.
+
+## Konwencje Nazewnicze
+- **Klasy:** Stosuj spójne sufiksy: `*Controller`, `*Action`, `*Service`, `*Handler`, `*Exception`, `*Enum`, `*Interface`. Klasy abstrakcyjne poprzedzaj prefiksem `Abstract*`.
+- **Commits:** Stosuj standard [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/), np. `feat: add password reset endpoint`.
+
+
+## Dokumentacja i Komentarze
+- **Komentarze:** Dodawaj komentarze wtedy, gdy są konieczne do wyjaśnienia, *dlaczego* kod jest napisany w określony sposób. Jeeli jest to niezbędne, mozesz dodać komentarz opisujący *co* robi kod.
+- **Optymalizacje:** Jeśli celowo stosujesz rozwiązanie, które odbiega od standardów w celu optymalizacji, oznacz je specjalnym komentarzem.
+- **PHPStan:** Nie stosuj ogólnego `@phpstan-ignore-line`. Zamiast tego, ignoruj konkretną regułę, np. `// @phpstan-ignore method.notFound`.
