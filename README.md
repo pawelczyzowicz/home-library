@@ -1,0 +1,216 @@
+## HomeLibrary
+
+[![PHP](https://img.shields.io/badge/PHP-8.2-777bb3?logo=php&labelColor=555)](https://www.php.net/releases/8.2/)
+[![Symfony](https://img.shields.io/badge/Symfony-7.3-000000?logo=symfony&labelColor=555)](https://symfony.com/releases/7.3)
+[![License](https://img.shields.io/badge/License-Proprietary-informational.svg)](#license)
+
+### Spis treści
+- [Project name](#homelibrary)
+- [Project description](#project-description)
+- [Tech stack](#tech-stack)
+- [Getting started locally](#getting-started-locally)
+- [Available scripts](#available-scripts)
+- [Project scope](#project-scope)
+- [Project status](#project-status)
+- [License](#license)
+
+## Project description
+HomeLibrary to aplikacja webowa do zarządzania domową kolekcją książek i odkrywania nowych pozycji z pomocą AI. System umożliwia:
+- zarządzanie książkami (dodawanie, edycja, usuwanie, przenoszenie między regałami),
+- system regałów z wbudowanym regałem specjalnym „Do zakupu”,
+- predefiniowane gatunki (1–3 gatunki na książkę),
+- widok listy/tabeli z wyszukiwaniem i filtrami (regał, gatunek),
+- rekomendacje AI na podstawie podanych tytułów/autorów (3 propozycje, akceptacja/odrzucenie),
+- współdzieloną bibliotekę dla wielu użytkowników jednego gospodarstwa domowego (bez ról),
+- podstawowe analytics do pomiaru skuteczności rekomendacji AI.
+
+Szczegółowe wymagania znajdują się w pliku `./.ai/prd.md`.
+
+## Tech stack
+- **Frontend**: Twig + HTMX
+- **Backend**: Symfony 7.3 (m.in. `framework-bundle`, `security-bundle`, `validator`, `serializer`, `twig-bundle`, `ux-turbo`, `stimulus-bundle`, `asset-mapper`)
+- **Baza danych**: Doctrine ORM 3.5 + Doctrine Migrations + PostgreSQL
+- **AI**: integracja przez OpenRouter (dostęp do wielu modeli, limity kosztów)
+- **Inne**: Monolog, HttpClient
+- **Dev/QA**: PHPUnit, PHP-CS-Fixer, PHPStan (+ rozszerzenia), PHPMD, Web Profiler, Maker Bundle
+- **CI/CD**: GitHub Actions
+- **Hosting**: DigitalOcean (obraz docker)
+
+Więcej informacji: `./.ai/tech-stack.md`.
+
+## Getting started locally
+
+### Szybki start (Docker — zalecane)
+- Wymagania: Docker + Docker Compose plugin (polecenie `docker compose`)
+
+1) Uruchom środowisko deweloperskie:
+```bash
+bash ./docker/run-dev.sh
+```
+
+2) Aplikacja będzie dostępna pod adresem:
+```text
+http://127.0.0.1:8080
+```
+Port można zmienić zmienną `DOCKER_NGINX_PORT` (patrz niżej).
+
+3) Logi i zarządzanie usługami:
+```bash
+# logi wszystkich usług
+docker compose logs -f
+
+# zatrzymanie usług
+docker compose stop
+
+# zatrzymanie i usunięcie (wraz z wolumenami)
+docker compose down -v
+```
+
+4) Konsola i testy wewnątrz kontenera backendu (`home-library-backend`):
+```bash
+# wejście do kontenera
+docker exec -it home-library-backend bash
+
+# wybrane polecenia (bezpośrednio, bez wchodzenia do środka)
+docker exec --user www-data home-library-backend bin/console about
+docker exec --user www-data home-library-backend bin/console doctrine:migrations:migrate -n
+docker exec --user www-data home-library-backend vendor/bin/phpunit
+```
+
+5) Zmienne środowiskowe dla Docker (ustaw w pliku `.env` w katalogu projektu):
+```bash
+# Porty i bazy (wartości domyślne)
+DOCKER_NGINX_PORT=8080
+DOCKER_POSTGRES_PORT=5433
+DOCKER_POSTGRES_TEST_PORT=5434
+
+# Dane dostępowe do DB (domyślne wartości używane w kontenerach)
+DATABASE_USER=app
+DATABASE_PASSWORD=app
+DATABASE_NAME=app
+DOCKER_POSTGRES_USER=${DATABASE_USER}
+DOCKER_POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+DOCKER_POSTGRES_TEST_DB=app_test
+```
+
+Skrypt `docker/run-dev.sh` automatycznie:
+- kopiuje `.env.dist` do `.env` (jeśli `.env` nie istnieje),
+- buduje bazowy obraz `home-library:2.0` z `docker/etc/Dockerfile` (jeśli brak),
+- tworzy sieć Docker `local-network` (jeśli brak),
+- uruchamia `docker compose build` i `docker compose up -d`,
+- wykonuje `composer install` oraz tworzy i migruje bazy `dev` i `test` w kontenerze `home-library-backend`.
+
+### Wymagania (instalacja natywna)
+- PHP >= 8.2
+- Composer
+- PostgreSQL
+- (Opcjonalnie) Symfony CLI (`symfony`)
+
+### Instalacja i uruchomienie (instalacja natywna)
+1) Sklonuj repozytorium i zainstaluj zależności:
+```bash
+git clone <URL_REPO> home-library
+cd home-library
+composer install
+```
+
+2) Skonfiguruj środowisko w pliku `.env.local` (utwórz, jeśli nie istnieje):  
+Przykładowe wartości – dostosuj do swojej konfiguracji.
+```bash
+# DSN PostgreSQL (dopasuj user/hasło/wersję serwera)
+DATABASE_URL="postgresql://USER:PASSWORD@127.0.0.1:5432/homelibrary?serverVersion=16&charset=utf8"
+
+# Klucz API do OpenRouter (nazwa zmiennej przykładowa – dostosuj do implementacji)
+OPENROUTER_API_KEY="your_api_key_here"
+```
+
+3) Utwórz bazę i uruchom migracje:
+```bash
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrate -n
+```
+
+4) Uruchom serwer deweloperski:
+```bash
+# Opcja A: Symfony CLI
+symfony server:start -d
+
+# Opcja B: wbudowany serwer PHP (upewnij się, że document root to katalog public/)
+php -S 127.0.0.1:8000 -t public
+```
+
+5) Otwórz aplikację w przeglądarce: `http://127.0.0.1:8000`
+
+6) Testy (opcjonalnie):
+```bash
+vendor/bin/phpunit
+```
+
+Uwaga: `composer install` uruchamia automatycznie `cache:clear`, `assets:install` i `importmap:install` dzięki skryptom Composer.
+
+## Available scripts
+
+### Skrypty Composer (zdefiniowane)
+- `post-install-cmd` → auto-scripts: `cache:clear`, `assets:install %PUBLIC_DIR%`, `importmap:install`
+- `post-update-cmd` → auto-scripts: jw.
+
+Przydatne komendy konsolowe:
+```bash
+# Baza i migracje
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrate -n
+
+# Cache i zasoby
+php bin/console cache:clear
+php bin/console assets:install --symlink
+
+# Serwer dev (Symfony CLI)
+symfony server:start -d
+symfony server:stop
+```
+
+### Narzędzia deweloperskie
+```bash
+# Testy jednostkowe
+vendor/bin/phpunit
+
+# Formatowanie wg .php-cs-fixer.dist.php
+vendor/bin/php-cs-fixer fix --diff
+
+# Analiza statyczna (przykład – dostosuj poziom)
+vendor/bin/phpstan analyse src --level=max
+
+# PHPMD (przykład)
+vendor/bin/phpmd src text cleancode,codesize,controversial,design,naming,unusedcode
+```
+
+## Project scope
+
+### W zakresie (MVP)
+- Książki: dodawanie, edycja, usuwanie, przenoszenie między regałami; walidacje (tytuł/autor 1–255, ISBN 10/13 cyfr, liczba stron 1–50000).
+- Regały: tworzenie/edycja/usuwanie; specjalny regał systemowy „Do zakupu” (nieusuwalny, wizualnie wyróżniony).
+- Gatunki: predefiniowana lista (10–15); 1–3 na książkę.
+- Wyszukiwanie i filtrowanie: live search po tytule/autorze; filtry regału i gatunków; logiczne AND między różnymi filtrami.
+- Rekomendacje AI: wejście tytuły/autorzy; 3 propozycje (tytuł, autor, uzasadnienie); akceptacja dodaje do „Do zakupu”; odrzucenie ukrywa bez zapisu.
+- Użytkownicy: rejestracja, logowanie, wylogowanie; wspólna biblioteka bez ról.
+- Analytics: eventy `ai_recommendation_generated`, `book_accepted` (PostgreSQL); metryka sukcesu MVP.
+
+### Poza zakresem (MVP)
+- Role użytkowników, wiele bibliotek, import danych z zewnętrznych API (Google Books, OpenLibrary, Goodreads), drag&drop, oceny/recenzje, automatyczne rekomendacje na podstawie całej biblioteki, monetyzacja/affiliate, zaawansowane dashboardy analityczne, aplikacje mobilne native.
+
+Pełna specyfikacja: `./.ai/prd.md`.
+
+## Project status
+- Etap: MVP w toku (repo zawiera konfigurację Symfony 7.3 i zestaw zależności pod implementację wymagań z PRD).
+- CI/CD: planowane pipeline’y GitHub Actions.
+- Hosting docelowy: DigitalOcean (obraz docker).
+
+## License
+- Licencja: proprietary (zgodnie z `composer.json`).
+- Skontaktuj się z autorami projektu w sprawie praw/licencji przed użyciem lub dystrybucją.
+
+Dokumentacja dodatkowa:
+- PRD: `./.ai/prd.md`
+- Stos technologiczny: `./.ai/tech-stack.md`
+
+
