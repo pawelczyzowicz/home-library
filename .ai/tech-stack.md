@@ -1,4 +1,4 @@
-Frontend - Twig + HTMX
+Frontend - Twig + Symfony
 
 Backend - Symfony z PostgreSQL, doctrine
 
@@ -8,4 +8,3 @@ AI - Komunikacja z modelami przez usługę Openrouter.ai:
 
 CI/CD i Hosting:
 - Github Actions do tworzenia pipeline’ów CI/CD
-- DigitalOcean do hostowania aplikacji za pośrednictwem obrazu docker
