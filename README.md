@@ -27,14 +27,13 @@ HomeLibrary to aplikacja webowa do zarządzania domową kolekcją książek i od
 Szczegółowe wymagania znajdują się w pliku `./.ai/prd.md`.
 
 ## Tech stack
-- **Frontend**: Twig + HTMX
+- **Frontend**: Symfony
 - **Backend**: Symfony 7.3 (m.in. `framework-bundle`, `security-bundle`, `validator`, `serializer`, `twig-bundle`, `ux-turbo`, `stimulus-bundle`, `asset-mapper`)
 - **Baza danych**: Doctrine ORM 3.5 + Doctrine Migrations + PostgreSQL
 - **AI**: integracja przez OpenRouter (dostęp do wielu modeli, limity kosztów)
 - **Inne**: Monolog, HttpClient
 - **Dev/QA**: PHPUnit, PHP-CS-Fixer, PHPStan (+ rozszerzenia), PHPMD, Web Profiler, Maker Bundle
 - **CI/CD**: GitHub Actions
-- **Hosting**: DigitalOcean (obraz docker)
 
 Więcej informacji: `./.ai/tech-stack.md`.
 

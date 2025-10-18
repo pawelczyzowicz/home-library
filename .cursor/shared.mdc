@@ -6,6 +6,6 @@ alwaysApply: true
 HomeLibrary to aplikacja webowa przeznaczona do zarządzania domową kolekcją książek oraz odkrywania nowych, interesujących pozycji przy wsparciu sztucznej inteligencji. System umożliwia organizację książek na wielu regałach z nazwami własnymi, wyszukiwanie i filtrowanie kolekcji oraz otrzymywanie spersonalizowanych rekomendacji książek na podstawie wybranych przez użytkownika tytułów lub autorów.
 
 ## Stack technologiczny
-Frontend - Twig + HTMX
+Frontend - Symfony
 Backend - Symfony z PostgreSQL, doctrine
 

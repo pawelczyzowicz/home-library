@@ -3,3 +3,9 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+api:
+    resource:
+        path: ../src/HomeLibrary/UI/Api/
+        namespace: App\HomeLibrary\UI\Api
+    type: attribute

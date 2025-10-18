@@ -8,10 +8,12 @@ alwaysApply: false
 - **Logika w serwisach:** Logika biznesowa musi znajdować się w dedykowanych serwisach, a nie w klasach wejścia/wyjścia (kontrolery, komendy CLI). Kontrolery powinny być "chude" i delegować zadania.
 
 ## Domain Driven Development (DDD)
+Wszysztkie pliki .php znajdują się w domenie src/HomeLibrary
 - **Rozmieszczenie komponentów:**
     - **Domain:** Encje, Value Objecty.
     - **Application:** Serwisy aplikacyjne, DTO, interfejsy repozytoriów, walidatory (kompromis ze względu na sprzężenie z Symfony).
     - **Infrastructure:** Implementacje repozytoriów, `MessageHandler`, `StateProvider`, `StateProcessor`, rozszerzenia Doctrine (np. filtry).
+    - **UI:** Kontrolery, CLI, API endpoints
 - **Agregaty:** Dąż do implementacji agregatów, które chronią swoje niezmienniki. Operacje na agregacie powinny odbywać się tylko przez jego korzeń.
 
 # Standardy Kodu
@@ -25,6 +27,7 @@ alwaysApply: false
 - **Struktury kontrolne:** Preferuj `match` nad `switch` (w PHP 8.0+).
 - **Narzędzia:** Używaj `Rector` do automatycznej modernizacji kodu (np. konwersja adnotacji na atrybuty). Regularnie uruchamiaj analizę statyczną (`PHPStan`, `phpmd`) i stosuj się do zdefiniowanych rulesets `PHP-CS-Fixer`.
 - **Czystość repozytorium:** Nie zostawiaj w kodzie zakomentowanych fragmentów. Jeśli kod jest tymczasowo wyłączony, musi to być uzasadnione w komentarzu.
+- Do pól Uuid używaj biblioteki ramsey/uuid.
 
 ## Konwencje Nazewnicze
 - **Klasy:** Stosuj spójne sufiksy: `*Controller`, `*Action`, `*Service`, `*Handler`, `*Exception`, `*Enum`, `*Interface`. Klasy abstrakcyjne poprzedzaj prefiksem `Abstract*`.

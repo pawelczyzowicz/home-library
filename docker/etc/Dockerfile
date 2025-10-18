@@ -27,12 +27,11 @@ RUN apt-get update \
     && rm -f /etc/nginx/conf.d/default.conf \
     && rm -rf /var/lib/apt/lists/*
 
-COPY docker/etc/php/conf.d/docker-php-ext-xdebug.ini $PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini
 
 RUN docker-php-source extract; \
-    pecl install redis-6.1.0 amqp-2.1.2 xdebug-3.4.5; \
+    pecl install redis-6.1.0 amqp-2.1.2; \
     docker-php-ext-install bcmath intl opcache pdo pdo_mysql pdo_pgsql sockets xsl zip ftp; \
-    docker-php-ext-enable redis amqp xdebug; \
+    docker-php-ext-enable redis amqp; \
     docker-php-ext-configure pcntl --enable-pcntl && docker-php-ext-install pcntl && rm -f $PHP_INI_DIR/conf.d/docker-php-ext-pcntl.ini; \
     docker-php-source delete; \
     echo 'memory_limit = 512M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini;
