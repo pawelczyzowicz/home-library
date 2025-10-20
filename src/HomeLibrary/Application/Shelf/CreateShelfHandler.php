@@ -17,14 +17,13 @@ class CreateShelfHandler
 {
     public function __construct(
         private readonly DomainShelfRepository $repository,
-    ) {
-    }
+    ) {}
 
     public function __invoke(CreateShelfCommand $command): Shelf
     {
         $name = trim($command->name());
 
-        if ($name === '') {
+        if ('' === $name) {
             throw ValidationException::withMessage('name', 'This value should not be blank.');
         }
 
@@ -47,5 +46,3 @@ class CreateShelfHandler
         return $shelf;
     }
 }
-
-

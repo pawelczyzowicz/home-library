@@ -37,9 +37,9 @@ class DoctrineShelfRepository extends ServiceEntityRepository implements ShelfRe
         $qb = $this->createQueryBuilder('s')
             ->orderBy('s.createdAt', 'ASC');
 
-        if ($searchTerm !== null) {
+        if (null !== $searchTerm) {
             $qb->andWhere('LOWER(s.name.value) LIKE :searchTerm')
-                ->setParameter('searchTerm', sprintf('%%%s%%', mb_strtolower($searchTerm)));
+                ->setParameter('searchTerm', \sprintf('%%%s%%', mb_strtolower($searchTerm)));
         }
 
         /** @var Shelf[] $shelves */
@@ -53,9 +53,9 @@ class DoctrineShelfRepository extends ServiceEntityRepository implements ShelfRe
         $qb = $this->createQueryBuilder('s')
             ->select('COUNT(s.id)');
 
-        if ($searchTerm !== null) {
+        if (null !== $searchTerm) {
             $qb->andWhere('LOWER(s.name.value) LIKE :searchTerm')
-                ->setParameter('searchTerm', sprintf('%%%s%%', mb_strtolower($searchTerm)));
+                ->setParameter('searchTerm', \sprintf('%%%s%%', mb_strtolower($searchTerm)));
         }
 
         return (int) $qb->getQuery()->getSingleScalarResult();
@@ -68,5 +68,3 @@ class DoctrineShelfRepository extends ServiceEntityRepository implements ShelfRe
         $em->flush();
     }
 }
-
-

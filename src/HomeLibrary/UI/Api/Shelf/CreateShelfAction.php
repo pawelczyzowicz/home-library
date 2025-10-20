@@ -15,18 +15,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route(path: '/api/shelves', name: 'api_shelves_', methods: ['POST'])]
 final class CreateShelfAction extends AbstractController
 {
     public function __construct(
         private readonly CreateShelfHandler $handler,
-        private readonly ValidatorInterface $validator,
         private readonly ShelfResource $resource,
         private readonly ProblemJsonResponseFactory $problemFactory,
-    ) {
-    }
+    ) {}
 
     public function __invoke(Request $request): JsonResponse
     {
@@ -42,9 +39,13 @@ final class CreateShelfAction extends AbstractController
         }
 
         try {
-            $data = $request->toArray();
+            $data = json_decode($request->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         } catch (\JsonException $exception) {
             throw new BadRequestHttpException('Invalid JSON payload.', $exception);
+        }
+
+        if (!\is_array($data)) {
+            throw new BadRequestHttpException('Invalid JSON payload. Expected JSON object.');
         }
 
         $command = new CreateShelfCommand(
@@ -62,5 +63,3 @@ final class CreateShelfAction extends AbstractController
         );
     }
 }
-
-

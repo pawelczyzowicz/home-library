@@ -12,8 +12,7 @@ class CreateShelfCommand
         private readonly UuidInterface $id,
         private readonly string $name,
         private readonly bool $isSystem,
-    ) {
-    }
+    ) {}
 
     public function id(): UuidInterface
     {
@@ -30,5 +29,3 @@ class CreateShelfCommand
         return $this->isSystem;
     }
 }
-
-

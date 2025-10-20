@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\HomeLibrary\Application\Exception;
 
-use RuntimeException;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class ValidationException extends RuntimeException
+class ValidationException extends \RuntimeException
 {
     /**
      * @param array<string, list<string>> $errors
@@ -43,5 +42,3 @@ class ValidationException extends RuntimeException
         return $this->errors;
     }
 }
-
-

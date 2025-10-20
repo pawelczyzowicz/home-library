@@ -57,5 +57,3 @@ class Shelf
         $this->isSystem = ShelfFlag::system();
     }
 }
-
-

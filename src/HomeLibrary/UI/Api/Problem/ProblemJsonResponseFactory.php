@@ -21,7 +21,7 @@ class ProblemJsonResponseFactory
             'status' => $status,
         ];
 
-        if ($detail !== null) {
+        if (null !== $detail) {
             $problem['detail'] = $detail;
         }
 
@@ -34,5 +34,3 @@ class ProblemJsonResponseFactory
         );
     }
 }
-
-

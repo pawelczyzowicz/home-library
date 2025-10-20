@@ -56,4 +56,3 @@ final class ShelfTest extends TestCase
         self::assertTrue($this->shelf->systemFlag()->value());
     }
 }
-

@@ -28,5 +28,3 @@ final class Version20251018100000 extends AbstractMigration
         $this->addSql('DROP INDEX shelves_name_ci_unique');
     }
 }
-
-

@@ -10,8 +10,6 @@ final class ShelfNotEmptyException extends \RuntimeException
 {
     public static function withId(UuidInterface $id): self
     {
-        return new self(sprintf('Shelf with id "%s" contains books and cannot be removed.', $id->toString()));
+        return new self(\sprintf('Shelf with id "%s" contains books and cannot be removed.', $id->toString()));
     }
 }
-
-

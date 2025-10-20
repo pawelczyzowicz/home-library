@@ -15,14 +15,13 @@ final class DeleteShelfHandler
     public function __construct(
         private readonly ShelfRepository $repository,
         private readonly ShelfBooksCounter $booksCounter,
-    ) {
-    }
+    ) {}
 
     public function __invoke(DeleteShelfCommand $command): void
     {
         $shelf = $this->repository->findById($command->id());
 
-        if ($shelf === null) {
+        if (null === $shelf) {
             throw ShelfNotFoundException::withId($command->id());
         }
 
@@ -37,5 +36,3 @@ final class DeleteShelfHandler
         $this->repository->remove($shelf);
     }
 }
-
-

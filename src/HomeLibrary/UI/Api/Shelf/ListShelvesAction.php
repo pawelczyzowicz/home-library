@@ -20,14 +20,13 @@ final class ListShelvesAction extends AbstractController
         private readonly ListShelvesHandler $handler,
         private readonly ShelfResource $resource,
         private readonly ProblemJsonResponseFactory $problemFactory,
-    ) {
-    }
+    ) {}
 
     public function __invoke(Request $request): JsonResponse
     {
         $searchTerm = $request->query->get('q');
 
-        if ($searchTerm !== null) {
+        if (null !== $searchTerm) {
             $searchTerm = trim((string) $searchTerm);
 
             if (mb_strlen($searchTerm) > 50) {
@@ -39,7 +38,7 @@ final class ListShelvesAction extends AbstractController
                 );
             }
 
-            if ($searchTerm === '') {
+            if ('' === $searchTerm) {
                 $searchTerm = null;
             }
         }
@@ -57,5 +56,3 @@ final class ListShelvesAction extends AbstractController
         );
     }
 }
-
-

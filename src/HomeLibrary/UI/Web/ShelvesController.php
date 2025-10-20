@@ -16,5 +16,3 @@ final class ShelvesController extends AbstractController
         return $this->render('shelves/index.html.twig');
     }
 }
-
-

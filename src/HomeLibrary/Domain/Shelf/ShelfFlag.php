@@ -37,5 +37,3 @@ class ShelfFlag
         return $this->isSystem;
     }
 }
-
-

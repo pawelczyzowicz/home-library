@@ -8,9 +8,7 @@ use App\HomeLibrary\Domain\Shelf\ShelfRepository;
 
 class ListShelvesHandler
 {
-    public function __construct(private readonly ShelfRepository $repository)
-    {
-    }
+    public function __construct(private readonly ShelfRepository $repository) {}
 
     public function __invoke(ListShelvesQuery $query): ListShelvesResult
     {
@@ -22,5 +20,3 @@ class ListShelvesHandler
         );
     }
 }
-
-

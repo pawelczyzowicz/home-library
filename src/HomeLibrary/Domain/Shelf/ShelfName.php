@@ -6,7 +6,6 @@ namespace App\HomeLibrary\Domain\Shelf;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use InvalidArgumentException;
 
 #[ORM\Embeddable]
 class ShelfName
@@ -24,7 +23,7 @@ class ShelfName
         $length = mb_strlen($normalized);
 
         if ($length < self::MIN_LENGTH || $length > self::MAX_LENGTH) {
-            throw new InvalidArgumentException(sprintf(
+            throw new \InvalidArgumentException(\sprintf(
                 'Shelf name must have between %d and %d characters.',
                 self::MIN_LENGTH,
                 self::MAX_LENGTH,
@@ -44,5 +43,3 @@ class ShelfName
         return $this->value;
     }
 }
-
-

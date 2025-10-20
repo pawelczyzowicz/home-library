@@ -8,7 +8,6 @@ use App\HomeLibrary\Application\Shelf\Command\DeleteShelfCommand;
 use App\HomeLibrary\Application\Shelf\DeleteShelfHandler;
 use App\HomeLibrary\UI\Api\Problem\ProblemJsonResponseFactory;
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,8 +19,7 @@ final class DeleteShelfAction extends AbstractController
     public function __construct(
         private readonly DeleteShelfHandler $handler,
         private readonly ProblemJsonResponseFactory $problemFactory,
-    ) {
-    }
+    ) {}
 
     public function __invoke(string $id): JsonResponse
     {
@@ -41,5 +39,3 @@ final class DeleteShelfAction extends AbstractController
         return new JsonResponse(status: Response::HTTP_NO_CONTENT);
     }
 }
-
-

@@ -10,5 +10,3 @@ interface ShelfBooksCounter
 {
     public function countForShelf(UuidInterface $shelfId): int;
 }
-
-

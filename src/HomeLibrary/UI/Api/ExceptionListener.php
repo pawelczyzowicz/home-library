@@ -21,9 +21,7 @@ final class ExceptionListener
     public function __construct(
         private readonly Problem\ProblemJsonResponseFactory $problemFactory,
         private readonly LoggerInterface $logger,
-    )
-    {
-    }
+    ) {}
 
     public function __invoke(ExceptionEvent $event): void
     {
@@ -117,5 +115,3 @@ final class ExceptionListener
         );
     }
 }
-
-

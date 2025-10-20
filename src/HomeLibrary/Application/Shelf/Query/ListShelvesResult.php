@@ -9,9 +9,7 @@ use App\HomeLibrary\Domain\Shelf\Shelf;
 class ListShelvesResult
 {
     /** @param Shelf[] $shelves */
-    public function __construct(private readonly array $shelves, private readonly int $total)
-    {
-    }
+    public function __construct(private readonly array $shelves, private readonly int $total) {}
 
     /** @return Shelf[] */
     public function shelves(): array
@@ -24,5 +22,3 @@ class ListShelvesResult
         return $this->total;
     }
 }
-
-

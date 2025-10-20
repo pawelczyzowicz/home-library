@@ -17,10 +17,8 @@ final class ShelfResource
             'id' => (string) $shelf->id(),
             'name' => $shelf->name()->value(),
             'isSystem' => $shelf->systemFlag()->value(),
-            'createdAt' => $shelf->createdAt()->format(DATE_ATOM),
-            'updatedAt' => $shelf->updatedAt()->format(DATE_ATOM),
+            'createdAt' => $shelf->createdAt()->format(\DATE_ATOM),
+            'updatedAt' => $shelf->updatedAt()->format(\DATE_ATOM),
         ];
     }
 }
-
-

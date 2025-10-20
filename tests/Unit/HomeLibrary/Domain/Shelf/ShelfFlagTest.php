@@ -33,4 +33,3 @@ final class ShelfFlagTest extends TestCase
         self::assertFalse($this->userFlag->value());
     }
 }
-

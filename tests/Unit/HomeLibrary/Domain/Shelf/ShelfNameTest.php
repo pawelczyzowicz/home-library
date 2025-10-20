@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\HomeLibrary\Domain\Shelf;
 
 use App\HomeLibrary\Domain\Shelf\ShelfName;
-use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -47,10 +46,9 @@ final class ShelfNameTest extends TestCase
     #[Test]
     public function itThrowsInvalidArgumentExceptionWhenValueHasInvalidLength(string $invalidValue): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Shelf name must have between 1 and 50 characters.');
 
         new ShelfName($invalidValue);
     }
 }
-

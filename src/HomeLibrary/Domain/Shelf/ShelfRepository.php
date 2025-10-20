@@ -21,5 +21,3 @@ interface ShelfRepository
 
     public function remove(Shelf $shelf): void;
 }
-
-
