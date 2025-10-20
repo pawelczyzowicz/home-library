@@ -17,6 +17,7 @@ final class DbalShelfBooksCounter implements ShelfBooksCounter
 
     public function countForShelf(UuidInterface $shelfId): int
     {
+        // temporary
         return 0;
         $sql = 'SELECT COUNT(*) FROM books WHERE shelf_id = :shelf_id';
 

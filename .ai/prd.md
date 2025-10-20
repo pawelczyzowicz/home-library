@@ -358,21 +358,6 @@ Kryteria akceptacji:
 - Nowy regał pojawia się w dropdown podczas dodawania/edycji książek
 - Nowy regał pojawia się w filtrach
 
-US-010: Edycja nazwy regału
-
-Jako użytkownik chcę zmienić nazwę regału, aby dostosować ją do zmian w organizacji domu lub poprawić błąd.
-
-Kryteria akceptacji:
-- System wyświetla listę regałów w sekcji zarządzania regałami
-- Każdy regał (oprócz "Do zakupu") ma przycisk "Edytuj"
-- Po kliknięciu "Edytuj" system wyświetla formularz z aktualną nazwą
-- Użytkownik może zmienić nazwę
-- System waliduje, że nowa nazwa nie jest pusta i jest unikalna
-- Po kliknięciu "Zapisz" system aktualizuje nazwę regału
-- System wyświetla komunikat "Nazwa regału została zmieniona"
-- Zmiana nazwy jest widoczna we wszystkich miejscach (dropdown, filtry, lista książek)
-- Książki przypisane do regału zachowują przypisanie z nową nazwą
-
 US-011: Usunięcie regału
 
 Jako użytkownik chcę usunąć niepotrzebny regał, gdy już go nie używam.
