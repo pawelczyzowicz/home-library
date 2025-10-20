@@ -1,2 +1,67 @@
 grumphp:
-    tasks: {  }
+    git_hook_variables:
+        EXEC_GRUMPHP_COMMAND: 'docker exec --user www-data home-library-backend php'
+    process_timeout: 600
+    ignore_unstaged_changes: false
+    stop_on_failure: true
+    tasks:
+        composer:
+            file: ./composer.json
+            no_check_all: true
+            no_check_lock: false
+            no_check_publish: true
+            with_dependencies: false
+            strict: false
+            metadata:
+                priority: 3
+        git_blacklist:
+            keywords:
+                - "die\\("
+                - "exit\\("
+                - "var_dump\\("
+                - "dump\\("
+                - "console\\.log\\("
+                - "phpinfo\\("
+                - "print_r\\("
+                - "phpinfo"
+                - "die;"
+                - "exit;"
+            triggered_by: [ 'php', 'js', 'html', 'twig' ]
+            regexp_type: E
+            metadata:
+                priority: 3
+        phpcsfixer:
+            config: '.php-cs-fixer.dist.php'
+            using_cache: ~
+            config_contains_finder: true
+            verbose: true
+            diff: false
+            triggered_by: ['php']
+            metadata:
+                priority: 3
+        phpmd:
+            whitelist_patterns: []
+            exclude: []
+            ruleset: ['phpmd_ruleset.xml']
+            triggered_by: ['php']
+            metadata:
+                priority: 2
+        phpstan:
+            autoload_file: ~
+            configuration: 'phpstan.neon'
+            force_patterns: [ ]
+            ignore_patterns: [ ]
+            triggered_by: [ 'php' ]
+            memory_limit: "-1"
+            use_grumphp_paths: true
+            metadata:
+                priority: 1
+        yamllint:
+            whitelist_patterns: [  ]
+            ignore_patterns: [ catalog-info.yaml ]
+            object_support: false
+            exception_on_invalid_type: true
+            parse_constant: true
+            parse_custom_tags: true
+            metadata:
+                priority: 3

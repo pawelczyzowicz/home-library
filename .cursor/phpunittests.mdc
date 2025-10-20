@@ -1,0 +1,48 @@
+---
+alwaysApply: false
+---
+## Struktura i Konfiguracja
+- **Lokalizacja:** Testy jednostkowe muszą znajdować się w katalogu `tests/Unit`.
+- **Namespace:** Przestrzeń nazw testu musi odzwierciedlać strukturę katalogu `src/`, z prefiksem `App\Tests\Unit`.
+- **Ścisłe typowanie:** Każdy plik testowy musi zaczynać się od `declare(strict_types=1);`.
+- **Klasa testowa:**
+    - Nazwa klasy musi być nazwą testowanej klasy z sufiksem `Test` (np. `MyService` -> `MyServiceTest`).
+- **Metoda `setUp()`:**
+    - Używaj `protected function setUp(): void` do inicjalizacji testowanej klasy i jej zależności.
+- **Mocki:**
+    - Definiuj mocki jako prywatne właściwości klasy testowej.
+    - Używaj typów łączonych (intersection types) do typowania mocków: `private MyInterface&MockObject $myMock;`.
+
+## Pisanie Testów
+- **Nazewnictwo metod:**
+    - Nazwy metod testowych powinny być opisowe i używać `camelCase` (np. `itThrowsExceptionWhenEmailIsInvalid`).
+    - **Nie mogą** zaczynać się od prefiksu `test`.
+- **Atrybut `#[Test]`:** Każda metoda testowa musi być oznaczona atrybutem `#[Test]`.
+- **Struktura (Arrange-Act-Assert):** Zachowuj klarowną strukturę testu. Przygotowanie danych (Arrange) powinno odbywać się w `setUp()` lub w `DataProvider`.
+- **Metody prywatne/chronione:** Unikaj testowania metod prywatnych. Jeśli metoda jest na tyle skomplikowana, że wymaga testów, wydziel ją do osobnej, publicznej klasy. Testowanie metod chronionych (`protected`) jest dopuszczalne (za pomocą refleksji) tylko w uzasadnionych przypadkach.
+
+## Asercje i Dane Testowe
+- **Różnorodność Danych:** W asercjach zawsze używaj różnych, unikalnych wartości dla poszczególnych pól. Unikaj używania tej samej wartości (np. 'test' lub 100) dla różnych właściwości.
+- **Przypadki Brzegowe:** Zawsze testuj przypadki brzegowe: wartości graniczne (0, -1, max int), znaki specjalne, puste ciągi znaków, `null` (jeśli dozwolony).
+- **Ścisłe Porównania:** Preferuj `assertSame()` nad `assertEquals()`, aby sprawdzać zarówno wartość, jak i typ.
+- **Wyjątki:** Testując wyjątki, weryfikuj nie tylko ich typ, ale także treść komunikatu i kod błędu.
+
+## DataProviders
+- **Użycie:** Do testowania wielu zestawów danych dla jednej metody używaj `DataProvider`ów, oznaczając metodę testową atrybutem `#[DataProvider('nazwaMetodyDostawcy')]`.
+- **Definicja:**
+    - Metoda dostawcy musi być `public static` i zwracać `array`.
+    - Nazwa metody powinna być w formacie `provider*` (np. `providerForValidation`).
+    - Metoda dostawcy **musi znajdować się przed** metodą testową, która z niej korzysta.
+    - Dla złożonych danych używaj tablic asocjacyjnych z opisowymi kluczami, aby poprawić czytelność.
+
+## Mockowanie i Zależności
+- **Funkcje Natywne:** Kod, który opiera się na natywnych funkcjach PHP (np. `file_get_contents`), testuj poprzez opakowanie tych funkcji w dedykowany serwis, który można łatwo zamockować.
+- **Brak Akcji:** Weryfikuj nie tylko pozytywne ścieżki, ale również to, że określone akcje *nie zostały* wykonane, gdy warunki nie są spełnione (np. używając `$mock->expects($this->never())`).
+
+## Jakość i Narzędzia
+- **Pokrycie Kodu:** Dąż do 100% pokrycia kodu testami jednostkowymi dla nowej i modyfikowanej logiki biznesowej. Używaj `@codeCoverageIgnore` tylko dla metod bez logiki.
+- **PHPUnit 10:** Stosuj nowoczesną składnię PHPUnit 10 z atrybutami (`#[Test]`, `#[DataProvider]`).
+
+## Dobre Praktyki i Zasady Ogólne
+- **Unikanie Losowości:** Nie polegaj na domyślnej kolejności elementów w kolekcjach zwracanych przez API. Jeśli kolejność jest ważna, wymuś ją sortowaniem w zapytaniu.
+- **Testowanie Przypadków Brzegowych:** Nie testuj tylko "happy path". Scenariusze powinny obejmować również walidację, obsługę błędów i inne przypadki brzegowe.

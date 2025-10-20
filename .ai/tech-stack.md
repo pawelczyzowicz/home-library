@@ -8,3 +8,7 @@ AI - Komunikacja z modelami przez usługę Openrouter.ai:
 
 CI/CD i Hosting:
 - Github Actions do tworzenia pipeline’ów CI/CD
+ 
+Testy
+- Testy jednostkowe: PHPUnit (pokrycie domeny, warstwy aplikacyjnej, test doubles)
+- Testy integracyjne: PHPUnit + Doctrine ORM + Doctrine Migrations + PostgreSQL (osobna baza testowa; alternatywnie SQLite in-memory, jeśli zgodne z mappingiem)

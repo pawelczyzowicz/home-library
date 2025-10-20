@@ -32,7 +32,7 @@ Szczegółowe wymagania znajdują się w pliku `./.ai/prd.md`.
 - **Baza danych**: Doctrine ORM 3.5 + Doctrine Migrations + PostgreSQL
 - **AI**: integracja przez OpenRouter (dostęp do wielu modeli, limity kosztów)
 - **Inne**: Monolog, HttpClient
-- **Dev/QA**: PHPUnit, PHP-CS-Fixer, PHPStan (+ rozszerzenia), PHPMD, Web Profiler, Maker Bundle
+- **Dev/QA**: Testy jednostkowe — PHPUnit; Testy integracyjne — PHPUnit + Doctrine ORM + Doctrine Migrations + PostgreSQL (osobna baza testowa; alternatywnie SQLite in-memory, jeśli zgodne); dodatkowo: PHP-CS-Fixer, PHPStan (+ rozszerzenia), PHPMD, Web Profiler, Maker Bundle
 - **CI/CD**: GitHub Actions
 
 Więcej informacji: `./.ai/tech-stack.md`.
