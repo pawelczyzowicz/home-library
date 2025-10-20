@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Regały{% endblock %}
+
+{% block body %}
+    <main class="shelves-view" data-controller="shelves">
+        <header class="shelves-view__header">
+            <div>
+                <h1>Regały</h1>
+                <p class="shelves-view__subtitle">Zarządzaj swoimi regałami i porządkuj kolekcję.</p>
+            </div>
+            <span class="shelves-view__summary" data-shelves-target="summary"></span>
+        </header>
+
+        <section class="shelves-view__banner" data-shelves-target="banner"></section>
+
+        <section class="shelves-view__create">
+            <form data-action="submit->shelves#createShelf" data-shelves-target="form">
+                <div class="form-field">
+                    <label for="shelf-name">Nazwa regału</label>
+                    <input id="shelf-name" name="name" type="text" maxlength="50" required data-shelves-target="nameInput">
+                    <p class="form-field__error" data-shelves-target="nameError" hidden></p>
+                </div>
+
+                <input type="hidden" data-controller="csrf-protection">
+
+                <button type="submit" data-shelves-target="createButton">Dodaj</button>
+            </form>
+        </section>
+
+        <section class="shelves-view__table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nazwa</th>
+                        <th>Systemowy</th>
+                        <th>Utworzono</th>
+                        <th>Zaktualizowano</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody data-shelves-target="tableBody"></tbody>
+            </table>
+        </section>
+
+        <section class="shelves-view__modal" hidden data-shelves-target="modal">
+            <div class="modal">
+                <div class="modal__content">
+                    <h2 data-shelves-target="modalTitle"></h2>
+                    <p data-shelves-target="modalMessage"></p>
+                    <div class="modal__actions">
+                        <button type="button" data-action="shelves#cancelDelete">Anuluj</button>
+                        <button type="button" data-action="shelves#confirmDelete">Usuń</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock %}
+
+

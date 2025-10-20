@@ -9,3 +9,9 @@ api:
         path: ../src/HomeLibrary/UI/Api/
         namespace: App\HomeLibrary\UI\Api
     type: attribute
+
+ui:
+    resource:
+        path: ../src/HomeLibrary/UI/Web/
+        namespace: App\HomeLibrary\UI\Web
+    type: attribute
