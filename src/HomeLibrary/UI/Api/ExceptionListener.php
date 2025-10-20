@@ -6,6 +6,9 @@ namespace App\HomeLibrary\UI\Api;
 
 use App\HomeLibrary\Application\Exception\ValidationException;
 use App\HomeLibrary\Domain\Shelf\Exception\DuplicateShelfNameException;
+use App\HomeLibrary\Domain\Shelf\Exception\ShelfIsSystemException;
+use App\HomeLibrary\Domain\Shelf\Exception\ShelfNotEmptyException;
+use App\HomeLibrary\Domain\Shelf\Exception\ShelfNotFoundException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,6 +38,45 @@ final class ExceptionListener
                 $this->problemFactory->create(
                     type: 'https://example.com/problems/shelf-conflict',
                     title: 'Shelf name already exists',
+                    status: Response::HTTP_CONFLICT,
+                    detail: $exception->getMessage(),
+                ),
+            );
+
+            return;
+        }
+
+        if ($exception instanceof ShelfNotFoundException) {
+            $event->setResponse(
+                $this->problemFactory->create(
+                    type: 'https://example.com/problems/not-found',
+                    title: 'Shelf not found',
+                    status: Response::HTTP_NOT_FOUND,
+                    detail: $exception->getMessage(),
+                ),
+            );
+
+            return;
+        }
+
+        if ($exception instanceof ShelfIsSystemException) {
+            $event->setResponse(
+                $this->problemFactory->create(
+                    type: 'https://example.com/errors/cannot-delete-system-shelf',
+                    title: 'Cannot delete system shelf',
+                    status: Response::HTTP_CONFLICT,
+                    detail: $exception->getMessage(),
+                ),
+            );
+
+            return;
+        }
+
+        if ($exception instanceof ShelfNotEmptyException) {
+            $event->setResponse(
+                $this->problemFactory->create(
+                    type: 'https://example.com/errors/shelf-not-empty',
+                    title: 'Shelf not empty',
                     status: Response::HTTP_CONFLICT,
                     detail: $exception->getMessage(),
                 ),
