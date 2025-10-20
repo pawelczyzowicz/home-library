@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<ruleset name="Clean Code customized"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+    <description>
+        The Clean Code ruleset adjusted to our needs
+    </description>
+
+    <rule ref="rulesets/cleancode.xml">
+        <exclude name="StaticAccess" />
+        <exclude name="ElseExpression" />
+        <exclude name="MissingImport" comment="Customized below" />
+        <exclude name="BooleanArgumentFlag" />
+    </rule>
+    <rule ref="rulesets/cleancode.xml/MissingImport">
+        <properties>
+            <property name="ignore-global">
+                <value comment="Global namespaces are nice">true</value>
+            </property>
+        </properties>
+    </rule>
+    <rule ref="rulesets/unusedcode.xml">
+        <exclude name="UnusedFormalParameter" comment="Added because of up() and down() migration classes" />
+    </rule>
+    <rule ref="rulesets/codesize.xml">
+        <exclude name="TooManyMethods" comment="Customized below" />
+        <exclude name="TooManyPublicMethods" comment="Customized below" />
+        <exclude name="TooManyFields" comment="to be refactored" />
+        <exclude name="CyclomaticComplexity" comment="to be refactored" />
+    </rule>
+    <rule ref="rulesets/codesize.xml/TooManyPublicMethods">
+        <properties>
+            <property name="ignorepattern">
+                <value comment="Added 'should' for unit tests, also some Symfony methods">
+                    (^(set|get|add|is|remove|should))i
+                </value>
+            </property>
+        </properties>
+    </rule>
+    <rule ref="rulesets/codesize.xml/TooManyMethods">
+        <properties>
+            <property name="ignorepattern">
+                <value comment="Added 'should' for unit tests, also some Symfony methods">
+                    (^(set|get|add|is|remove|should))i
+                </value>
+            </property>
+        </properties>
+    </rule>
+    <exclude-pattern>/tests/*</exclude-pattern>
+</ruleset>
