@@ -166,6 +166,8 @@ export default class extends Controller {
                 'Content-Type': 'application/json',
             };
 
+            // Ensure CSRF token is generated before reading headers
+            try { generateCsrfHeaders(this.formTarget); } catch (e) { /* noop */ }
             Object.assign(headers, generateCsrfHeaders(this.formTarget));
 
             const response = await fetch('/api/shelves', {
