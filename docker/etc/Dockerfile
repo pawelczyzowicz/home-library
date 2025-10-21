@@ -27,6 +27,37 @@ RUN apt-get update \
     && rm -f /etc/nginx/conf.d/default.conf \
     && rm -rf /var/lib/apt/lists/*
 
+# --- E2E: Chromium + dependencies for headless browser (Panther)
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        chromium \
+        fonts-liberation \
+        libasound2 \
+        libatk-bridge2.0-0 \
+        libatk1.0-0 \
+        libcups2 \
+        libdrm2 \
+        libgbm1 \
+        libgtk-3-0 \
+        libnspr4 \
+        libnss3 \
+        libx11-xcb1 \
+        libxcomposite1 \
+        libxdamage1 \
+        libxfixes3 \
+        libxkbcommon0 \
+        libxrandr2 \
+        xdg-utils \
+    ; \
+    rm -rf /var/lib/apt/lists/*
+
+# Panther: disable sandbox and reduce /dev/shm usage
+ENV PANTHER_NO_SANDBOX=1
+ENV PANTHER_CHROME_ARGUMENTS="--no-sandbox --disable-dev-shm-usage"
+# Optional: explicitly point to Chromium binary in Debian
+ENV PANTHER_CHROME_BINARY=/usr/bin/chromium
+
 
 RUN docker-php-source extract; \
     pecl install redis-6.1.0 amqp-2.1.2; \
@@ -63,7 +94,8 @@ RUN set -eux; \
     git config --global --add safe.directory /var/www/html
 
 WORKDIR /var/www/html
-RUN PATH=$PATH:/var/www/html/vendor/bin:bin
+# Ensure vendor binaries (e.g., chromedriver/geckodriver via bdi) are on PATH at runtime
+ENV PATH="/var/www/html/vendor/bin:${PATH}"
 EXPOSE 80
 
 # add www-data user to sudo so it can start supervisor as root

@@ -9,6 +9,7 @@
 - [Project description](#project-description)
 - [Tech stack](#tech-stack)
 - [Getting started locally](#getting-started-locally)
+- [E2E tests](#e2e-tests-docker--panther)
 - [Available scripts](#available-scripts)
 - [Project scope](#project-scope)
 - [Project status](#project-status)
@@ -144,6 +145,37 @@ php -S 127.0.0.1:8000 -t public
 ```bash
 vendor/bin/phpunit
 ```
+
+## E2E tests (Docker + Panther)
+
+Uruchamianie testów E2E wewnątrz kontenera `home-library-backend` z użyciem headless Chromium:
+
+1) Zbuduj i uruchom środowisko (jeśli nie działa):
+```bash
+bash ./docker/run-dev.sh
+```
+
+2) Uruchom testy E2E:
+```bash
+docker compose run --rm home-library-backend bash -lc "bash docker/run-e2e.sh"
+```
+
+3) Debug (opcjonalnie): wyłącz headless
+```bash
+docker compose run --rm \
+  -e PANTHER_NO_HEADLESS=1 \
+  home-library-backend bash -lc "bash docker/run-e2e.sh"
+```
+
+Uwagi techniczne:
+- Obraz `home-library:2.0` zawiera Chromium i wymagane biblioteki, a `docker-compose.yml` ustawia `PANTHER_NO_SANDBOX` oraz `PANTHER_CHROME_ARGUMENTS` i zwiększa `shm_size`.
+- Skrypt `docker/run-e2e.sh`:
+  - wykonuje `composer install` (dev),
+  - pobiera sterownik przez `vendor/bin/bdi detect drivers`,
+  - przygotowuje bazę testową (`doctrine:database:create`, `migrations:migrate`),
+  - uruchamia testy: `--testsuite e2e` (fallback do `tests/E2E`).
+- Domyślnie testy korzystają z wbudowanego serwera Symfony uruchamianego przez Panther. Zmienna `PANTHER_APP_ENV` jest ustawiana na `test` w skrypcie.
+- Testy POST używają `createHttpBrowserClient()` dla zapytań innych niż GET.
 
 Uwaga: `composer install` uruchamia automatycznie `cache:clear`, `assets:install` i `importmap:install` dzięki skryptom Composer.
 

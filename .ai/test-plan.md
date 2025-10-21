@@ -30,6 +30,8 @@
   - Integracje z konfiguracją Symfony (np. walidator, translator).
 - **Testy API (jeśli wystawione)**:
   - Kontrakty JSON, walidacje, statusy, błędy, paginacja/filtry.
+- **Testy E2E (opcjonalnie, Symfony Panther lub Playwright)**:
+  - Zachowanie Turbo/Stimulus (nawigacja bez przeładowania, interakcje formularzy).
 - **Testy jakości statycznej**:
   - PHPStan, PHP-CS-Fixer, PHPMD, GrumPHP bramki w CI.
 
@@ -86,6 +88,7 @@
 ### 6. Narzędzia do testowania
 - **PHPUnit**: testy unit/integration/functional, raporty JUnit/XML.
 - **Doctrine**: testy repozytoriów, migracji.
+- **E2E**: Symfony Panther lub Playwright (wymaga dodania do projektu).
 - **Statyczna analiza/jakość**: PHPStan, PHP-CS-Fixer, PHPMD, GrumPHP (hooki pre-commit).
 
 ### 7. Kryteria akceptacji testów

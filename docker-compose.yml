@@ -22,10 +22,15 @@ services:
       - '${DOCKER_NGINX_PORT}:80'
     environment:
       - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@home-library-postgres:5432/${DATABASE_NAME}
+      - APP_ENV=test
+      - PANTHER_NO_SANDBOX=1
+      - PANTHER_CHROME_ARGUMENTS=--no-sandbox --disable-dev-shm-usage
+      # - PANTHER_CHROME_BINARY=/usr/bin/chromium
     dns:
       - 8.8.8.8
     volumes:
       - .:/var/www/html
+    shm_size: "2gb"
     networks:
       - local-network
 

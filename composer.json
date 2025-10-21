@@ -99,6 +99,8 @@
         }
     },
     "require-dev": {
+        "dbrekelmans/bdi": "^1.4",
+        "doctrine/doctrine-fixtures-bundle": "^4.3",
         "friendsofphp/php-cs-fixer": "^3.88",
         "phpmd/phpmd": "^2.15",
         "phpro/grumphp": "^2.12",
@@ -110,6 +112,7 @@
         "symfony/css-selector": "7.3.*",
         "symfony/debug-bundle": "7.3.*",
         "symfony/maker-bundle": "^1.64",
+        "symfony/panther": "^2.2",
         "symfony/stopwatch": "7.3.*",
         "symfony/web-profiler-bundle": "7.3.*"
     }
