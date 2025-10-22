@@ -17,9 +17,7 @@ final class ShelvesPage
     public const CREATE_BUTTON = '[data-e2e="shelf-create-button"]';
     public const TABLE_BODY = '[data-shelves-target="tableBody"]';
 
-    public function __construct(private readonly PantherClient $client)
-    {
-    }
+    public function __construct(private readonly PantherClient $client) {}
 
     public static function open(PantherClient $client): self
     {
@@ -27,11 +25,6 @@ final class ShelvesPage
         $client->waitFor(self::ROOT);
 
         return new self($client);
-    }
-
-    public function form(): ShelfCreateForm
-    {
-        return new ShelfCreateForm($this->client);
     }
 
     public function typeName(string $name): self
@@ -64,5 +57,3 @@ final class ShelvesPage
         return (string) $element->getAttribute('innerHTML');
     }
 }
-
-

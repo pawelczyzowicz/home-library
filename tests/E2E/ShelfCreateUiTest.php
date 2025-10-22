@@ -27,14 +27,12 @@ final class ShelfCreateUiTest extends PantherTestCase
         $found = false;
         foreach ($rows as $row) {
             $cells = $row->findElements(WebDriverBy::cssSelector('td'));
-            if (count($cells) > 0 && trim((string) $cells[0]->getText()) === $name) {
+            if (\count($cells) > 0 && trim((string) $cells[0]->getText()) === $name) {
                 $found = true;
                 break;
             }
         }
 
-        self::assertTrue($found, sprintf('Table should contain a row with shelf name "%s"', $name));
+        self::assertTrue($found, \sprintf('Table should contain a row with shelf name "%s"', $name));
     }
 }
-
-

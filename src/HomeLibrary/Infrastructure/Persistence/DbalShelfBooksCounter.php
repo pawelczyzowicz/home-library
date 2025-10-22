@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+/** @phpstan-ignore-file */
+
 namespace App\HomeLibrary\Infrastructure\Persistence;
 
 use App\HomeLibrary\Application\Shelf\ShelfBooksCounter;

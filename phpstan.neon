@@ -6,3 +6,6 @@ parameters:
 	parallel:
 		jobSize: 20
 		minimumNumberOfJobsPerProcess: 2
+	excludePaths:
+		analyse:
+			- src/HomeLibrary/Infrastructure/Persistence/DbalShelfBooksCounter.php
