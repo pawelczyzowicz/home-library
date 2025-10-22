@@ -68,6 +68,10 @@ jobs:
         run: |
           docker run --rm \
             -u 0:0 \
+            -e APP_ENV=test \
+            -e APP_DEBUG=0 \
+            -e APP_SECRET=ci_test_secret \
+            -e COMPOSER_ALLOW_SUPERUSER=1 \
             -v "$PWD":/var/www/html \
             -w /var/www/html \
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
@@ -76,6 +80,9 @@ jobs:
       - name: Run GrumPHP tasks (phpcsfixer, phpmd, phpstan)
         run: |
           docker run --rm \
+            -e APP_ENV=test \
+            -e APP_DEBUG=0 \
+            -e APP_SECRET=ci_test_secret \
             -v "$PWD":/var/www/html \
             -w /var/www/html \
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
@@ -102,6 +109,10 @@ jobs:
         run: |
           docker run --rm \
             -u 0:0 \
+            -e APP_ENV=test \
+            -e APP_DEBUG=0 \
+            -e APP_SECRET=ci_test_secret \
+            -e COMPOSER_ALLOW_SUPERUSER=1 \
             -v "$PWD":/var/www/html \
             -w /var/www/html \
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
@@ -111,6 +122,9 @@ jobs:
         run: |
           docker run --rm \
             -u www-data \
+            -e APP_ENV=test \
+            -e APP_DEBUG=0 \
+            -e APP_SECRET=ci_test_secret \
             -e XDEBUG_MODE=coverage \
             -v "$PWD":/var/www/html \
             -w /var/www/html \
