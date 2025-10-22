@@ -82,7 +82,7 @@ jobs:
             -v "$PWD":/var/www/html \
             -w /var/www/html \
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
-            bash -lc "git config --global --add safe.directory /var/www/html && git add -A && vendor/bin/grumphp run --ansi --no-interaction --tasks=phpcsfixer,phpmd,phpstan"
+            bash -lc "git config --global --add safe.directory /var/www/html && vendor/bin/grumphp run --ansi --no-interaction --tasks=phpcsfixer,phpmd,phpstan"
 
   tests:
     name: Unit tests

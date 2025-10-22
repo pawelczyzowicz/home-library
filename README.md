@@ -73,8 +73,7 @@ docker exec -it home-library-backend bash
 
 # wybrane polecenia (bezpośrednio, bez wchodzenia do środka)
 docker exec --user www-data home-library-backend bin/console about
-docker exec --user www-data home-library-backend bin/console doctrine:migrations:migrate -n
-docker exec --user www-data home-library-backend vendor/bin/phpunit
+docker exec --user www-data home-library-backend vendor/bin/phpunit tests/Unit
 ```
 
 5) Zmienne środowiskowe dla Docker (ustaw w pliku `.env` w katalogu projektu):
@@ -157,7 +156,7 @@ symfony server:stop
 ### Narzędzia deweloperskie
 ```bash
 # Testy jednostkowe
-vendor/bin/phpunit
+vendor/bin/phpunit tests/Unit
 
 # Formatowanie wg .php-cs-fixer.dist.php
 vendor/bin/php-cs-fixer fix --diff
