@@ -33,7 +33,7 @@ Szczegółowe wymagania znajdują się w pliku `./.ai/prd.md`.
 - **Baza danych**: Doctrine ORM 3.5 + Doctrine Migrations + PostgreSQL
 - **AI**: integracja przez OpenRouter (dostęp do wielu modeli, limity kosztów)
 - **Inne**: Monolog, HttpClient
-- **Dev/QA**: Testy jednostkowe — PHPUnit; Testy integracyjne — PHPUnit + Doctrine ORM + Doctrine Migrations + PostgreSQL (osobna baza testowa; alternatywnie SQLite in-memory, jeśli zgodne); dodatkowo: PHP-CS-Fixer, PHPStan (+ rozszerzenia), PHPMD, Web Profiler, Maker Bundle
+- **Dev/QA**: Testy jednostkowe — PHPUnit; Testy integracyjne — PHPUnit + Doctrine ORM + Doctrine Migrations + PostgreSQL (osobna baza testowa); dodatkowo: PHP-CS-Fixer, PHPStan (+ rozszerzenia), PHPMD, Web Profiler, Maker Bundle
 - **CI/CD**: GitHub Actions
 
 Więcej informacji: `./.ai/tech-stack.md`.
@@ -99,52 +99,6 @@ Skrypt `docker/run-dev.sh` automatycznie:
 - tworzy sieć Docker `local-network` (jeśli brak),
 - uruchamia `docker compose build` i `docker compose up -d`,
 - wykonuje `composer install` oraz tworzy i migruje bazy `dev` i `test` w kontenerze `home-library-backend`.
-
-### Wymagania (instalacja natywna)
-- PHP >= 8.2
-- Composer
-- PostgreSQL
-- (Opcjonalnie) Symfony CLI (`symfony`)
-
-### Instalacja i uruchomienie (instalacja natywna)
-1) Sklonuj repozytorium i zainstaluj zależności:
-```bash
-git clone <URL_REPO> home-library
-cd home-library
-composer install
-```
-
-2) Skonfiguruj środowisko w pliku `.env.local` (utwórz, jeśli nie istnieje):  
-Przykładowe wartości – dostosuj do swojej konfiguracji.
-```bash
-# DSN PostgreSQL (dopasuj user/hasło/wersję serwera)
-DATABASE_URL="postgresql://USER:PASSWORD@127.0.0.1:5432/homelibrary?serverVersion=16&charset=utf8"
-
-# Klucz API do OpenRouter (nazwa zmiennej przykładowa – dostosuj do implementacji)
-OPENROUTER_API_KEY="your_api_key_here"
-```
-
-3) Utwórz bazę i uruchom migracje:
-```bash
-php bin/console doctrine:database:create
-php bin/console doctrine:migrations:migrate -n
-```
-
-4) Uruchom serwer deweloperski:
-```bash
-# Opcja A: Symfony CLI
-symfony server:start -d
-
-# Opcja B: wbudowany serwer PHP (upewnij się, że document root to katalog public/)
-php -S 127.0.0.1:8000 -t public
-```
-
-5) Otwórz aplikację w przeglądarce: `http://127.0.0.1:8000`
-
-6) Testy (opcjonalnie):
-```bash
-vendor/bin/phpunit
-```
 
 ## E2E tests (Docker + Panther)
 
@@ -234,7 +188,6 @@ Pełna specyfikacja: `./.ai/prd.md`.
 ## Project status
 - Etap: MVP w toku (repo zawiera konfigurację Symfony 7.3 i zestaw zależności pod implementację wymagań z PRD).
 - CI/CD: planowane pipeline’y GitHub Actions.
-- Hosting docelowy: DigitalOcean (obraz docker).
 
 ## License
 - Licencja: proprietary (zgodnie z `composer.json`).

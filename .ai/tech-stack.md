@@ -11,4 +11,5 @@ CI/CD i Hosting:
  
 Testy
 - Testy jednostkowe: PHPUnit (pokrycie domeny, warstwy aplikacyjnej, test doubles)
-- Testy integracyjne: PHPUnit + Doctrine ORM + Doctrine Migrations + PostgreSQL (osobna baza testowa; alternatywnie SQLite in-memory, jeśli zgodne z mappingiem)
+- Testy integracyjne: PHPUnit + Doctrine ORM
+- Testy e2e: Symfony Panther + Docker + Doctrine Migrations + PostgreSQL (osobna baza testowa)
