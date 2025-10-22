@@ -196,5 +196,3 @@ Pełna specyfikacja: `./.ai/prd.md`.
 Dokumentacja dodatkowa:
 - PRD: `./.ai/prd.md`
 - Stos technologiczny: `./.ai/tech-stack.md`
-
-
