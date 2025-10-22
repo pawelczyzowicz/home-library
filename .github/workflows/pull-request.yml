@@ -1,0 +1,158 @@
+name: pull-request
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  IMAGE_NAME: home-library
+  IMAGE_TAG: pr-${{ github.sha }}
+
+jobs:
+  build-image:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry (anonymous)
+        if: false
+        run: echo "noop" # placeholder if pushing is needed later
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/etc/Dockerfile
+          push: false
+          tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          outputs: type=docker,dest=/tmp/home-library-image.tar
+
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-library-image
+          path: /tmp/home-library-image.tar
+          retention-days: 3
+
+  static-analysis:
+    name: Static analysis
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: home-library-image
+          path: /tmp
+
+      - name: Load image
+        run: docker load --input /tmp/home-library-image.tar
+
+      - name: Show images
+        run: docker images
+
+      - name: Composer install (inside container)
+        run: |
+          docker run --rm \
+            -u www-data \
+            -v "$PWD":/var/www/html \
+            -w /var/www/html \
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+            bash -lc "composer install --no-interaction --prefer-dist"
+
+      - name: Run GrumPHP tasks (phpcsfixer, phpmd, phpstan)
+        run: |
+          docker run --rm \
+            -u www-data \
+            -v "$PWD":/var/www/html \
+            -w /var/www/html \
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+            bash -lc "git config --global user.email 'ci@example.com' && git config --global user.name 'CI' && git add -A && vendor/bin/grumphp run --ansi --no-interaction --tasks=phpcsfixer,phpmd,phpstan"
+
+  tests:
+    name: Unit tests
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: home-library-image
+          path: /tmp
+
+      - name: Load image
+        run: docker load --input /tmp/home-library-image.tar
+
+      - name: Composer install (inside container)
+        run: |
+          docker run --rm \
+            -u www-data \
+            -v "$PWD":/var/www/html \
+            -w /var/www/html \
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+            bash -lc "composer install --no-interaction --prefer-dist"
+
+      - name: Run PHPUnit (Unit) with coverage
+        run: |
+          docker run --rm \
+            -u www-data \
+            -e XDEBUG_MODE=coverage \
+            -v "$PWD":/var/www/html \
+            -w /var/www/html \
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+            bash -lc "vendor/bin/phpunit -c phpunit.dist.xml tests/Unit --coverage-clover coverage.xml --colors=always"
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
+          if-no-files-found: error
+          retention-days: 7
+
+  status-comment:
+    name: Post status comment
+    needs: [static-analysis, tests]
+    if: ${{ success() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage
+          path: .
+
+      - name: Extract coverage percentage
+        id: cov
+        run: |
+          php -r '$x=simplexml_load_file("coverage.xml");$m=$x->project->metrics; $tot=(int)$m["statements"]; $cov=(int)$m["coveredstatements"]; $pct=$tot?round($cov/$tot*100,2):0; file_put_contents(getenv("GITHUB_OUTPUT"), "coverage=$pct\n", FILE_APPEND);'
+
+      - name: Comment on PR with status
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ✅ Static analysis: passed
+            ✅ Tests: passed
+            📊 Unit test coverage: ${{ steps.cov.outputs.coverage }}%
+
+

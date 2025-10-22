@@ -60,9 +60,9 @@ ENV PANTHER_CHROME_BINARY=/usr/bin/chromium
 
 
 RUN docker-php-source extract; \
-    pecl install redis-6.1.0 amqp-2.1.2; \
+    pecl install redis-6.1.0 amqp-2.1.2 xdebug-3.3.2; \
     docker-php-ext-install bcmath intl opcache pdo pdo_mysql pdo_pgsql sockets xsl zip ftp; \
-    docker-php-ext-enable redis amqp; \
+    docker-php-ext-enable redis amqp xdebug; \
     docker-php-ext-configure pcntl --enable-pcntl && docker-php-ext-install pcntl && rm -f $PHP_INI_DIR/conf.d/docker-php-ext-pcntl.ini; \
     docker-php-source delete; \
     echo 'memory_limit = 512M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini;
