@@ -67,10 +67,11 @@ jobs:
       - name: Composer install (inside container)
         run: |
           docker run --rm \
+            -u 0:0 \
             -v "$PWD":/var/www/html \
             -w /var/www/html \
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
-            bash -lc "composer install --no-interaction --prefer-dist"
+            bash -lc "git config --global --add safe.directory /var/www/html && composer install --no-interaction --prefer-dist"
 
       - name: Run GrumPHP tasks (phpcsfixer, phpmd, phpstan)
         run: |
@@ -100,10 +101,11 @@ jobs:
       - name: Composer install (inside container)
         run: |
           docker run --rm \
+            -u 0:0 \
             -v "$PWD":/var/www/html \
             -w /var/www/html \
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
-            bash -lc "composer install --no-interaction --prefer-dist"
+            bash -lc "git config --global --add safe.directory /var/www/html && composer install --no-interaction --prefer-dist"
 
       - name: Run PHPUnit (Unit) with coverage
         run: |
