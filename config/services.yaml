@@ -21,6 +21,11 @@ services:
 
     App\HomeLibrary\Domain\Shelf\ShelfRepository: '@App\HomeLibrary\Infrastructure\Persistence\DoctrineShelfRepository'
     App\HomeLibrary\Application\Shelf\ShelfBooksCounter: '@App\HomeLibrary\Infrastructure\Persistence\DbalShelfBooksCounter'
+    App\HomeLibrary\Domain\User\UserRepository: '@App\HomeLibrary\Infrastructure\Persistence\DoctrineUserRepository'
+
+    App\HomeLibrary\UI\Api\Auth\RegisterAction:
+        arguments:
+            $loginAuthenticator: '@security.authenticator.json_login.main'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

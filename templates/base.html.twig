@@ -10,6 +10,9 @@
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
+
+        <meta name="csrf-token-authenticate" content="{{ csrf_token('authenticate') }}">
+        <meta name="csrf-token-logout" content="{{ csrf_token('logout') }}">
     </head>
     <body>
         {% block body %}{% endblock %}

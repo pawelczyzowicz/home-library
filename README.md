@@ -74,6 +74,7 @@ docker exec -it home-library-backend bash
 # wybrane polecenia (bezpośrednio, bez wchodzenia do środka)
 docker exec --user www-data home-library-backend bin/console about
 docker exec --user www-data home-library-backend vendor/bin/phpunit tests/Unit
+docker exec --user www-data home-library-backend vendor/bin/phpunit tests/Integration
 ```
 
 5) Zmienne środowiskowe dla Docker (ustaw w pliku `.env` w katalogu projektu):
@@ -111,6 +112,35 @@ bash ./docker/run-dev.sh
 2) Uruchom testy E2E:
 ```bash
 docker compose run --rm home-library-backend bash -lc "bash docker/run-e2e.sh"
+```
+
+### API Auth (register/login/logout/me)
+
+- `POST /api/auth/register` — rejestruje użytkownika, waliduje dane (CSRF token `authenticate`), automatycznie loguje i zwraca obiekt `user`.
+- `POST /api/auth/login` — logowanie JSON (CSRF `authenticate`), w odpowiedzi zwraca `user`.
+- `POST /api/auth/logout` — wylogowanie (CSRF `logout`), status 204.
+- `GET /api/auth/me` — bieżący użytkownik (401 gdy brak sesji).
+
+Przykład (curl):
+
+```
+# pobierz tokeny CSRF z meta tagów
+curl -c cookies.txt http://127.0.0.1:8080/
+
+# rejestracja
+curl -b cookies.txt -c cookies.txt \
+  -H "Content-Type: application/json" \
+  -H "X-CSRF-Token: <token-authenticate>" \
+  -d '{"email":"user@example.com","password":"SecurePass1","passwordConfirm":"SecurePass1"}' \
+  http://127.0.0.1:8080/api/auth/register
+
+# bieżący użytkownik
+curl -b cookies.txt http://127.0.0.1:8080/api/auth/me
+
+# logout
+curl -b cookies.txt -c cookies.txt \
+  -H "X-CSRF-Token: <token-logout>" \
+  -X POST http://127.0.0.1:8080/api/auth/logout
 ```
 
 3) Debug (opcjonalnie): wyłącz headless

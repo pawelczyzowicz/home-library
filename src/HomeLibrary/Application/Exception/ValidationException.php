@@ -6,7 +6,7 @@ namespace App\HomeLibrary\Application\Exception;
 
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class ValidationException extends \RuntimeException
+final class ValidationException extends \RuntimeException
 {
     /**
      * @param array<string, list<string>> $errors
