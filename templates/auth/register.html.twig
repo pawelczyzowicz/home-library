@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rejestracja{% endblock %}
+
+{% block body %}
+    <main class="auth-view" data-view="auth-register">
+        <section class="auth-card" aria-labelledby="auth-register-title">
+            <header class="auth-card__header">
+                <h1 id="auth-register-title">Utwórz konto</h1>
+                <p class="auth-card__subtitle">Dołącz do domowej biblioteki i zacznij zarządzać książkami.</p>
+            </header>
+
+            <div class="banner" data-view="banner" role="alert" aria-live="polite" hidden></div>
+
+            <div class="field-error-summary" role="alert" aria-live="assertive" tabindex="-1" data-view="field-summary" hidden>
+                <h2 class="field-error-summary__title" id="register-error-summary-title">Proszę poprawić poniższe błędy:</h2>
+                <ul class="field-error-summary__list" data-view="field-summary-list"></ul>
+            </div>
+
+            <form id="register-form" novalidate data-view="form">
+                <div class="form-field">
+                    <label for="register-email">Email</label>
+                    <input id="register-email" name="email" type="email" autocomplete="email" required autofocus data-view="input-email">
+                    <p class="form-field__error" id="register-email-error" data-view="error-email" hidden></p>
+                </div>
+
+                <div class="form-field">
+                    <label for="register-password">Hasło</label>
+                    <input id="register-password" name="password" type="password" autocomplete="new-password" required data-view="input-password">
+                    <p class="form-field__error" id="register-password-error" data-view="error-password" hidden></p>
+                </div>
+
+                <div class="form-field">
+                    <label for="register-password-confirm">Potwierdź hasło</label>
+                    <input id="register-password-confirm" name="passwordConfirm" type="password" autocomplete="new-password" required data-view="input-password-confirm">
+                    <p class="form-field__error" id="register-password-confirm-error" data-view="error-password-confirm" hidden></p>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="csrf-token-authenticate" data-controller="csrf-protection" data-view="csrf">
+
+                <button type="submit" class="auth-card__submit" data-view="submit">Utwórz konto</button>
+            </form>
+
+            <footer class="auth-card__footer">
+                <p>Masz już konto?
+                    <a href="{{ path('auth_login') }}">Zaloguj się</a>
+                </p>
+            </footer>
+        </section>
+    </main>
+{% endblock %}
+

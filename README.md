@@ -75,6 +75,7 @@ docker exec -it home-library-backend bash
 docker exec --user www-data home-library-backend bin/console about
 docker exec --user www-data home-library-backend vendor/bin/phpunit tests/Unit
 docker exec --user www-data home-library-backend vendor/bin/phpunit tests/Integration
+docker exec --user www-data home-library-backend vendor/bin/phpunit tests/E2E
 ```
 
 5) Zmienne środowiskowe dla Docker (ustaw w pliku `.env` w katalogu projektu):
@@ -191,8 +192,8 @@ vendor/bin/phpunit tests/Unit
 # Formatowanie wg .php-cs-fixer.dist.php
 vendor/bin/php-cs-fixer fix --diff
 
-# Analiza statyczna (przykład – dostosuj poziom)
-vendor/bin/phpstan analyse src --level=max
+# Analiza statyczna
+vendor/bin/grumphp run --tasks=phpcsfixer,phpmd,phpstan
 
 # PHPMD (przykład)
 vendor/bin/phpmd src text cleancode,codesize,controversial,design,naming,unusedcode

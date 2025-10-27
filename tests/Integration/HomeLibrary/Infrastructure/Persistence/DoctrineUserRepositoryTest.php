@@ -10,7 +10,6 @@ use App\HomeLibrary\Domain\User\UserPasswordHash;
 use App\HomeLibrary\Domain\User\UserRepository;
 use App\HomeLibrary\Domain\User\UserRoles;
 use Doctrine\DBAL\Connection;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -25,8 +24,6 @@ final class DoctrineUserRepositoryTest extends KernelTestCase
         $this->repository = self::getContainer()->get(UserRepository::class);
 
         $container = self::getContainer();
-
-        \assert($container instanceof ContainerInterface);
 
         $connection = $container->get(Connection::class);
         \assert($connection instanceof Connection);

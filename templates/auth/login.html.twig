@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Logowanie{% endblock %}
+
+{% block body %}
+    <main class="auth-view" data-view="auth-login">
+        <section class="auth-card" aria-labelledby="auth-login-title">
+            <header class="auth-card__header">
+                <h1 id="auth-login-title">Zaloguj się</h1>
+                <p class="auth-card__subtitle">Uzyskaj dostęp do swojej domowej biblioteki.</p>
+            </header>
+
+            <div class="banner" data-view="banner" role="alert" aria-live="polite" hidden></div>
+
+            <div class="field-error-summary" role="alert" aria-live="assertive" tabindex="-1" data-view="field-summary" hidden>
+                <h2 class="field-error-summary__title" id="login-error-summary-title">Proszę poprawić poniższe błędy:</h2>
+                <ul class="field-error-summary__list" data-view="field-summary-list"></ul>
+            </div>
+
+            <form id="login-form" novalidate data-view="form">
+                <div class="form-field">
+                    <label for="login-email">Email</label>
+                    <input id="login-email" name="email" type="email" autocomplete="email" required autofocus data-view="input-email">
+                    <p class="form-field__error" id="login-email-error" data-view="error-email" hidden></p>
+                </div>
+
+                <div class="form-field">
+                    <label for="login-password">Hasło</label>
+                    <input id="login-password" name="password" type="password" autocomplete="current-password" required data-view="input-password">
+                    <p class="form-field__error" id="login-password-error" data-view="error-password" hidden></p>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="csrf-token-authenticate" data-controller="csrf-protection" data-view="csrf">
+
+                <button type="submit" class="auth-card__submit" data-view="submit">Zaloguj</button>
+            </form>
+
+            <footer class="auth-card__footer">
+                <p>Nie masz konta?
+                    <a href="{{ path('auth_register') }}">Zarejestruj się</a>
+                </p>
+            </footer>
+        </section>
+    </main>
+{% endblock %}
+

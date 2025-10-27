@@ -39,8 +39,7 @@ Session-based auth over same-origin requests (Symfony Security). All responses s
 {
   "email": "user@example.com",
   "password": "strong-password",
-  "passwordConfirm": "strong-password",
-  "name": "Optional display name"
+  "passwordConfirm": "strong-password"
 }
 ```
 - Response JSON (201):

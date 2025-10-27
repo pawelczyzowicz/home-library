@@ -238,14 +238,13 @@ US-001: Rejestracja nowego konta
 Jako nowy użytkownik chcę zarejestrować się w systemie HomeLibrary, aby móc tworzyć i zarządzać moją domową biblioteką.
 
 Kryteria akceptacji:
-- System wyświetla formularz rejestracji z polami: email, hasło, potwierdzenie hasła, imię (opcjonalne)
+- System wyświetla formularz rejestracji z polami: email, hasło, potwierdzenie hasła
 - System waliduje format email (zawiera @, domenę)
 - System waliduje, że hasło ma minimum 8 znaków
 - System waliduje, że hasło i potwierdzenie hasła są identyczne
 - Jeśli email już istnieje w bazie, system wyświetla komunikat "Ten email jest już zarejestrowany"
 - Po poprawnej rejestracji system tworzy konto, automatycznie loguje użytkownika i przekierowuje do dashboardu
 - System wyświetla komunikat powitalny po pierwszym zalogowaniu
-- System automatycznie tworzy specjalny regał "Do zakupu" dla nowej biblioteki
 
 US-002: Logowanie do systemu
 
