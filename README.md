@@ -122,6 +122,13 @@ docker compose run --rm home-library-backend bash -lc "bash docker/run-e2e.sh"
 - `POST /api/auth/logout` — wylogowanie (CSRF `logout`), status 204.
 - `GET /api/auth/me` — bieżący użytkownik (401 gdy brak sesji).
 
+### API Books (nowe)
+
+- `GET /api/books`
+  - Query params: `q`, `shelfId`, `genreIds`, `limit`, `offset`, `sort` (`title|author|createdAt`), `order` (`asc|desc`).
+  - Walidacja wejścia (Problem Details 400) przy błędnych parametrach.
+  - Odpowiedź 200: `data` (lista książek z osadzonym `shelf` i `genres`) + `meta { total, limit, offset }`.
+
 Przykład (curl):
 
 ```

@@ -22,6 +22,7 @@ services:
     App\HomeLibrary\Domain\Shelf\ShelfRepository: '@App\HomeLibrary\Infrastructure\Persistence\DoctrineShelfRepository'
     App\HomeLibrary\Application\Shelf\ShelfBooksCounter: '@App\HomeLibrary\Infrastructure\Persistence\DbalShelfBooksCounter'
     App\HomeLibrary\Domain\User\UserRepository: '@App\HomeLibrary\Infrastructure\Persistence\DoctrineUserRepository'
+    App\HomeLibrary\Domain\Book\BookRepository: '@App\HomeLibrary\Infrastructure\Persistence\DoctrineBookRepository'
 
     App\HomeLibrary\UI\Api\Auth\RegisterAction:
         arguments:

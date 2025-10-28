@@ -187,6 +187,13 @@ Book JSON shape (with embedded shelf and genres for client convenience):
   "meta": { "total": 47, "limit": 20, "offset": 0 }
 }
 ```
+- Notes:
+  - Walidacja parametrów (`ListBooksParameterValidator`) odrzuca niepoprawne wartości i zwraca RFC 7807 z listą błędów.
+  - Zapytania OR filtrują po `shelfId`, `q`, `genreIds` i zwracają metadane paginacji.
+  - Wynik zawiera zagnieżdżone `shelf` oraz `genres` dzięki `BookResource`.
+- Errors:
+  - 400 (Problem Details) dla błędnych parametrów (`Invalid query parameter`).
+  - 401 brak autoryzacji.
 
 2) Create book
 - Method: POST

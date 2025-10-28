@@ -35,6 +35,20 @@ final class ValidationException extends \RuntimeException
     }
 
     /**
+     * @param array<array{parameter: string, message: string}> $issues
+     */
+    public static function withIssues(array $issues): self
+    {
+        $errors = [];
+
+        foreach ($issues as $issue) {
+            $errors[$issue['parameter']][] = $issue['message'];
+        }
+
+        return new self($errors);
+    }
+
+    /**
      * @return array<string, list<string>>
      */
     public function errors(): array

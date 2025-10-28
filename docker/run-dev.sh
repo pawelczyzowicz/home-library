@@ -57,5 +57,6 @@ env -u DOCKER_NGINX_PORT -u DOCKER_POSTGRES_PORT -u DOCKER_POSTGRES_TEST_PORT do
 
 docker exec --user www-data home-library-backend composer install
 docker exec --user www-data home-library-backend bin/console d:d:c --if-not-exists --env=dev
-docker exec --user www-data home-library-backend bin/console doctrine:migrations:migrate -n
+docker exec --user www-data home-library-backend bin/console doctrine:migrations:migrate -n --env=dev
 docker exec --user www-data home-library-backend bin/console d:d:c --if-not-exists --env=test
+docker exec --user www-data home-library-backend bin/console doctrine:migrations:migrate -n --env=test
