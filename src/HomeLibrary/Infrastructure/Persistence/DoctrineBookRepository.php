@@ -25,6 +25,13 @@ final class DoctrineBookRepository extends ServiceEntityRepository implements Bo
         parent::__construct($registry, Book::class);
     }
 
+    public function save(Book $book): void
+    {
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($book);
+        $entityManager->flush();
+    }
+
     /**
      * @param int[] $genreIds
      */

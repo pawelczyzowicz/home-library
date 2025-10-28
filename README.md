@@ -129,6 +129,28 @@ docker compose run --rm home-library-backend bash -lc "bash docker/run-e2e.sh"
   - Walidacja wejścia (Problem Details 400) przy błędnych parametrach.
   - Odpowiedź 200: `data` (lista książek z osadzonym `shelf` i `genres`) + `meta { total, limit, offset }`.
 
+- `POST /api/books`
+  - Nagłówek: `Content-Type: application/json`.
+  - Body (JSON): `title` (string 1–255), `author` (string 1–255), `shelfId` (UUID), `genreIds` (tablica 1–3 unikalnych intów), opcjonalnie `isbn` (10/13 cyfr), `pageCount` (1–50000).
+  - Wymaga uwierzytelnionego użytkownika (sesja) i zwraca 201 z obiektem `Book` (łącznie z `shelf` i `genres`).
+  - Błędy: 400 (Content-Type/JSON), 404 (brak regału/gatunku), 422 (walidacja — format RFC7807 z kluczem `errors`).
+
+Przykład tworzenia książki (curl, wykorzystuje cookies z wcześniejszego logowania):
+
+```bash
+curl -b cookies.txt \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Wiedźmin",
+    "author": "Andrzej Sapkowski",
+    "shelfId": "<UUID istniejącego regału>",
+    "genreIds": [1, 12],
+    "isbn": "9781234567890",
+    "pageCount": 384
+  }' \
+  http://127.0.0.1:8080/api/books
+```
+
 Przykład (curl):
 
 ```

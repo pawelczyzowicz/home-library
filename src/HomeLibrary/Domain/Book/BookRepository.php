@@ -9,6 +9,8 @@ use Ramsey\Uuid\UuidInterface;
 
 interface BookRepository
 {
+    public function save(Book $book): void;
+
     /**
      * @param int[] $genreIds
      */
