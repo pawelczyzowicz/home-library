@@ -35,21 +35,14 @@ HomeLibrary rozwiązuje te problemy poprzez cyfrowy rejestr książek z przypisa
 - Użytkownik przypisuje książkę do wybranego regału podczas dodawania
 - System potwierdza dodanie książki i wyświetla ją na liście
 
-3.1.2 Edycja książki
-- System umożliwia edycję wszystkich pól książki (tytuł, autor, gatunek, ISBN, liczba stron, regał)
-- Zmiana regału odbywa się poprzez dropdown z listą dostępnych regałów
-- System waliduje dane przed zapisem (wymagane pola, format ISBN jeśli podany)
-- System potwierdza zapisanie zmian
+ 
 
-3.1.3 Usuwanie książki
+3.1.2 Usuwanie książki
 - System umożliwia usunięcie książki z biblioteki
 - System wyświetla potwierdzenie przed usunięciem
 - Po usunięciu książka znika z wszystkich widoków i filtrów
 
-3.1.4 Przesuwanie książki między regałami
-- System umożliwia zmianę regału poprzez edycję książki i wybór z dropdown
-- System aktualizuje lokalizację książki w widoku listy/tabeli
-- Zmiana jest natychmiastowo widoczna dla wszystkich użytkowników
+ 
 
 ### 3.2 System regałów
 
@@ -147,7 +140,7 @@ HomeLibrary rozwiązuje te problemy poprzez cyfrowy rejestr książek z przypisa
 
 3.6.4 Model uprawnień
 - Wszyscy użytkownikami w ramach jednego gospodarstwa domowego mają równe uprawnienia
-- Każdy użytkownik może: dodawać, edytować, usuwać książki; tworzyć, edytować, usuwać regały; korzystać z rekomendacji AI
+- Każdy użytkownik może: dodawać i usuwać książki; tworzyć, edytować, usuwać regały; korzystać z rekomendacji AI
 - System nie implementuje ról użytkowników w MVP
 
 3.6.5 Wspólna biblioteka
@@ -214,6 +207,10 @@ HomeLibrary rozwiązuje te problemy poprzez cyfrowy rejestr książek z przypisa
 4.1.10 Zaawansowane analytics użytkownika
 - Brak dashboardu z statystykami czytelniczymi
 - Brak wykresów wzrostu biblioteki, najczęściej czytanych gatunków, itp.
+4.1.11 Edycja i widok szczegółowy książki
+- Brak możliwości edycji istniejącej książki w MVP (w tym zmiany regału).
+- Brak widoku szczegółów książki w MVP; dostępne są lista, dodawanie i usuwanie książek.
+- Przenoszenie książki między regałami poprzez edycję nie jest dostępne w MVP.
 - Tracking ograniczony wyłącznie do miary sukcesu MVP
 
 ### 4.2 Ograniczenia techniczne
@@ -288,34 +285,7 @@ Kryteria akceptacji:
 - System wyświetla komunikat "Książka została dodana"
 - System przekierowuje do listy książek, gdzie nowa książka jest widoczna
 
-US-005: Edycja danych książki
-
-Jako użytkownik chcę edytować dane książki (w tym zmienić tytuł, autora, gatunek, ISBN, liczbę stron), aby poprawić błędy lub zaktualizować informacje.
-
-Kryteria akceptacji:
-- System wyświetla przycisk "Edytuj" przy każdej książce w widoku listy lub szczegółów
-- System wyświetla formularz edycji z wypełnionymi aktualnymi danymi książki
-- Użytkownik może zmienić dowolne pole: tytuł, autor, gatunek (1-3), regał, ISBN, liczba stron
-- System waliduje dane analogicznie jak przy dodawaniu
-- Po kliknięciu "Zapisz" system aktualizuje dane książki w bazie
-- System wyświetla komunikat "Zmiany zostały zapisane"
-- Zaktualizowane dane są natychmiastowo widoczne na liście książek
-
-US-006: Przeniesienie książki na inny regał
-
-Jako użytkownik chcę przenieść książkę z jednego regału na drugi, edytując jej dane, aby odzwierciedlić zmiany w fizycznej organizacji moich książek.
-
-Kryteria akceptacji:
-- System umożliwia edycję książki (przycisk "Edytuj")
-- W formularzu edycji pole "Regał" wyświetla dropdown z listą wszystkich regałów
-- Aktualny regał jest preselektowany w dropdown
-- Użytkownik wybiera nowy regał z listy
-- Po kliknięciu "Zapisz" system aktualizuje przypisanie książki do nowego regału
-- System wyświetla komunikat "Książka została przeniesiona do regału [nazwa]"
-- Na liście książek książka wyświetla się z nowym regałem
-- Filtrowanie po regale pokazuje książkę w nowej lokalizacji
-
-US-007: Usunięcie książki z biblioteki
+US-005: Usunięcie książki z biblioteki
 
 Jako użytkownik chcę usunąć książkę z biblioteki, gdy już jej nie posiadam lub została dodana przez pomyłkę.
 
@@ -329,20 +299,9 @@ Kryteria akceptacji:
 - Książka znika z listy książek i wszystkich widoków
 - Jeśli książka była dodana przez AI i zaakceptowana, usunięcie nie wpływa na dane analytics
 
-US-008: Wyświetlenie szczegółów książki
-
-Jako użytkownik chcę zobaczyć wszystkie szczegóły książki, aby sprawdzić pełne informacje o niej.
-
-Kryteria akceptacji:
-- System wyświetla link/przycisk do szczegółów przy każdej książce (np. tytuł jest klikalny)
-- Po kliknięciu system wyświetla widok szczegółów książki
-- Widok zawiera wszystkie dane: tytuł, autor, gatunek(i), regał, ISBN (jeśli podany), liczba stron (jeśli podana)
-- Widok zawiera przyciski: "Edytuj", "Usuń", "Powrót do listy"
-- W widoku szczegółów wyświetla się informacja, jeśli książka została dodana z rekomendacji AI
-
 ### 5.3 Zarządzanie regałami
 
-US-009: Utworzenie nowego regału
+US-006: Utworzenie nowego regału
 
 Jako użytkownik chcę utworzyć nowy regał z nazwą własną (np. "Salon lewy", "Sypialnia górna półka"), aby organizować książki według fizycznych lokalizacji w domu.
 
@@ -357,7 +316,7 @@ Kryteria akceptacji:
 - Nowy regał pojawia się w dropdown podczas dodawania/edycji książek
 - Nowy regał pojawia się w filtrach
 
-US-011: Usunięcie regału
+US-007: Usunięcie regału
 
 Jako użytkownik chcę usunąć niepotrzebny regał, gdy już go nie używam.
 
@@ -373,7 +332,7 @@ Kryteria akceptacji:
 - System wyświetla komunikat "Regał został usunięty"
 - Regał znika z dropdown, filtrów i listy regałów
 
-US-012: Wyświetlenie specjalnego regału "Do zakupu"
+US-008: Wyświetlenie specjalnego regału "Do zakupu"
 
 Jako użytkownik chcę mieć dostęp do specjalnego regału "Do zakupu", gdzie automatycznie trafiają książki zaakceptowane z rekomendacji AI, aby planować przyszłe zakupy.
 
@@ -388,7 +347,7 @@ Kryteria akceptacji:
 
 ### 5.4 Wyszukiwanie i filtrowanie
 
-US-013: Wyświetlenie listy wszystkich książek
+US-009: Wyświetlenie listy wszystkich książek
 
 Jako użytkownik chcę zobaczyć listę wszystkich moich książek w formie tabeli, aby mieć przegląd całej kolekcji.
 
@@ -397,11 +356,11 @@ Kryteria akceptacji:
 - Tabela zawiera kolumny: tytuł, autor, gatunek(i), regał
 - Opcjonalnie tabela zawiera kolumny: ISBN, liczba stron (jeśli są wypełnione)
 - Tabela jest responsywna (dostosowuje się do szerokości ekranu, na mobile może być listą kart)
-- Każdy wiersz zawiera przyciski: "Szczegóły", "Edytuj", "Usuń"
+- Każdy wiersz zawiera przycisk: "Usuń"
 - Jeśli biblioteka jest pusta, system wyświetla komunikat "Twoja biblioteka jest pusta. Dodaj pierwszą książkę!"
 - System wyświetla liczbę wszystkich książek (np. "Książki (47)")
 
-US-014: Wyszukiwanie książek po tytule lub autorze
+US-010: Wyszukiwanie książek po tytule lub autorze
 
 Jako użytkownik z dużą biblioteką chcę szybko znaleźć książkę po tytule lub autorze, aby nie przewijać długiej listy.
 
@@ -415,7 +374,7 @@ Kryteria akceptacji:
 - Użytkownik może wyczyścić pole wyszukiwania przyciskiem "X" w polu lub usuwając tekst
 - Po wyczyszczeniu wyświetlają się wszystkie książki
 
-US-015: Filtrowanie książek po regale
+US-011: Filtrowanie książek po regale
 
 Jako użytkownik chcę filtrować książki po regale, aby zobaczyć tylko książki z konkretnej lokalizacji.
 
@@ -428,7 +387,7 @@ Kryteria akceptacji:
 - Filtr można wyczyścić wybierając "Wszystkie regały"
 - Filtr działa łącznie z wyszukiwaniem (jeśli aktywne) - AND logic
 
-US-016: Filtrowanie książek po gatunku
+US-012: Filtrowanie książek po gatunku
 
 Jako użytkownik chcę filtrować książki po gatunku, aby znaleźć wszystkie książki z konkretnej kategorii.
 
@@ -441,7 +400,7 @@ Kryteria akceptacji:
 - Filtr można wyczyścić odznaczając wszystkie gatunki lub przyciskiem "Wyczyść"
 - Filtr działa łącznie z wyszukiwaniem i filtrem regału (AND logic między różnymi filtrami)
 
-US-017: Czyszczenie wszystkich filtrów
+US-013: Czyszczenie wszystkich filtrów
 
 Jako użytkownik chcę wyczyścić wszystkie aktywne filtry i wyszukiwanie jednym kliknięciem, aby szybko wrócić do widoku pełnej biblioteki.
 
@@ -457,7 +416,7 @@ Kryteria akceptacji:
 
 ### 5.5 System rekomendacji AI
 
-US-018: Wprowadzenie tytułów/autorów do rekomendacji
+US-014: Wprowadzenie tytułów/autorów do rekomendacji
 
 Jako użytkownik chcę wprowadzić tytuły książek wraz z autorami lub nazwiska autorów, które lubię, aby otrzymać podobne rekomendacje od AI.
 
@@ -470,7 +429,7 @@ Kryteria akceptacji:
 - System wyświetla przycisk "Generuj rekomendacje"
 - Formularz zawiera przykłady: "Np. 'Wiedźmin Andrzej Sapkowski' lub 'Andrzej Sapkowski'"
 
-US-019: Wygenerowanie rekomendacji AI
+US-015: Wygenerowanie rekomendacji AI
 
 Jako użytkownik chcę otrzymać 3 propozycje książek od AI podobnych do podanych przeze mnie tytułów/autorów, aby znaleźć kolejne interesujące pozycje do przeczytania.
 
@@ -491,7 +450,7 @@ Kryteria akceptacji:
 - System rejestruje event "ai_recommendation_generated" w bazie (timestamp, user_id, input_titles, recommended_book_ids)
 - Jeśli wystąpi błąd API, system wyświetla komunikat "Nie udało się wygenerować rekomendacji. Spróbuj ponownie."
 
-US-020: Akceptacja książki z rekomendacji AI
+US-016: Akceptacja książki z rekomendacji AI
 
 Jako użytkownik chcę zaakceptować zaproponowaną przez AI książkę i dodać ją do regału "Do zakupu", aby zapamiętać ją na przyszłość.
 
@@ -507,7 +466,7 @@ Kryteria akceptacji:
 - Książka jest natychmiastowo widoczna w regale "Do zakupu" i na liście wszystkich książek
 - Użytkownik może zaakceptować więcej niż jedną książkę z zestawu
 
-US-021: Odrzucenie książki z rekomendacji AI
+US-017: Odrzucenie książki z rekomendacji AI
 
 Jako użytkownik chcę odrzucić zaproponowaną przez AI książkę, gdy nie jestem nią zainteresowany.
 
@@ -519,7 +478,7 @@ Kryteria akceptacji:
 - Użytkownik może odrzucić wszystkie 3 książki
 - Po odrzuceniu wszystkich książek system wyświetla opcję "Wygeneruj nowe rekomendacje" lub powrotu do formularza
 
-US-022: Ponowne wygenerowanie rekomendacji
+US-018: Ponowne wygenerowanie rekomendacji
 
 Jako użytkownik chcę wygenerować nowe rekomendacje z innymi tytułami/autorami, gdy poprzednie propozycje mi nie odpowiadają.
 
@@ -533,18 +492,18 @@ Kryteria akceptacji:
 
 ### 5.6 Współdzielenie biblioteki
 
-US-023: Wyświetlanie zmian dokonanych przez innych użytkowników
+US-019: Wyświetlanie zmian dokonanych przez innych użytkowników
 
 Jako użytkownik współdzielący bibliotekę z domownikami chcę widzieć zmiany dokonane przez innych użytkowników, aby być na bieżąco z aktualnymstanem kolekcji.
 
 Kryteria akceptacji:
 - Wszyscy zalogowani użytkownicy w jednym gospodarstwie domowym widzą tę samą bibliotekę (te same książki i regały)
-- Gdy użytkownik A doda/edytuje/usunie książkę, zmiany są widoczne dla użytkownika B po odświeżeniu strony
+- Gdy użytkownik A doda lub usunie książkę, zmiany są widoczne dla użytkownika B po odświeżeniu strony
 - Gdy użytkownik A utworzy/edytuje/usunie regał, zmiany są widoczne dla użytkownika B po odświeżeniu strony
 - System nie wyświetla informacji, który użytkownik dokonał zmiany (brak historii zmian w MVP)
 - Brak automatycznego odświeżania/WebSocket (wymaga ręcznego odświeżenia strony F5)
 
-US-024: Dodawanie książek przez wielu użytkowników bez konfliktów
+US-020: Dodawanie książek przez wielu użytkowników bez konfliktów
 
 Jako użytkownik współdzielący bibliotekę chcę móc dodawać książki niezależnie od innych domowników, bez blokowania ani konfliktów.
 
@@ -556,7 +515,7 @@ Kryteria akceptacji:
 
 ### 5.7 Scenariusze skrajne i błędy
 
-US-025: Obsługa błędów połączenia z AI provider
+US-021: Obsługa błędów połączenia z AI provider
 
 Jako użytkownik chcę otrzymać zrozumiały komunikat, gdy system nie może wygenerować rekomendacji z powodu problemów technicznych.
 
@@ -567,17 +526,8 @@ Kryteria akceptacji:
 - System nie crashuje i pozwala użytkownikowi wrócić do formularza lub dashboardu
 - Błędy są logowane po stronie backend dla debugowania
 
-US-026: Próba edycji nieistniejącej książki
 
-Jako użytkownik chcę otrzymać komunikat o błędzie, gdy próbuję edytować książkę, która została usunięta przez innego użytkownika.
-
-Kryteria akceptacji:
-- Jeśli użytkownik A wyświetla listę książek, a użytkownik B usuwa książkę, następnie użytkownik A klika "Edytuj" na usuniętej książce
-- System sprawdza, czy książka istnieje przed wyświetleniem formularza
-- Jeśli książka nie istnieje, system wyświetla komunikat "Ta książka została usunięta" i przekierowuje do listy książek
-- Lista książek odświeża się pokazując aktualny stan
-
-US-027: Próba usunięcia regału "Do zakupu"
+US-022: Próba usunięcia regału "Do zakupu"
 
 Jako użytkownik chcę być uniemożliwione usunięcie specjalnego regału "Do zakupu", aby zachować integralność systemu rekomendacji.
 
@@ -587,7 +537,7 @@ Kryteria akceptacji:
 - System wyświetla komunikat "Regał 'Do zakupu' jest regałem systemowym i nie może być usunięty"
 - Regał "Do zakupu" pozostaje w bazie danych
 
-US-028: Obsługa pustej biblioteki
+US-023: Obsługa pustej biblioteki
 
 Jako nowy użytkownik z pustą biblioteką chcę zobaczyć pomocne komunikaty zachęcające do dodania pierwszych książek.
 
@@ -599,7 +549,7 @@ Kryteria akceptacji:
 - Funkcje wyszukiwania i filtrowania są nieaktywne lub ukryte (brak sensu dla pustej biblioteki)
 - Funkcja rekomendacji AI jest dostępna, ale system może wyświetlić wskazówkę "Dodaj kilka książek, aby AI mogło wykluczyć duplikaty z rekomendacji"
 
-US-029: Walidacja długości pól tekstowych
+US-024: Walidacja długości pól tekstowych
 
 Jako użytkownik chcę otrzymać komunikaty walidacyjne, gdy wprowadzam zbyt długie lub zbyt krótkie dane.
 
@@ -614,7 +564,7 @@ Kryteria akceptacji:
 - Jeśli pole wymagane jest puste, system wyświetla "Pole '[nazwa]' jest wymagane"
 - Walidacja działa po stronie frontend (natychmiastowa) i backend (przed zapisem)
 
-US-030: Próba utworzenia regału z duplikowaną nazwą
+US-025: Próba utworzenia regału z duplikowaną nazwą
 
 Jako użytkownik chcę otrzymać komunikat o błędzie, gdy próbuję utworzyć regał z nazwą, która już istnieje.
 
@@ -627,7 +577,7 @@ Kryteria akceptacji:
 
 ### 5.8 Analytics i tracking
 
-US-031: Automatyczne rejestrowanie eventi rekomendacji AI
+US-026: Automatyczne rejestrowanie eventi rekomendacji AI
 
 Jako administrator produktu chcę, aby system automatycznie rejestrował eventy związane z rekomendacjami AI, aby móc analizować skuteczność funkcji.
 
@@ -639,7 +589,7 @@ Kryteria akceptacji:
 - Eventy są zapisywane synchronicznie (przed zwróceniem odpowiedzi użytkownikowi)
 - W przypadku błędu zapisu eventi system loguje błąd, ale NIE przerywa procesu (użytkownik nie widzi błędu)
 
-US-032: Kalkulacja metryki sukcesu MVP
+US-027: Kalkulacja metryki sukcesu MVP
 
 Jako administrator produktu chcę móc wyliczyć % zaakceptowanych rekomendacji, przynajmniej 1 książkę z rekomendacji AI, aby zmierzyć sukces MVP.
 

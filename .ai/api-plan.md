@@ -213,31 +213,7 @@ Book JSON shape (with embedded shelf and genres for client convenience):
 - Errors:
   - 422 (validation: required fields, title/author length 1–255; `genreIds` size 1–3; `isbn` format 10 or 13 digits; `pageCount` 1–50000)
   - 404 (shelf or genre not found)
-
-3) Get book
-- Method: GET
-- Path: `/api/books/{id}`
-- Response JSON (200): Book JSON
-- Errors: 404
-
-4) Update book
-- Method: PATCH
-- Path: `/api/books/{id}`
-- Request JSON (any subset):
-```json
-{
-  "title": "...",
-  "author": "...",
-  "shelfId": "uuid",
-  "genreIds": [1, 2, 3],
-  "isbn": "1234567890",
-  "pageCount": 500
-}
-```
-- Response JSON (200): Book JSON
-- Errors: 404, 422 (same validation as create)
-
-5) Delete book
+3) Delete book
 - Method: DELETE
 - Path: `/api/books/{id}`
 - Success: 204 No Content
@@ -352,7 +328,7 @@ Validation (enforced in API layer; DB constraints backstop):
 
 Business Logic Mapping
 - System shelf protection: attempts to update/delete → 403, message: "Shelf is system-protected and cannot be updated/deleted".
-- Genre linking: manage `book_genre` rows on create/update; on book delete, relations cascade (DB `ON DELETE CASCADE`).
+- Genre linking: manage `book_genre` rows on create; on book delete, relations cascade (DB `ON DELETE CASCADE`).
 - Search: `q` applies to `books.title ILIKE '%q%' OR books.author ILIKE '%q%'`; recommend pg_trgm index for performance.
 - Sorting whitelist to avoid SQL injection; default `created_at DESC`.
 <!-- - Analytics: compute success metric per PRD definition with SQL equivalent and optional date bounds. -->

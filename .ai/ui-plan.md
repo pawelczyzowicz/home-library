@@ -42,7 +42,7 @@ Poniżej zdefiniowane widoki zawierają: ścieżkę, cel, kluczowe informacje, k
 - Ścieżka widoku: `/books`
 - Główny cel: Przegląd i filtrowanie kolekcji; centralny dashboard po zalogowaniu.
 - Kluczowe informacje: liczba wyników, filtr `q`, `shelfId`, `genreIds`, sort (`title|author|createdAt`), `order`, paginacja `limit/offset`; tabela z kolumnami: tytuł, autor, gatunki, regał, (opcjonalnie ISBN, liczba stron), akcje.
-- Kluczowe komponenty: FilterFormBooks (GET), BooksTable, PaginationControls, EmptyState, BannerAlert, Linki akcji („Szczegóły”, „Edytuj”, „Usuń”).
+- Kluczowe komponenty: FilterFormBooks (GET), BooksTable, PaginationControls, EmptyState, BannerAlert, Linki akcji („Usuń”).
 - Akcje API: `GET /api/books` (z query), `GET /api/genres`, `GET /api/shelves` do danych referencyjnych.
 - UX/A11y/Sec: stan „Wyświetlono X z Y”; utrzymanie filtrów w URL; whitelist sortowania; brak JS live‑search (full reload); 404 gdy brak zasobu przy wejściu z nieaktualnym URL; 401 → redirect do logowania.
 - Powiązane US: US‑013, US‑014, US‑015, US‑016, US‑017, US‑023, US‑028.
@@ -52,38 +52,20 @@ Poniżej zdefiniowane widoki zawierają: ścieżkę, cel, kluczowe informacje, k
 - Główny cel: Utworzenie nowej książki i przypisanie do regału.
 - Kluczowe informacje: pola: tytuł, autor (wymagane), `shelfId` (select), `genreIds` (multi‑select 1–3), ISBN (opc.), liczba stron (opc.).
 - Kluczowe komponenty: BookForm (Create), FieldErrorSummary, BannerAlert.
-- Akcje API: `POST /api/books` (source=manual); po 201 → PRG redirect do `/books` lub `/books/{id}`.
+- Akcje API: `POST /api/books` (source=manual); po 201 → PRG redirect do `/books`.
 - UX/A11y/Sec: walidacje 422 wyświetlane nad formularzem; zachowanie inputów; CSRF; selecty wypełnione z `GET /api/shelves` i `GET /api/genres`.
 - Powiązane US: US‑004, US‑029.
 
-5) Widok: Edytuj książkę
-- Ścieżka widoku: `/books/{id}/edit`
-- Główny cel: Aktualizacja pól książki, w tym zmiana regału i gatunków.
-- Kluczowe informacje: te same pola co Create, wypełnione aktualnymi danymi.
-- Kluczowe komponenty: BookForm (Edit), FieldErrorSummary, BannerAlert.
-- Akcje API: `PATCH /api/books/{id}`; po 200 → PRG redirect do `/books/{id}` lub `/books`.
-- UX/A11y/Sec: 404 jeśli książka nie istnieje (np. równoległe usunięcie — US‑026); CSRF; komunikat „Zmiany zapisane”.
-- Powiązane US: US‑005, US‑006, US‑026.
-
-6) Widok: Szczegóły książki
-- Ścieżka widoku: `/books/{id}`
-- Główny cel: Wgląd w pełne dane książki z metadanymi pochodzenia.
-- Kluczowe informacje: tytuł, autor, gatunki, regał, ISBN (jeśli podany), liczba stron (jeśli podana), `source`, `recommendationId` (jeśli dotyczy); akcje: „Edytuj”, „Usuń”, „Powrót”.
-- Kluczowe komponenty: BookDetails, ActionButtons (Edit/Delete), BannerAlert.
-- Akcje API: `GET /api/books/{id}`; Delete inicjowane z poziomu tego widoku.
-- UX/A11y/Sec: 404 dla nieistniejącego ID; Delete jako formularz POST/DELETE z CSRF i stroną potwierdzenia.
-- Powiązane US: US‑008, US‑020 (metadane), US‑021 (konsekwencje odrzucenia nie zapisują się — informacyjnie).
-
-7) Widok: Lista regałów
+5) Widok: Lista regałów
 - Ścieżka widoku: `/shelves`
 - Główny cel: Przegląd i zarządzanie regałami; tworzenie nowych; usuwanie pustych.
 - Kluczowe informacje: tabela: nazwa, znacznik `isSystem`, daty utw./akt.; akcje: „Dodaj”, „Usuń” (gdy dozwolone).
 - Kluczowe komponenty: ShelvesTable, ShelfCreateForm (inline lub osobna strona), BannerAlert.
 - Akcje API: `GET /api/shelves`; `POST /api/shelves`; `DELETE /api/shelves/{id}`.
-- UX/A11y/Sec: regał „Do zakupu” bez akcji Delete; przy `409` (niepusty) wyświetlić banner z `detail` i zablokować operację (bez UI przenoszenia w MVP); CSRF w akcjach.
+- UX/A11y/Sec: regał „Do zakupu” bez akcji Delete; przy `409` (niepusty) wyświetlić banner z `detail` i zablokować operację (bez przenoszenia w UI MVP); CSRF w akcjach.
 - Powiązane US: US‑009, US‑011, US‑012, US‑027, US‑030.
 
-8) Widok: Rekomendacje AI – formularz
+6) Widok: Rekomendacje AI – formularz
 - Ścieżka widoku: `/ai/recommendations`
 - Główny cel: Zebranie wejść dla rekomendacji; uruchomienie generowania.
 - Kluczowe informacje: min. 1 pole tekstowe (z możliwością dodania kolejnych w przyszłości), przykłady, przycisk „Generuj rekomendacje”.
@@ -92,7 +74,7 @@ Poniżej zdefiniowane widoki zawierają: ścieżkę, cel, kluczowe informacje, k
 - UX/A11y/Sec: 422 gdy brak danych; 504/502 komunikat „AI niedostępne, spróbuj ponownie”; CSRF; fokus na nagłówku wyników po redirect.
 - Powiązane US: US‑018, US‑019, US‑025.
 
-9) Widok: Rekomendacje AI – wyniki (3 karty)
+7) Widok: Rekomendacje AI – wyniki (3 karty)
 - Ścieżka widoku: `/ai/recommendations/{eventId}`
 - Główny cel: Prezentacja 3 propozycji z uzasadnieniem i akcjami akceptacji/odrzucenia.
 - Kluczowe informacje: 3 karty: tytuł, autor, krótkie uzasadnienie; przyciski „Akceptuj” i „Odrzuć”.
@@ -116,30 +98,26 @@ Główne przepływy end‑to‑end z przejściami między widokami:
 2) Dodanie książki
 - `/books` → klik „Dodaj książkę” → `/books/new` → (POST `POST /api/books`) → [PRG] → `/books` (flash „Książka została dodana”).
 
-3) Edycja i przeniesienie na inny regał
-- `/books` lub `/books/{id}` → „Edytuj” → `/books/{id}/edit` → (PATCH) → [PRG] → `/books/{id}` lub `/books` (flash „Zmiany zapisane”).
-- Filtry i sortowanie utrzymane w URL po powrocie na listę.
+3) Usunięcie książki
+ - `/books` → „Usuń” → `/books/{id}/delete` (confirm) → (DELETE) → [PRG] → `/books` (flash „Książka została usunięta”).
 
-4) Usunięcie książki
-- `/books/{id}` → „Usuń” → `/books/{id}/delete` (confirm) → (DELETE) → [PRG] → `/books` (flash „Książka została usunięta”).
-
-5) Zarządzanie regałami
+4) Zarządzanie regałami
 - Lista: `/shelves` (GET)
 - Dodanie: `/shelves` (inline) lub `/shelves/new` → (POST) → [PRG] → `/shelves` (flash „Regał został utworzony”).
 - Usunięcie: klik „Usuń” → (DELETE) → przy 204 [PRG] → `/shelves`; przy 409 banner „Shelf not empty” (bez przenoszenia w UI MVP).
 
-6) Rekomendacje AI – generowanie i akceptacja
+5) Rekomendacje AI – generowanie i akceptacja
 - Formularz: `/ai/recommendations` → (POST generate) → [PRG] → `/ai/recommendations/{eventId}` z 3 kartami.
 - Akceptacja: na karcie klik „Akceptuj” → UI blokuje przycisk i pokazuje „Przetwarzanie…” → serwer wykonuje sekwencję: `POST /api/books` (source=ai_recommendation, shelf="Do zakupu") → `POST /api/ai/recommendations/{eventId}/accept` (Idempotency‑Key) → [PRG] → `/books` (flash „Dodano do regału 'Do zakupu'”).
 - Odrzucenie: klik „Odrzuć” → odświeżony widok bez tej karty; po odrzuceniu wszystkich – link „Wygeneruj nowe rekomendacje”.
 
 Powiązanie z historyjkami PRD (wybrane):
 - US‑001/002/003: logowanie/rejestracja/wylogowanie.
-- US‑004/005/006/007/008: CRUD i detale książki.
+- US‑004/007: CRUD książki (bez edycji i widoku szczegółów w MVP).
 - US‑009/011/012/027/030: zarządzanie regałami i ograniczenia systemowe.
 - US‑013/014/015/016/017: lista, wyszukiwanie, filtrowanie, sortowanie.
 - US‑018/019/020/021/022/025/031: rekomendacje AI i obsługa błędów.
-- US‑023/024/026/028/029: współdzielenie, skrajne przypadki, puste stany, walidacje.
+- US‑023/024/028/029: współdzielenie, skrajne przypadki, puste stany, walidacje.
 
 ## 4. Układ i struktura nawigacji
 
@@ -150,7 +128,7 @@ Powiązanie z historyjkami PRD (wybrane):
   - „Wyloguj” → (POST do `/api/auth/logout` wykonywany przez kontroler Twig; PRG → `/auth/login`)
 
 - Sekundarne elementy nawigacyjne:
-  - Breadcrumbs: opcjonalne; minimalnie link „Powrót do listy” na stronach szczegółów/edycji.
+- Breadcrumbs: opcjonalne; minimalnie link „Powrót do listy”.
   - Paginacja: kontrolki `limit/offset` w stopce listy książek.
   - Sortowanie: kontrola w formularzu filtrów; utrzymane w query string.
 
@@ -166,8 +144,7 @@ Powiązanie z historyjkami PRD (wybrane):
 - FilterFormBooks: formularz GET z polami `q`, `shelfId`, `genreIds`, `sort`, `order`, `limit`.
 - BooksTable: tabela wyników z kolumnami, linkami akcji i informacją „Wyświetlono X z Y”.
 - PaginationControls: linki `Poprzednia/Następna`, wskaźnik strony; parametry w query string.
-- BookForm: wspólny formularz create/edit z walidacją backend; select regałów i multi‑select gatunków.
-- BookDetails: sekcja szczegółów z metadanymi `source`, `recommendationId` i akcjami.
+- BookForm: formularz create z walidacją backend; select regałów i multi‑select gatunków.
 - ConfirmForm: uniwersalny szablon potwierdzeń destruktywnych (np. Delete book) z CSRF.
 - ShelvesTable: tabela regałów z oznaczeniem `isSystem` i akcjami.
 - ShelfCreateForm: prosty formularz dodania regału (inline lub osobny widok).
