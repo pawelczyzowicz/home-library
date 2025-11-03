@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\HomeLibrary\UI\Web\Books\ViewModel;
 
+/** @SuppressWarnings("PHPMD.TooManyPublicMethods") */
 final class ListBooksMetaViewModel
 {
     public function __construct(

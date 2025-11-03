@@ -6,6 +6,7 @@ namespace App\HomeLibrary\UI\Web\Books\ViewModel;
 
 use Symfony\Component\HttpFoundation\Request;
 
+/** @SuppressWarnings("PHPMD.TooManyPublicMethods") */
 final class ListBooksFilters
 {
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\HomeLibrary\UI\Web\Books\ViewModel;
 
+/** @SuppressWarnings("PHPMD.TooManyPublicMethods") */
 final class ListBooksViewModel
 {
     /**
@@ -67,7 +68,7 @@ final class ListBooksViewModel
     public function showIsbn(): bool
     {
         foreach ($this->books as $book) {
-            if (isset($book['isbn']) && null !== $book['isbn'] && '' !== $book['isbn']) {
+            if (\array_key_exists('isbn', $book) && null !== $book['isbn'] && '' !== $book['isbn']) {
                 return true;
             }
         }
@@ -78,7 +79,7 @@ final class ListBooksViewModel
     public function showPages(): bool
     {
         foreach ($this->books as $book) {
-            if (isset($book['pageCount']) && null !== $book['pageCount']) {
+            if (\array_key_exists('pageCount', $book) && null !== $book['pageCount']) {
                 return true;
             }
         }
