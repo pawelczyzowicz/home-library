@@ -12,8 +12,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(path: '/api/shelves/{id}', name: 'api_shelves_delete', methods: ['DELETE'])]
+#[IsGranted('ROLE_USER')]
 final class DeleteShelfAction extends AbstractController
 {
     public function __construct(

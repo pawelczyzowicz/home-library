@@ -15,8 +15,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(path: '/api/shelves', name: 'api_shelves_', methods: ['POST'])]
+#[IsGranted('ROLE_USER')]
 final class CreateShelfAction extends AbstractController
 {
     public function __construct(

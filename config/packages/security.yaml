@@ -16,6 +16,7 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            entry_point: App\HomeLibrary\Infrastructure\Security\Http\EntryPoint\LoginRedirectEntryPoint
             json_login:
                 check_path: /api/auth/login
                 username_path: email
@@ -27,6 +28,8 @@ security:
                 invalidate_session: true
 
     access_control:
+        - { path: ^/books, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/shelves, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/auth/me$, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
