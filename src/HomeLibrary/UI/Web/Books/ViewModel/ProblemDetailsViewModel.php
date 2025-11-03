@@ -101,7 +101,7 @@ final class ProblemDetailsViewModel
     }
 
     /**
-     * @param array<string, mixed> $errors
+     * @param array<string|int, mixed> $errors
      *
      * @return array<int, array{field: string|null, message: string}>
      */

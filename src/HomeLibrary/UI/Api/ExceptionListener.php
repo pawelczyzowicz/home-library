@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\HomeLibrary\UI\Api;
 
 use App\HomeLibrary\Application\Exception\ValidationException;
+use App\HomeLibrary\Domain\Book\Exception\BookNotFoundException;
 use App\HomeLibrary\Domain\Genre\Exception\GenreNotFoundException;
 use App\HomeLibrary\Domain\Shelf\Exception\DuplicateShelfNameException;
 use App\HomeLibrary\Domain\Shelf\Exception\ShelfIsSystemException;
@@ -66,6 +67,12 @@ final class ExceptionListener
             $exception instanceof ShelfNotFoundException => $this->problemFactory->create(
                 type: 'https://example.com/problems/not-found',
                 title: 'Shelf not found',
+                status: Response::HTTP_NOT_FOUND,
+                detail: $exception->getMessage(),
+            ),
+            $exception instanceof BookNotFoundException => $this->problemFactory->create(
+                type: 'https://example.com/problems/not-found',
+                title: 'Book not found',
                 status: Response::HTTP_NOT_FOUND,
                 detail: $exception->getMessage(),
             ),

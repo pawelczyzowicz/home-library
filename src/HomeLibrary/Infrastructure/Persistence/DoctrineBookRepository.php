@@ -32,6 +32,11 @@ final class DoctrineBookRepository extends ServiceEntityRepository implements Bo
         $entityManager->flush();
     }
 
+    public function findById(UuidInterface $id): ?Book
+    {
+        return parent::find($id);
+    }
+
     /**
      * @param int[] $genreIds
      */
@@ -82,6 +87,13 @@ final class DoctrineBookRepository extends ServiceEntityRepository implements Bo
             limit: $limit,
             offset: $offset,
         );
+    }
+
+    public function remove(Book $book): void
+    {
+        $entityManager = $this->getEntityManager();
+        $entityManager->remove($book);
+        $entityManager->flush();
     }
 
     /**

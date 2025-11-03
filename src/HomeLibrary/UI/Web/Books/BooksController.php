@@ -124,7 +124,7 @@ final class BooksController extends AbstractController
     {
         $content = $response->getContent();
 
-        if (null === $content || '' === $content) {
+        if (false === $content || '' === $content) {
             return [];
         }
 

@@ -11,6 +11,8 @@ interface BookRepository
 {
     public function save(Book $book): void;
 
+    public function findById(UuidInterface $id): ?Book;
+
     /**
      * @param int[] $genreIds
      */
@@ -23,4 +25,6 @@ interface BookRepository
         string $sort,
         string $order,
     ): ListBooksResult;
+
+    public function remove(Book $book): void;
 }
