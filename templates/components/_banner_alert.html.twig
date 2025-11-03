@@ -1,0 +1,35 @@
+{% set hasProblem = problem is defined and problem and (problem.detail() or problem.hasErrors()) %}
+{% set noticeData = notice is defined and notice ? notice : (message is defined and message ? { 'message': message, 'status': status|default('info') } : null) %}
+{% set hasNotice = noticeData is not null %}
+
+{% if hasProblem or hasNotice %}
+    {% set alertStatus = hasNotice ? noticeData.status|default('info') : 'error' %}
+    <div class="alert alert--{{ alertStatus }}" role="alert" data-testid="banner-alert">
+        {% if hasProblem %}
+            <div class="alert__title">{{ problem.title() ?? 'Wystąpił błąd' }}</div>
+
+            {% if problem.detail() %}
+                <p class="alert__description">{{ problem.detail() }}</p>
+            {% endif %}
+
+            {% if problem.hasErrors() %}
+                <ul class="alert__errors">
+                    {% for error in problem.errors() %}
+                        <li>
+                            {% if error.field %}
+                                <strong>{{ error.field }}:</strong>
+                            {% endif %}
+                            {{ error.message }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endif %}
+
+        {% if hasNotice %}
+            <p class="alert__message">{{ noticeData.message }}</p>
+        {% endif %}
+    </div>
+{% endif %}
+
+

@@ -18,6 +18,20 @@ services:
         exclude:
             - '../src/Entity/'
             - '../src/Kernel.php'
+            - '../src/**/Dto/'
+            - '../src/**/ViewModel/'
+
+    App\HomeLibrary\UI\Web\:
+        resource: '../src/HomeLibrary/UI/Web/'
+        exclude:
+            - '../src/HomeLibrary/UI/Web/**/ViewModel/'
+        tags: ['controller.service_arguments']
+
+    App\HomeLibrary\UI\Api\:
+        resource: '../src/HomeLibrary/UI/Api/'
+        exclude:
+            - '../src/HomeLibrary/UI/Api/**/Dto/'
+        tags: ['controller.service_arguments']
 
     App\HomeLibrary\Domain\Shelf\ShelfRepository: '@App\HomeLibrary\Infrastructure\Persistence\DoctrineShelfRepository'
     App\HomeLibrary\Application\Shelf\ShelfBooksCounter: '@App\HomeLibrary\Infrastructure\Persistence\DbalShelfBooksCounter'

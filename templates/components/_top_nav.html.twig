@@ -1,0 +1,40 @@
+{% set current_route = app.request.attributes.get('_route') %}
+
+<nav class="top-nav" role="navigation" aria-label="Główna nawigacja">
+    <div class="top-nav__inner">
+        <a class="top-nav__brand" href="{{ path('books_index') }}">HomeLibrary</a>
+
+        <ul class="top-nav__links">
+            <li>
+                <a
+                    href="{{ path('books_index') }}"
+                    class="top-nav__link{% if current_route starts with 'books_' %} top-nav__link--active{% endif %}"
+                >
+                    Książki
+                </a>
+            </li>
+            <li>
+                <a
+                    href="{{ path('shelves_index') }}"
+                    class="top-nav__link{% if current_route starts with 'shelves_' %} top-nav__link--active{% endif %}"
+                >
+                    Regały
+                </a>
+            </li>
+            <li>
+                <a
+                    href="/ai/recommendations"
+                    class="top-nav__link{% if current_route starts with 'ai_' %} top-nav__link--active{% endif %}"
+                >
+                    Rekomendacje AI
+                </a>
+            </li>
+        </ul>
+
+        <form class="top-nav__logout" method="post" action="{{ path('api_auth_logout') }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+            <button type="submit" class="button button--ghost">Wyloguj</button>
+        </form>
+    </div>
+</nav>
+

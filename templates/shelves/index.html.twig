@@ -5,7 +5,7 @@
 {% block body %}
     <main class="shelves-view" data-controller="shelves">
         <header class="shelves-view__header">
-            <div>
+            <div class="shelves-view__heading">
                 <h1>Regały</h1>
                 <p class="shelves-view__subtitle">Zarządzaj swoimi regałami i porządkuj kolekcję.</p>
             </div>
@@ -15,7 +15,7 @@
         <section class="shelves-view__banner" data-shelves-target="banner"></section>
 
         <section class="shelves-view__create">
-            <form data-action="submit->shelves#createShelf" data-shelves-target="form">
+            <form data-action="submit->shelves#createShelf" data-shelves-target="form" class="shelves-view__form">
                 <div class="form-field">
                     <label for="shelf-name">Nazwa regału</label>
                     <input id="shelf-name" name="name" type="text" maxlength="50" required data-shelves-target="nameInput" data-e2e="shelf-name-input">
@@ -24,37 +24,33 @@
 
                 <input type="hidden" data-controller="csrf-protection" value="submit">
 
-                <button type="submit" data-shelves-target="createButton" data-e2e="shelf-create-button">Dodaj</button>
+                <button type="submit" class="button button--primary" data-shelves-target="createButton" data-e2e="shelf-create-button">Dodaj</button>
             </form>
         </section>
 
         <section class="shelves-view__table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nazwa</th>
-                        <th>Systemowy</th>
-                        <th>Utworzono</th>
-                        <th>Zaktualizowano</th>
-                        <th>Akcje</th>
-                    </tr>
-                </thead>
-                <tbody data-shelves-target="tableBody"></tbody>
-            </table>
-        </section>
-
-        <section class="shelves-view__modal" hidden data-shelves-target="modal">
-            <div class="modal">
-                <div class="modal__content">
-                    <h2 data-shelves-target="modalTitle"></h2>
-                    <p data-shelves-target="modalMessage"></p>
-                    <div class="modal__actions">
-                        <button type="button" data-action="shelves#cancelDelete">Anuluj</button>
-                        <button type="button" data-action="shelves#confirmDelete">Usuń</button>
-                    </div>
-                </div>
+            <div class="shelves-view__table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nazwa</th>
+                            <th>Systemowy</th>
+                            <th>Utworzono</th>
+                            <th>Zaktualizowano</th>
+                            <th>Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody data-shelves-target="tableBody"></tbody>
+                </table>
             </div>
         </section>
+
+        {% include 'components/_confirm_modal.html.twig' with {
+            controller: 'shelves',
+            wrapper_class: 'shelves-view__modal',
+            cancel_label: 'Anuluj',
+            confirm_label: 'Usuń'
+        } only %}
     </main>
 {% endblock %}
 

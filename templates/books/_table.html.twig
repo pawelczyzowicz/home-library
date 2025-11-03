@@ -1,0 +1,74 @@
+<section
+    class="books-table"
+    data-controller="books-table"
+    data-books-table-reload-url-value="{{ path('books_index', app.request.query.all) }}"
+    data-testid="books-table"
+>
+    <div class="books-table__container">
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Tytuł</th>
+                    <th scope="col">Autor</th>
+                    <th scope="col">Gatunki</th>
+                    <th scope="col">Regał</th>
+                    {% if showIsbn %}
+                        <th scope="col">ISBN</th>
+                    {% endif %}
+                    {% if showPages %}
+                        <th scope="col">Liczba stron</th>
+                    {% endif %}
+                    <th scope="col" class="books-table__column--actions">Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                    <tr>
+                        <td data-label="Tytuł">{{ book.title }}</td>
+                        <td data-label="Autor">{{ book.author }}</td>
+                        <td data-label="Gatunki">
+                            {% if book.genres is not empty %}
+                                {% set genreLabels = [] %}
+                                {% for genre in book.genres %}
+                                    {% set genreLabels = genreLabels|merge([genre.name]) %}
+                                {% endfor %}
+                                {{ genreLabels|join(', ') }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td data-label="Regał">{{ book.shelf.name }}</td>
+                        {% if showIsbn %}
+                            <td data-label="ISBN">{{ book.isbn ?? '—' }}</td>
+                        {% endif %}
+                        {% if showPages %}
+                            <td data-label="Liczba stron">{{ book.pageCount ?? '—' }}</td>
+                        {% endif %}
+                        <td data-label="Akcje" class="books-table__cell--actions">
+                            <button
+                                type="button"
+                                class="button button--danger"
+                                data-action="books-table#openDeleteConfirm"
+                                data-books-table-id-param="{{ book.id }}"
+                                data-books-table-title-param="{{ book.title|e('html_attr') }}"
+                                data-books-table-url-param="/api/books/{{ book.id }}"
+                                data-testid="books-delete-button"
+                            >
+                                Usuń
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% include 'components/_confirm_modal.html.twig' with {
+        controller: 'books-table',
+        wrapper_class: 'books-view__modal',
+        cancel_label: 'Anuluj',
+        confirm_label: 'Usuń'
+    } only %}
+</section>
+
+

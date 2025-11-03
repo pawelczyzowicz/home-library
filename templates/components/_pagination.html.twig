@@ -1,0 +1,85 @@
+{% set total = meta.total() %}
+{% set limit = meta.limit() %}
+{% set totalPages = meta.totalPages() %}
+
+{% if total > limit or meta.offset() > 0 %}
+    {% set currentPage = meta.currentPage() %}
+    {% set hasPrevious = meta.hasPrevious() %}
+    {% set hasNext = meta.hasNext() %}
+    {% set baseQuery = filters.toApiQuery() %}
+    {% set safeLimit = limit > 0 ? limit : 1 %}
+
+    {% set window = 2 %}
+    {% set startPage = currentPage - window %}
+    {% if startPage < 1 %}
+        {% set startPage = 1 %}
+    {% endif %}
+    {% set endPage = currentPage + window %}
+    {% if endPage > totalPages %}
+        {% set endPage = totalPages %}
+    {% endif %}
+
+    <nav class="pagination" aria-label="Paginacja wyników" data-testid="books-pagination">
+        <ul class="pagination__list">
+            <li class="pagination__item">
+                {% if hasPrevious %}
+                    <a
+                        class="pagination__link"
+                        href="{{ path('books_index', baseQuery|merge({'offset': meta.previousOffset()})) }}"
+                        rel="prev"
+                    >
+                        Poprzednia
+                    </a>
+                {% else %}
+                    <span class="pagination__link pagination__link--disabled" aria-disabled="true">Poprzednia</span>
+                {% endif %}
+            </li>
+
+            {% if startPage > 1 %}
+                <li class="pagination__item">
+                    <a class="pagination__link" href="{{ path('books_index', baseQuery|merge({'offset': 0})) }}">1</a>
+                </li>
+                {% if startPage > 2 %}
+                    <li class="pagination__item"><span class="pagination__ellipsis" aria-hidden="true">…</span></li>
+                {% endif %}
+            {% endif %}
+
+            {% for page in startPage..endPage %}
+                {% set pageOffset = (page - 1) * safeLimit %}
+                <li class="pagination__item">
+                    {% if page == currentPage %}
+                        <span class="pagination__link pagination__link--active" aria-current="page">{{ page }}</span>
+                    {% else %}
+                        <a class="pagination__link" href="{{ path('books_index', baseQuery|merge({'offset': pageOffset})) }}">{{ page }}</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+
+            {% if endPage < totalPages %}
+                {% if endPage < totalPages - 1 %}
+                    <li class="pagination__item"><span class="pagination__ellipsis" aria-hidden="true">…</span></li>
+                {% endif %}
+                {% set lastOffset = (totalPages - 1) * safeLimit %}
+                <li class="pagination__item">
+                    <a class="pagination__link" href="{{ path('books_index', baseQuery|merge({'offset': lastOffset})) }}">{{ totalPages }}</a>
+                </li>
+            {% endif %}
+
+            <li class="pagination__item">
+                {% if hasNext %}
+                    <a
+                        class="pagination__link"
+                        href="{{ path('books_index', baseQuery|merge({'offset': meta.nextOffset()})) }}"
+                        rel="next"
+                    >
+                        Następna
+                    </a>
+                {% else %}
+                    <span class="pagination__link pagination__link--disabled" aria-disabled="true">Następna</span>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+{% endif %}
+
+

@@ -1,0 +1,159 @@
+{% set errors = problem ? problem.errors() : [] %}
+{% set fieldErrors = {} %}
+
+{% if errors is iterable %}
+    {% for error in errors %}
+        {% set field = error.field ?? '_general' %}
+        {% set existing = attribute(fieldErrors, field)|default([]) %}
+        {% set fieldErrors = fieldErrors|merge({ (field): existing|merge([error.message]) }) %}
+    {% endfor %}
+{% endif %}
+
+{% set qError = attribute(fieldErrors, 'q')|default([])|first %}
+{% set shelfError = attribute(fieldErrors, 'shelfId')|default([])|first %}
+{% set limitError = attribute(fieldErrors, 'limit')|default([])|first %}
+{% set sortError = attribute(fieldErrors, 'sort')|default([])|first %}
+{% set orderError = attribute(fieldErrors, 'order')|default([])|first %}
+
+<form
+    method="get"
+    action="{{ path('books_index') }}"
+    class="books-filter-form"
+    data-controller="books-autosubmit books-clear"
+    data-books-autosubmit-delay-value="400"
+>
+    <fieldset class="books-filter-form__fieldset books-filter-form__fieldset--search">
+        <div class="form-field">
+            <label for="books-filter-q">Szukaj</label>
+            <input
+                id="books-filter-q"
+                type="search"
+                name="q"
+                maxlength="255"
+                value="{{ filters.qDisplay() }}"
+                placeholder="Szukaj po tytule lub autorze"
+                data-action="input->books-autosubmit#debouncedSubmit"
+                data-books-autosubmit-target="search"
+                data-testid="books-filter-q"
+            >
+            {% if qError %}
+                <p class="form-field__error">{{ qError }}</p>
+            {% endif %}
+        </div>
+    </fieldset>
+
+    <fieldset class="books-filter-form__fieldset books-filter-form__fieldset--primary">
+        <div class="form-field">
+            <label for="books-filter-shelf">Regał</label>
+            <select
+                id="books-filter-shelf"
+                name="shelfId"
+                data-action="change->books-autosubmit#resetOffsetAndSubmit"
+                data-books-autosubmit-target="select"
+                data-testid="books-filter-shelf"
+            >
+                <option value="">Wszystkie regały</option>
+                {% for shelf in shelves %}
+                    <option value="{{ shelf.id }}" {% if filters.shelfId() == shelf.id %}selected{% endif %}>
+                        {{ shelf.name }}{% if shelf.isSystem ?? false %} (systemowy){% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+            {% if shelfError %}
+                <p class="form-field__error">{{ shelfError }}</p>
+            {% endif %}
+        </div>
+
+        <div class="form-field">
+            <span class="form-field__label">Gatunki</span>
+            <div class="checkbox-group" data-testid="books-filter-genres">
+                {% for genre in genres %}
+                    {% set checked = filters.hasGenre(genre.id) %}
+                    <label class="checkbox">
+                        <input
+                            type="checkbox"
+                            name="genreIds[]"
+                            value="{{ genre.id }}"
+                            {% if checked %}checked{% endif %}
+                            data-action="change->books-autosubmit#resetOffsetAndSubmit"
+                        >
+                        <span>{{ genre.name }}</span>
+                    </label>
+                {% else %}
+                    <p class="checkbox-group__empty">Brak dostępnych gatunków.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="books-filter-form__fieldset books-filter-form__fieldset--secondary">
+        <div class="form-field">
+            <label for="books-filter-sort">Sortowanie</label>
+            <select
+                id="books-filter-sort"
+                name="sort"
+                data-action="change->books-autosubmit#resetOffsetAndSubmit"
+            >
+                <option value="createdAt" {% if filters.sort() == 'createdAt' %}selected{% endif %}>Data dodania</option>
+                <option value="title" {% if filters.sort() == 'title' %}selected{% endif %}>Tytuł</option>
+                <option value="author" {% if filters.sort() == 'author' %}selected{% endif %}>Autor</option>
+            </select>
+            {% if sortError %}
+                <p class="form-field__error">{{ sortError }}</p>
+            {% endif %}
+        </div>
+
+        <div class="form-field">
+            <label for="books-filter-order">Kierunek</label>
+            <select
+                id="books-filter-order"
+                name="order"
+                data-action="change->books-autosubmit#resetOffsetAndSubmit"
+            >
+                <option value="desc" {% if filters.order() == 'desc' %}selected{% endif %}>Malejąco</option>
+                <option value="asc" {% if filters.order() == 'asc' %}selected{% endif %}>Rosnąco</option>
+            </select>
+            {% if orderError %}
+                <p class="form-field__error">{{ orderError }}</p>
+            {% endif %}
+        </div>
+
+        <div class="form-field">
+            <label for="books-filter-limit">Na stronę</label>
+            <select
+                id="books-filter-limit"
+                name="limit"
+                data-action="change->books-autosubmit#resetOffsetAndSubmit"
+            >
+                {% for option in [10, 20, 50] %}
+                    <option value="{{ option }}" {% if filters.limit() == option %}selected{% endif %}>{{ option }}</option>
+                {% endfor %}
+            </select>
+            {% if limitError %}
+                <p class="form-field__error">{{ limitError }}</p>
+            {% endif %}
+        </div>
+    </fieldset>
+
+    <input
+        type="hidden"
+        name="offset"
+        value="{{ filters.offset() }}"
+        data-books-autosubmit-target="offset"
+        data-books-clear-target="offset"
+    >
+
+    <div class="books-filter-form__actions">
+        <button type="submit" class="button button--primary" data-testid="books-filter-submit">Szukaj</button>
+        <button
+            type="button"
+            class="button button--ghost"
+            data-action="books-clear#reset"
+            data-testid="books-filter-clear"
+        >
+            Wyczyść
+        </button>
+    </div>
+</form>
+
+

@@ -14,6 +14,7 @@ export default class extends Controller {
         'modal',
         'modalTitle',
         'modalMessage',
+        'confirmButton',
     ];
 
     connect() {
@@ -230,27 +231,35 @@ export default class extends Controller {
         this.vm.items.forEach((item) => {
             const row = document.createElement('tr');
             row.dataset.shelfId = item.id;
+            row.className = 'shelves-view__row';
 
             const nameCell = document.createElement('td');
             nameCell.textContent = item.name;
+            nameCell.dataset.label = 'Nazwa';
 
             const systemCell = document.createElement('td');
             systemCell.innerHTML = item.isSystem
                 ? '<span class="badge badge--system" aria-label="Regał systemowy">Systemowy</span>'
                 : '';
+            systemCell.dataset.label = 'Systemowy';
 
             const createdCell = document.createElement('td');
             createdCell.textContent = item.createdAtLabel;
+            createdCell.dataset.label = 'Utworzono';
 
             const updatedCell = document.createElement('td');
             updatedCell.textContent = item.updatedAtLabel;
+            updatedCell.dataset.label = 'Zaktualizowano';
 
             const actionsCell = document.createElement('td');
+            actionsCell.className = 'shelves-view__actions';
+            actionsCell.dataset.label = 'Akcje';
 
             if (item.canDelete) {
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.textContent = 'Usuń';
+                button.className = 'button button--danger';
                 button.dataset.action = 'shelves#openDeleteConfirm';
                 button.dataset.shelfId = item.id;
                 button.dataset.shelfName = item.name;
@@ -297,10 +306,11 @@ export default class extends Controller {
         this.modalMessageTarget.textContent = `Czy na pewno chcesz usunąć regał „${shelfName}”?`;
         this.modalTarget.hidden = false;
 
-        const confirmButton = this.modalTarget.querySelector('button[data-action="shelves#confirmDelete"]');
-
-        if (confirmButton) {
-            confirmButton.focus();
+        if (this.hasConfirmButtonTarget) {
+            this.confirmButtonTarget.disabled = false;
+            this.confirmButtonTarget.removeAttribute('aria-busy');
+            this.confirmButtonTarget.textContent = 'Usuń';
+            this.confirmButtonTarget.focus();
         }
     }
 
@@ -315,6 +325,12 @@ export default class extends Controller {
 
         const { shelfId, shelfName } = this.confirmState;
         this.deletingId = shelfId;
+
+        if (this.hasConfirmButtonTarget) {
+            this.confirmButtonTarget.disabled = true;
+            this.confirmButtonTarget.setAttribute('aria-busy', 'true');
+            this.confirmButtonTarget.textContent = 'Usuwanie…';
+        }
 
         try {
             const headers = {
@@ -374,6 +390,12 @@ export default class extends Controller {
 
         this.modalTarget.hidden = true;
         this.confirmState = { open: false };
+
+        if (this.hasConfirmButtonTarget) {
+            this.confirmButtonTarget.disabled = false;
+            this.confirmButtonTarget.removeAttribute('aria-busy');
+            this.confirmButtonTarget.textContent = 'Usuń';
+        }
 
         if (triggerButton instanceof HTMLElement) {
             triggerButton.focus();

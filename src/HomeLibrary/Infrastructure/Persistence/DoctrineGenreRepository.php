@@ -36,4 +36,15 @@ final class DoctrineGenreRepository extends ServiceEntityRepository implements G
 
         return $genres;
     }
+
+    public function findAllOrderedByName(): array
+    {
+        /** @var Genre[] $genres */
+        $genres = $this->createQueryBuilder('g')
+            ->orderBy('g.name.value', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        return $genres;
+    }
 }

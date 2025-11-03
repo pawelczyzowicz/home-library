@@ -1,0 +1,77 @@
+{% set total = meta.total() %}
+{% set activeFilters = [] %}
+
+{% if filters.q() %}
+    {% set activeFilters = activeFilters|merge([{
+        label: 'Szukaj',
+        value: filters.q()
+    }]) %}
+{% endif %}
+
+{% if filters.shelfId() %}
+    {% set shelfLabel = null %}
+    {% for shelf in shelves %}
+        {% if shelf.id == filters.shelfId() %}
+            {% set shelfLabel = shelf.name %}
+        {% endif %}
+    {% endfor %}
+    {% if shelfLabel %}
+        {% set activeFilters = activeFilters|merge([{
+            label: 'Regał',
+            value: shelfLabel
+        }]) %}
+    {% endif %}
+{% endif %}
+
+{% set genreNames = [] %}
+{% for genre in genres %}
+    {% if filters.hasGenre(genre.id) %}
+        {% set genreNames = genreNames|merge([genre.name]) %}
+    {% endif %}
+{% endfor %}
+{% if genreNames is not empty %}
+    {% set genreList = genreNames|join(', ') %}
+    {% set activeFilters = activeFilters|merge([{
+        label: 'Gatunki',
+        value: genreList
+    }]) %}
+{% endif %}
+
+{% if filters.sort() != 'createdAt' or filters.order() != 'desc' %}
+    {% set sortLabel = filters.sort() == 'title' ? 'Tytuł' : (filters.sort() == 'author' ? 'Autor' : 'Data dodania') %}
+    {% set orderLabel = filters.order() == 'asc' ? 'rosnąco' : 'malejąco' %}
+    {% set activeFilters = activeFilters|merge([{
+        label: 'Sortowanie',
+        value: sortLabel ~ ' · ' ~ orderLabel
+    }]) %}
+{% endif %}
+
+{% if filters.limit() != 20 %}
+    {% set activeFilters = activeFilters|merge([{
+        label: 'Na stronę',
+        value: filters.limit()
+    }]) %}
+{% endif %}
+
+<div class="books-results-bar" data-testid="books-results-bar">
+    <div class="books-results-bar__summary">
+        {% if total > 0 %}
+            <strong>Wyświetlono {{ shownCount }} z {{ total }}</strong>
+        {% else %}
+            <strong>Brak wyników</strong>
+        {% endif %}
+    </div>
+
+    {% if activeFilters is not empty %}
+        <ul class="books-results-bar__filters">
+            {% for item in activeFilters %}
+                <li class="books-results-bar__filter">
+                    <span class="books-results-bar__filter-label">{{ item.label }}:</span>
+                    <span class="books-results-bar__filter-value">{{ item.value }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+
+

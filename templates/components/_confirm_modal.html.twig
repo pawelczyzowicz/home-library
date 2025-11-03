@@ -1,0 +1,18 @@
+{% set wrapperClass = wrapper_class|default('confirm-modal') %}
+{% set controller = controller|default('confirm-modal') %}
+{% set cancelLabel = cancel_label|default('Anuluj') %}
+{% set confirmLabel = confirm_label|default('Usuń') %}
+
+<section class="{{ wrapperClass }}" hidden data-{{ controller }}-target="modal">
+    <div class="modal">
+        <div class="modal__content">
+            <h2 data-{{ controller }}-target="modalTitle"></h2>
+            <p data-{{ controller }}-target="modalMessage"></p>
+            <div class="modal__actions">
+                <button type="button" class="button button--ghost" data-action="{{ controller }}#cancelDelete">{{ cancelLabel }}</button>
+                <button type="button" class="button button--danger" data-{{ controller }}-target="confirmButton" data-action="{{ controller }}#confirmDelete">{{ confirmLabel }}</button>
+            </div>
+        </div>
+    </div>
+</section>
+

@@ -12,4 +12,9 @@ interface GenreRepository
      * @return Genre[]
      */
     public function findByIds(array $ids): array;
+
+    /**
+     * @return Genre[]
+     */
+    public function findAllOrderedByName(): array;
 }

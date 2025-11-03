@@ -45,7 +45,7 @@ Poniżej zdefiniowane widoki zawierają: ścieżkę, cel, kluczowe informacje, k
 - Kluczowe komponenty: FilterFormBooks (GET), BooksTable, PaginationControls, EmptyState, BannerAlert, Linki akcji („Usuń”).
 - Akcje API: `GET /api/books` (z query), `GET /api/genres`, `GET /api/shelves` do danych referencyjnych.
 - UX/A11y/Sec: stan „Wyświetlono X z Y”; utrzymanie filtrów w URL; whitelist sortowania; brak JS live‑search (full reload); 404 gdy brak zasobu przy wejściu z nieaktualnym URL; 401 → redirect do logowania.
-- Powiązane US: US‑013, US‑014, US‑015, US‑016, US‑017, US‑023, US‑028.
+- Powiązane US: US‑009, US‑010, US‑011, US‑012, US‑013, US‑019, US‑023.
 
 4) Widok: Dodaj książkę
 - Ścieżka widoku: `/books/new`
@@ -54,7 +54,7 @@ Poniżej zdefiniowane widoki zawierają: ścieżkę, cel, kluczowe informacje, k
 - Kluczowe komponenty: BookForm (Create), FieldErrorSummary, BannerAlert.
 - Akcje API: `POST /api/books` (source=manual); po 201 → PRG redirect do `/books`.
 - UX/A11y/Sec: walidacje 422 wyświetlane nad formularzem; zachowanie inputów; CSRF; selecty wypełnione z `GET /api/shelves` i `GET /api/genres`.
-- Powiązane US: US‑004, US‑029.
+- Powiązane US: US‑004, US‑024.
 
 5) Widok: Lista regałów
 - Ścieżka widoku: `/shelves`
@@ -63,7 +63,7 @@ Poniżej zdefiniowane widoki zawierają: ścieżkę, cel, kluczowe informacje, k
 - Kluczowe komponenty: ShelvesTable, ShelfCreateForm (inline lub osobna strona), BannerAlert.
 - Akcje API: `GET /api/shelves`; `POST /api/shelves`; `DELETE /api/shelves/{id}`.
 - UX/A11y/Sec: regał „Do zakupu” bez akcji Delete; przy `409` (niepusty) wyświetlić banner z `detail` i zablokować operację (bez przenoszenia w UI MVP); CSRF w akcjach.
-- Powiązane US: US‑009, US‑011, US‑012, US‑027, US‑030.
+- Powiązane US: US‑006, US‑007, US‑008, US‑022, US‑025.
 
 6) Widok: Rekomendacje AI – formularz
 - Ścieżka widoku: `/ai/recommendations`
@@ -72,7 +72,7 @@ Poniżej zdefiniowane widoki zawierają: ścieżkę, cel, kluczowe informacje, k
 - Kluczowe komponenty: AIForm, FieldErrorSummary, BannerAlert (provider 502/504), Submit z prostym spinnerem tekstowym („AI analizuje…”).
 - Akcje API: `POST /api/ai/recommendations/generate`; sukces (201) → redirect do `#/ai/recommendations/{eventId}` (PRG).
 - UX/A11y/Sec: 422 gdy brak danych; 504/502 komunikat „AI niedostępne, spróbuj ponownie”; CSRF; fokus na nagłówku wyników po redirect.
-- Powiązane US: US‑018, US‑019, US‑025.
+- Powiązane US: US‑014, US‑015, US‑021.
 
 7) Widok: Rekomendacje AI – wyniki (3 karty)
 - Ścieżka widoku: `/ai/recommendations/{eventId}`
@@ -85,7 +85,7 @@ Poniżej zdefiniowane widoki zawierają: ścieżkę, cel, kluczowe informacje, k
   Sukces → PRG redirect do `/books` z komunikatem o dodaniu.
 - UX/A11y/Sec: przy „Akceptuj” dezaktywować przycisk i pokazać spinner tekstowy do czasu zakończenia; 400/404/409 mapować na baner; 502/504 dla providera AI komunikować podczas generowania (formularz).
 - Uwaga: API wymaga `genreIds` przy tworzeniu książki; w MVP UI akceptacja dodaje książkę z minimalnymi danymi (tytuł, autor) – należy doprecyzować walidację po stronie API (poluzowanie lub domyślne gatunki). Kontroler Twig powinien zająć się brakującymi polami zgodnie z decyzją backendu.
-- Powiązane US: US‑019, US‑020, US‑021, US‑022, US‑031.
+- Powiązane US: US‑015, US‑016, US‑017, US‑018, US‑026.
 
 ## 3. Mapa podróży użytkownika
 
@@ -93,7 +93,7 @@ Główne przepływy end‑to‑end z przejściami między widokami:
 
 1) Rejestracja i start
 - `/auth/register` → (POST) → [PRG] → `/books`
-- Efekt: sesja aktywna; systemowy regał „Do zakupu” istnieje; EmptyState jeśli brak książek (US‑028).
+- Efekt: sesja aktywna; systemowy regał „Do zakupu” istnieje; EmptyState jeśli brak książek (US‑023).
 
 2) Dodanie książki
 - `/books` → klik „Dodaj książkę” → `/books/new` → (POST `POST /api/books`) → [PRG] → `/books` (flash „Książka została dodana”).
@@ -113,11 +113,11 @@ Główne przepływy end‑to‑end z przejściami między widokami:
 
 Powiązanie z historyjkami PRD (wybrane):
 - US‑001/002/003: logowanie/rejestracja/wylogowanie.
-- US‑004/007: CRUD książki (bez edycji i widoku szczegółów w MVP).
-- US‑009/011/012/027/030: zarządzanie regałami i ograniczenia systemowe.
-- US‑013/014/015/016/017: lista, wyszukiwanie, filtrowanie, sortowanie.
-- US‑018/019/020/021/022/025/031: rekomendacje AI i obsługa błędów.
-- US‑023/024/028/029: współdzielenie, skrajne przypadki, puste stany, walidacje.
+- US‑004/005: CRUD książki (bez edycji i widoku szczegółów w MVP).
+- US‑006/007/008/022/025: zarządzanie regałami i ograniczenia systemowe.
+- US‑009/010/011/012/013: lista, wyszukiwanie, filtrowanie, sortowanie.
+- US‑014/015/016/017/018/021/026: rekomendacje AI i obsługa błędów.
+- US‑019/020/023/024: współdzielenie, skrajne przypadki, puste stany, walidacje.
 
 ## 4. Układ i struktura nawigacji
 

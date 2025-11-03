@@ -15,6 +15,10 @@
         <meta name="csrf-token-logout" content="{{ csrf_token('logout') }}">
     </head>
     <body>
+        {% block top_nav %}
+            {% include 'components/_top_nav.html.twig' %}
+        {% endblock %}
+
         {% block body %}{% endblock %}
     </body>
 </html>

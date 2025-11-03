@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Książki{% endblock %}
+
+{% block body %}
+    <main class="books-view" data-controller="books-page">
+        <header class="books-view__header">
+            <div class="books-view__heading">
+                <h1>Książki</h1>
+                <p class="books-view__subtitle">Przeglądaj, filtruj i zarządzaj swoją biblioteką.</p>
+            </div>
+        </header>
+
+        <section class="books-view__banner">
+            {% include 'components/_banner_alert.html.twig' with {
+                problem: viewModel.problem(),
+                notice: notice
+            } only %}
+        </section>
+
+        <section class="books-view__filters">
+            {% include 'books/_filter_form.html.twig' with {
+                filters: viewModel.filters(),
+                shelves: viewModel.shelves(),
+                genres: viewModel.genres(),
+                problem: viewModel.problem()
+            } only %}
+        </section>
+
+        <section class="books-view__results">
+            {% include 'books/_results_bar.html.twig' with {
+                meta: viewModel.meta(),
+                filters: viewModel.filters(),
+                shownCount: viewModel.shownCount(),
+                shelves: viewModel.shelves(),
+                genres: viewModel.genres()
+            } only %}
+        </section>
+
+        {% if viewModel.books() is empty %}
+            {% include 'books/_empty_state.html.twig' with { filters: viewModel.filters() } only %}
+        {% else %}
+            {% include 'books/_table.html.twig' with {
+                books: viewModel.books(),
+                showIsbn: viewModel.showIsbn(),
+                showPages: viewModel.showPages()
+            } only %}
+
+            <section class="books-view__pagination">
+                {% include 'components/_pagination.html.twig' with {
+                    meta: viewModel.meta(),
+                    filters: viewModel.filters()
+                } only %}
+            </section>
+        {% endif %}
+    </main>
+{% endblock %}
+

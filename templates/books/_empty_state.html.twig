@@ -1,0 +1,16 @@
+<section class="books-empty-state" data-testid="books-empty-state">
+    <div class="books-empty-state__icon" aria-hidden="true">📚</div>
+    <h2>Twoja biblioteka jest pusta</h2>
+    <p>Dodaj pierwszą książkę lub zmień filtry, aby zobaczyć wyniki.</p>
+
+    <div class="books-empty-state__actions">
+        <a class="button button--primary" href="/books/new" data-testid="books-empty-add">
+            Dodaj książkę
+        </a>
+        <a class="button button--ghost" href="{{ path('books_index') }}" data-testid="books-empty-reset">
+            Wyczyść filtry
+        </a>
+    </div>
+</section>
+
+
