@@ -4,25 +4,22 @@ declare(strict_types=1);
 
 namespace App\Tests\E2E;
 
-use Symfony\Component\Panther\Client as PantherClient;
-use Symfony\Component\Panther\PantherTestCase;
+use Symfony\Component\BrowserKit\HttpBrowser;
 
-final class BookCreateApiTest extends PantherTestCase
+final class BookCreateApiTest extends E2ETestCase
 {
     public function testCreateBookViaApiReturnsCreatedResource(): void
     {
-        $client = static::createPantherClient();
-
         $email = 'e2e-books-' . bin2hex(random_bytes(4)) . '@example.com';
         $password = 'SecurePass123!';
 
-        $this->registerUser($client, $email, $password);
+        $httpClient = $this->registerUser(null, $email, $password);
 
-        $shelfId = $this->createShelf($client);
+        $shelfId = $this->createShelf($httpClient);
 
         $title = 'E2E Book ' . bin2hex(random_bytes(4));
 
-        $client->request(
+        $httpClient->request(
             'POST',
             '/api/books',
             server: ['CONTENT_TYPE' => 'application/json'],
@@ -36,9 +33,9 @@ final class BookCreateApiTest extends PantherTestCase
             ], \JSON_THROW_ON_ERROR),
         );
 
-        self::assertSame(201, $client->getResponse()->getStatusCode());
+        self::assertSame(201, $httpClient->getResponse()->getStatusCode());
 
-        $payload = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        $payload = json_decode((string) $httpClient->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
 
         self::assertSame($title, $payload['title']);
         self::assertSame('Test Author', $payload['author']);
@@ -60,53 +57,23 @@ final class BookCreateApiTest extends PantherTestCase
         self::assertArrayHasKey('updatedAt', $payload);
     }
 
-    private function registerUser(PantherClient $client, string $email, string $password): void
-    {
-        $csrfToken = $this->fetchCsrfToken($client, 'authenticate');
-
-        $client->request(
-            'POST',
-            '/api/auth/register',
-            server: [
-                'CONTENT_TYPE' => 'application/json',
-                'HTTP_X_CSRF_TOKEN' => $csrfToken,
-            ],
-            content: json_encode([
-                'email' => $email,
-                'password' => $password,
-                'passwordConfirm' => $password,
-            ], \JSON_THROW_ON_ERROR),
-        );
-
-        self::assertSame(201, $client->getResponse()->getStatusCode());
-    }
-
-    private function createShelf(PantherClient $client): string
+    private function createShelf(HttpBrowser $httpClient): string
     {
         $name = 'E2E API Shelf ' . bin2hex(random_bytes(4));
 
-        $client->request(
+        $httpClient->request(
             'POST',
             '/api/shelves',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['name' => $name], \JSON_THROW_ON_ERROR),
         );
 
-        self::assertSame(201, $client->getResponse()->getStatusCode());
+        self::assertSame(201, $httpClient->getResponse()->getStatusCode());
 
-        $payload = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        $payload = json_decode((string) $httpClient->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
 
         self::assertSame($name, $payload['name']);
 
         return (string) $payload['id'];
-    }
-
-    private function fetchCsrfToken(PantherClient $client, string $tokenId): string
-    {
-        $node = $client->request('GET', '/')->filter(\sprintf('meta[name="csrf-token-%s"]', $tokenId));
-
-        self::assertGreaterThan(0, $node->count(), \sprintf('CSRF meta tag for %s must exist.', $tokenId));
-
-        return (string) $node->attr('content');
     }
 }
