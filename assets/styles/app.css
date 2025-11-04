@@ -559,6 +559,24 @@ button[disabled] {
     color: #ffffff;
 }
 
+.books-view__header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.books-view__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.books-view__actions .button {
+    white-space: nowrap;
+}
+
 .books-view__heading h1,
 .shelves-view__heading h1,
 .shelves-view__header h1,

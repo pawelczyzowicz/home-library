@@ -5,9 +5,17 @@
 {% block body %}
     <main class="books-view" data-controller="books-page">
         <header class="books-view__header">
-            <div class="books-view__heading">
-                <h1>Książki</h1>
-                <p class="books-view__subtitle">Przeglądaj, filtruj i zarządzaj swoją biblioteką.</p>
+            <div class="books-view__header-top">
+                <div class="books-view__heading">
+                    <h1>Książki</h1>
+                    <p class="books-view__subtitle">Przeglądaj, filtruj i zarządzaj swoją biblioteką.</p>
+                </div>
+
+                <div class="books-view__actions">
+                    <a class="button button--primary" href="{{ path('books_new') }}" data-testid="books-add">
+                        Dodaj książkę
+                    </a>
+                </div>
             </div>
         </header>
 
