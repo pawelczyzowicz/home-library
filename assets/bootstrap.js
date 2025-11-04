@@ -8,3 +8,4 @@ app.register('books-autosubmit', () => import('./controllers/books_autosubmit_co
 app.register('books-clear', () => import('./controllers/books_clear_controller.js'));
 app.register('confirm-delete', () => import('./controllers/confirm_delete_controller.js'));
 app.register('books-table', () => import('./controllers/books_table_controller.js'));
+app.register('books-create', () => import('./controllers/books_create_controller.js'));

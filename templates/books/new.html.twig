@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dodaj książkę{% endblock %}
+
+{% block body %}
+    <main class="books-create-view" data-controller="books-create">
+        <header class="books-create-view__header">
+            <div class="books-create-view__heading">
+                <h1>Dodaj książkę</h1>
+                <p class="books-create-view__subtitle">Uzupełnij dane książki i przypisz ją do odpowiedniego regału.</p>
+            </div>
+        </header>
+
+        <section class="books-create-view__banner" data-books-create-target="banner" aria-live="assertive"></section>
+
+        <section class="books-create-view__panel">
+            <section class="field-error-summary" role="status" aria-live="assertive" aria-labelledby="books-create-error-summary-title" tabindex="-1" data-books-create-target="fieldSummary" hidden>
+                <h2 class="field-error-summary__title" id="books-create-error-summary-title">Proszę poprawić poniższe błędy:</h2>
+                <ul class="field-error-summary__list" data-books-create-target="fieldSummaryList"></ul>
+            </section>
+
+            <form class="books-create-view__form" data-action="submit-&gt;books-create#submit" data-books-create-target="form" novalidate data-e2e="book-create-form">
+                <div class="books-create-view__fields">
+                    <div class="form-field books-create-view__field">
+                        <label for="book-title">Tytuł <span class="form-field__required" aria-hidden="true">*</span></label>
+                        <input id="book-title" name="title" type="text" maxlength="255" required autocomplete="off" data-books-create-target="titleInput" data-action="input-&gt;books-create#onTitleInput blur-&gt;books-create#onTitleBlur" data-e2e="book-title-input">
+                        <p class="form-field__error" id="book-title-error" data-books-create-target="titleError" hidden></p>
+                    </div>
+
+                    <div class="form-field books-create-view__field">
+                        <label for="book-author">Autor <span class="form-field__required" aria-hidden="true">*</span></label>
+                        <input id="book-author" name="author" type="text" maxlength="255" required autocomplete="off" data-books-create-target="authorInput" data-action="input-&gt;books-create#onAuthorInput blur-&gt;books-create#onAuthorBlur" data-e2e="book-author-input">
+                        <p class="form-field__error" id="book-author-error" data-books-create-target="authorError" hidden></p>
+                    </div>
+
+                    <div class="form-field books-create-view__field">
+                        <label for="book-shelf">Regał <span class="form-field__required" aria-hidden="true">*</span></label>
+                        <select id="book-shelf" name="shelfId" required data-books-create-target="shelfSelect" data-action="change-&gt;books-create#onShelfChange" data-e2e="book-shelf-select">
+                            <option value="" disabled selected>Wybierz regał</option>
+                        </select>
+                        <p class="form-field__error" id="book-shelf-error" data-books-create-target="shelfError" hidden></p>
+                    </div>
+
+                    <div class="form-field books-create-view__field">
+                        <span class="form-field__label">Gatunki <span class="form-field__required" aria-hidden="true">*</span></span>
+                        <p class="books-create-view__hint" id="book-genres-hint">Wybierz od 1 do 3 gatunków.</p>
+                        <div id="book-genres" class="books-create-view__genres checkbox-group" role="group" aria-labelledby="book-genres-hint" aria-describedby="book-genres-error" data-books-create-target="genresContainer" data-e2e="book-genres-container" tabindex="-1"></div>
+                        <p class="form-field__error" id="book-genres-error" data-books-create-target="genresError" hidden></p>
+                    </div>
+
+                    <div class="form-field books-create-view__field">
+                        <label for="book-isbn">ISBN</label>
+                        <input id="book-isbn" name="isbn" type="text" inputmode="numeric" maxlength="13" pattern="^[0-9]{10}([0-9]{3})?$" placeholder="Opcjonalnie" autocomplete="off" data-books-create-target="isbnInput" data-action="input-&gt;books-create#onIsbnInput blur-&gt;books-create#onIsbnBlur" data-e2e="book-isbn-input">
+                        <p class="form-field__error" id="book-isbn-error" data-books-create-target="isbnError" hidden></p>
+                    </div>
+
+                    <div class="form-field books-create-view__field">
+                        <label for="book-page-count">Liczba stron</label>
+                        <input id="book-page-count" name="pageCount" type="number" min="1" max="50000" step="1" placeholder="Opcjonalnie" data-books-create-target="pageCountInput" data-action="input-&gt;books-create#onPageCountInput blur-&gt;books-create#onPageCountBlur" data-e2e="book-page-count-input">
+                        <p class="form-field__error" id="book-page-count-error" data-books-create-target="pageCountError" hidden></p>
+                    </div>
+                </div>
+
+                <input type="hidden" value="submit" data-controller="csrf-protection">
+
+                <div class="books-create-view__actions">
+                    <button type="submit" class="button button--primary" data-books-create-target="submit" data-e2e="book-submit-button">Zapisz</button>
+                </div>
+            </form>
+        </section>
+    </main>
+{% endblock %}
+
+

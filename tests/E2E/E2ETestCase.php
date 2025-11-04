@@ -75,6 +75,67 @@ abstract class E2ETestCase extends PantherTestCase
         return $httpClient;
     }
 
+    /**
+     * @return array{id: string, name: string, isSystem?: bool}
+     */
+    protected function createShelf(HttpBrowser $httpClient, ?string $name = null): array
+    {
+        $shelfName = $name ?? ('E2E Shelf ' . bin2hex(random_bytes(4)));
+
+        $httpClient->request(
+            'POST',
+            '/api/shelves',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode(['name' => $shelfName], \JSON_THROW_ON_ERROR),
+        );
+
+        self::assertSame(201, $httpClient->getResponse()->getStatusCode(), 'Shelf creation must return 201.');
+
+        $payload = json_decode((string) $httpClient->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+
+        self::assertIsArray($payload, 'Shelf payload must be an array.');
+        self::assertArrayHasKey('id', $payload, 'Shelf payload must include id.');
+
+        return [
+            'id' => (string) $payload['id'],
+            'name' => isset($payload['name']) ? (string) $payload['name'] : $shelfName,
+            'isSystem' => isset($payload['isSystem']) ? (bool) $payload['isSystem'] : false,
+        ];
+    }
+
+    protected function deleteShelf(HttpBrowser $httpClient, string $shelfId): void
+    {
+        $httpClient->request('DELETE', \sprintf('/api/shelves/%s', $shelfId));
+
+        self::assertSame(204, $httpClient->getResponse()->getStatusCode(), 'Shelf deletion must return 204.');
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string}>
+     */
+    protected function listGenres(HttpBrowser $httpClient): array
+    {
+        $httpClient->request('GET', '/api/genres');
+
+        self::assertSame(200, $httpClient->getResponse()->getStatusCode(), 'Listing genres must return 200.');
+
+        $payload = json_decode((string) $httpClient->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        $entries = isset($payload['data']) && \is_array($payload['data']) ? $payload['data'] : [];
+
+        return array_values(array_filter(
+            array_map(static function ($item): ?array {
+                if (!\is_array($item) || !isset($item['id'], $item['name'])) {
+                    return null;
+                }
+
+                return [
+                    'id' => (int) $item['id'],
+                    'name' => (string) $item['name'],
+                ];
+            }, $entries),
+        ));
+    }
+
     protected function syncHttpCookiesToPanther(PantherClient $pantherClient, HttpBrowser $httpClient): void
     {
         $pantherClient->get('/');

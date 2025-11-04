@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\E2E;
 
-use Symfony\Component\BrowserKit\HttpBrowser;
-
 final class BookCreateApiTest extends E2ETestCase
 {
     public function testCreateBookViaApiReturnsCreatedResource(): void
@@ -15,7 +13,8 @@ final class BookCreateApiTest extends E2ETestCase
 
         $httpClient = $this->registerUser(null, $email, $password);
 
-        $shelfId = $this->createShelf($httpClient);
+        $shelf = $this->createShelf($httpClient);
+        $shelfId = $shelf['id'];
 
         $title = 'E2E Book ' . bin2hex(random_bytes(4));
 
@@ -55,25 +54,5 @@ final class BookCreateApiTest extends E2ETestCase
 
         self::assertArrayHasKey('createdAt', $payload);
         self::assertArrayHasKey('updatedAt', $payload);
-    }
-
-    private function createShelf(HttpBrowser $httpClient): string
-    {
-        $name = 'E2E API Shelf ' . bin2hex(random_bytes(4));
-
-        $httpClient->request(
-            'POST',
-            '/api/shelves',
-            server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['name' => $name], \JSON_THROW_ON_ERROR),
-        );
-
-        self::assertSame(201, $httpClient->getResponse()->getStatusCode());
-
-        $payload = json_decode((string) $httpClient->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
-
-        self::assertSame($name, $payload['name']);
-
-        return (string) $payload['id'];
     }
 }

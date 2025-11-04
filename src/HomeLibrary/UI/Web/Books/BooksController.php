@@ -143,6 +143,10 @@ final class BooksController extends AbstractController
     private function resolveNotice(?string $notice, ?string $detail): ?array
     {
         return match ($notice) {
+            'book-created' => [
+                'status' => 'success',
+                'message' => 'Książka została dodana.',
+            ],
             'book-deleted' => [
                 'status' => 'success',
                 'message' => 'Książka została usunięta.',
