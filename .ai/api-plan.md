@@ -243,7 +243,6 @@ Recommendation Event JSON (storage and response):
 ```json
 {
   "inputs": ["Wiedźmin Andrzej Sapkowski", "Ursula Le Guin"],
-  "excludeTitles": ["Wiedźmin"],
   "model": "openrouter/openai/gpt-4o-mini"
 }
 ```
@@ -323,7 +322,6 @@ Validation (enforced in API layer; DB constraints backstop):
 - AI Recommendation Events
   - `inputs`: array of ≥ 1 non-empty strings.
   - Do providera przekazywany jest katalog gatunków `{ id, name }` w celach audytowych/deskrypcyjnych (bez zewnętrznego połączenia), a odpowiedzi rekomendacji zawierają `genresId` (1–3 wartości 1–15).
-  - Provider prompt must exclude titles already in library.
   - On accept: create `books` with `source = 'ai_recommendation'` and `recommendation_id = {eventId}`; append created `book.id` to `accepted_book_ids` (jsonb array) atomically.
   - Default shelf for acceptance is the system shelf named "Do zakupu"; ensure it exists (seeded) or create if missing.
 

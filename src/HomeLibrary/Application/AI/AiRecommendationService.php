@@ -33,10 +33,9 @@ final class AiRecommendationService
     public function generate(GenerateRecommendationsCommand $command): AiRecommendationEvent
     {
         $inputTitles = $this->normalizeTitles($command->inputs(), 'inputs', false);
-        $excludeTitles = $this->normalizeTitles($command->excludeTitles(), 'excludeTitles', true);
 
         try {
-            $proposals = $this->recommendationProvider->generate($inputTitles, $excludeTitles);
+            $proposals = $this->recommendationProvider->generate($inputTitles);
         } catch (\Throwable $exception) {
             throw RecommendationProviderException::because('Failed to generate recommendations.', $exception);
         }

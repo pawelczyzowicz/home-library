@@ -56,7 +56,7 @@ final class AiRecommendationServiceTest extends TestCase
     public function itGeneratesRecommendations(): void
     {
         $userId = Uuid::uuid4();
-        $command = new GenerateRecommendationsCommand($userId, ['Title'], [], 'model');
+        $command = new GenerateRecommendationsCommand($userId, ['Title'], 'model');
 
         $proposals = [
             new RecommendationProposal('t1', 'Title1', 'Author1', [1], 'Reason1'),
@@ -67,7 +67,7 @@ final class AiRecommendationServiceTest extends TestCase
         $this->provider
             ->expects(self::once())
             ->method('generate')
-            ->with(['Title'], [])
+            ->with(['Title'])
             ->willReturn($proposals);
 
         $this->eventRepository
@@ -84,7 +84,7 @@ final class AiRecommendationServiceTest extends TestCase
     #[Test]
     public function itWrapsProviderFailures(): void
     {
-        $command = new GenerateRecommendationsCommand(null, ['Title'], [], null);
+        $command = new GenerateRecommendationsCommand(null, ['Title'], null);
 
         $this->provider
             ->method('generate')
@@ -97,7 +97,7 @@ final class AiRecommendationServiceTest extends TestCase
     #[Test]
     public function itValidatesNormalizedInputs(): void
     {
-        $command = new GenerateRecommendationsCommand(null, [], [], null);
+        $command = new GenerateRecommendationsCommand(null, [], null);
 
         $this->expectException(ValidationException::class);
         $this->service->generate($command);

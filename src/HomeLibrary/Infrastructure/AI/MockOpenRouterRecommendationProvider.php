@@ -71,9 +71,9 @@ final class MockOpenRouterRecommendationProvider implements IRecommendationProvi
         ],
     ];
 
-    public function generate(array $inputs, array $excludeTitles): array
+    public function generate(array $inputs): array
     {
-        $seed = $this->computeSeed($inputs, $excludeTitles);
+        $seed = $this->computeSeed($inputs);
         $offset = $seed % \count(self::DATASET);
 
         $proposals = [];
@@ -86,18 +86,17 @@ final class MockOpenRouterRecommendationProvider implements IRecommendationProvi
                 $data['title'],
                 $data['author'],
                 $data['genresId'],
-                $this->adaptReason($data['reason'], $inputs, $excludeTitles),
+                $this->adaptReason($data['reason'], $inputs),
             );
         }
 
         return $proposals;
     }
 
-    private function computeSeed(array $inputs, array $excludeTitles): int
+    private function computeSeed(array $inputs): int
     {
         $payload = json_encode([
             'inputs' => array_values($inputs),
-            'exclude' => array_values($excludeTitles),
         ], \JSON_THROW_ON_ERROR);
 
         return (int) (abs(crc32($payload)) ?: 1);
@@ -108,15 +107,14 @@ final class MockOpenRouterRecommendationProvider implements IRecommendationProvi
         return \sprintf('%s-%d', $base, $index + 1);
     }
 
-    private function adaptReason(string $baseReason, array $inputs, array $excludeTitles): string
+    private function adaptReason(string $baseReason, array $inputs): string
     {
         $firstInput = $inputs[0] ?? null;
-        $excludeNote = [] !== $excludeTitles ? \sprintf(' Avoids %s.', implode(', ', $excludeTitles)) : '';
 
         if (null === $firstInput) {
-            return $baseReason . $excludeNote;
+            return $baseReason;
         }
 
-        return \sprintf('%s Inspired by "%s".%s', $baseReason, $firstInput, $excludeNote);
+        return \sprintf('%s Inspired by "%s".', $baseReason, $firstInput);
     }
 }

@@ -48,7 +48,6 @@ final class ApiAiRecommendationsController extends AbstractController
 
         $dto = new GenerateRecommendationsPayloadDto(
             inputs: $payload['inputs'] ?? null,
-            excludeTitles: $payload['excludeTitles'] ?? null,
             model: $payload['model'] ?? null,
         );
 
@@ -57,7 +56,6 @@ final class ApiAiRecommendationsController extends AbstractController
         $command = new GenerateRecommendationsCommand(
             userId: $this->currentUserId(),
             inputs: $normalized['inputs'],
-            excludeTitles: $normalized['excludeTitles'],
             model: $normalized['model'],
         );
 

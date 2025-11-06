@@ -10,14 +10,12 @@ use App\HomeLibrary\UI\Api\AI\Dto\GenerateRecommendationsPayloadDto;
 final class GenerateRecommendationsPayloadValidator
 {
     private const FIELD_INPUTS = 'inputs';
-    private const FIELD_EXCLUDE_TITLES = 'excludeTitles';
     private const FIELD_MODEL = 'model';
     private const MODEL_MAX_LENGTH = 191;
 
     /**
      * @return array{
      *     inputs: string[],
-     *     excludeTitles: string[],
      *     model: string|null,
      * }
      */
@@ -26,7 +24,6 @@ final class GenerateRecommendationsPayloadValidator
         $issues = [];
 
         $inputs = $this->normalizeStringCollection($payload->inputs(), self::FIELD_INPUTS, false, $issues);
-        $excludeTitles = $this->normalizeStringCollection($payload->excludeTitles(), self::FIELD_EXCLUDE_TITLES, true, $issues);
         $model = $this->normalizeModel($payload->model(), $issues);
 
         if ([] !== $issues) {
@@ -35,7 +32,6 @@ final class GenerateRecommendationsPayloadValidator
 
         return [
             'inputs' => $inputs,
-            'excludeTitles' => $excludeTitles,
             'model' => $model,
         ];
     }

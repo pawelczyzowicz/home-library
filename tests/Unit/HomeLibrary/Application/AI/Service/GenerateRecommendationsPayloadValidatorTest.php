@@ -25,26 +25,23 @@ final class GenerateRecommendationsPayloadValidatorTest extends TestCase
     {
         $dto = new GenerateRecommendationsPayloadDto(
             inputs: ['  Title One  ', 'TITLE one', 'Title Two'],
-            excludeTitles: ['   excluded  '],
             model: '  openrouter/model  ',
         );
 
         $result = $this->validator->validate($dto);
 
         self::assertSame(['Title One', 'Title Two'], $result['inputs']);
-        self::assertSame(['excluded'], $result['excludeTitles']);
         self::assertSame('openrouter/model', $result['model']);
     }
 
     #[Test]
     public function itAllowsNullOptionalFields(): void
     {
-        $dto = new GenerateRecommendationsPayloadDto(inputs: ['Title'], excludeTitles: null, model: null);
+        $dto = new GenerateRecommendationsPayloadDto(inputs: ['Title'], model: null);
 
         $result = $this->validator->validate($dto);
 
         self::assertSame(['Title'], $result['inputs']);
-        self::assertSame([], $result['excludeTitles']);
         self::assertNull($result['model']);
     }
 
@@ -66,42 +63,32 @@ final class GenerateRecommendationsPayloadValidatorTest extends TestCase
     public static function invalidPayloadProvider(): iterable
     {
         yield 'inputs missing' => [
-            new GenerateRecommendationsPayloadDto(inputs: null, excludeTitles: null, model: null),
+            new GenerateRecommendationsPayloadDto(inputs: null, model: null),
             ['inputs' => ['This value should be of type array.']],
         ];
 
         yield 'inputs empty' => [
-            new GenerateRecommendationsPayloadDto(inputs: [], excludeTitles: null, model: null),
+            new GenerateRecommendationsPayloadDto(inputs: [], model: null),
             ['inputs' => ['This collection should contain at least 1 element.']],
         ];
 
         yield 'inputs non string entry' => [
-            new GenerateRecommendationsPayloadDto(inputs: ['Title', 123], excludeTitles: null, model: null),
+            new GenerateRecommendationsPayloadDto(inputs: ['Title', 123], model: null),
             ['inputs[1]' => ['This value should be of type string.']],
         ];
 
         yield 'inputs blank entry' => [
-            new GenerateRecommendationsPayloadDto(inputs: [''], excludeTitles: null, model: null),
+            new GenerateRecommendationsPayloadDto(inputs: [''], model: null),
             ['inputs[0]' => ['This value should not be blank.']],
         ];
 
-        yield 'excludeTitles wrong type' => [
-            new GenerateRecommendationsPayloadDto(inputs: ['Title'], excludeTitles: 'foo', model: null),
-            ['excludeTitles' => ['This value should be of type array.']],
-        ];
-
-        yield 'excludeTitles invalid entry' => [
-            new GenerateRecommendationsPayloadDto(inputs: ['Title'], excludeTitles: [123], model: null),
-            ['excludeTitles[0]' => ['This value should be of type string.']],
-        ];
-
         yield 'model wrong type' => [
-            new GenerateRecommendationsPayloadDto(inputs: ['Title'], excludeTitles: null, model: 123),
+            new GenerateRecommendationsPayloadDto(inputs: ['Title'], model: 123),
             ['model' => ['This value should be of type string.']],
         ];
 
         yield 'model too long' => [
-            new GenerateRecommendationsPayloadDto(inputs: ['Title'], excludeTitles: null, model: str_repeat('a', 192)),
+            new GenerateRecommendationsPayloadDto(inputs: ['Title'], model: str_repeat('a', 192)),
             ['model' => ['This value is too long. It should have 191 characters or less.']],
         ];
     }

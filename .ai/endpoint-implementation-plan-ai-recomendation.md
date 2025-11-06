@@ -18,14 +18,12 @@
 ```json
 {
   "inputs": ["Wiedźmin Andrzej Sapkowski", "Ursula Le Guin"],
-  "excludeTitles": ["Wiedźmin"],
   "model": "openrouter/openai/gpt-4o-mini"
 }
 ```
 - **Wymagane**:
   - `inputs`: non-empty array of non-empty strings
 - **Opcjonalne**:
-  - `excludeTitles`: array of strings (domyślnie pusty)
   - `model`: string (przechowywany/audytowany, ale nie używany do realnego wywołania)
 - **Ograniczenia**:
   - Maksymalny czas wykonania: 30s (w przypadku mocka i tak egzekwujemy timeout na warstwie serwisu)
@@ -53,7 +51,6 @@
 ### 3.1 DTOs (Request/Response)
 - `GenerateRecommendationsRequestDTO`:
   - `array<string> inputs`
-  - `array<string> excludeTitles|null`
   - `string|null model`
 - `RecommendationProposalDTO`:
   - `string tempId`
@@ -77,7 +74,6 @@
 - `GenerateRecommendationsCommand`:
   - `string|null userId`
   - `array<string> inputTitles`
-  - `array<string> excludeTitles`
   - `string|null model`
 - `AcceptRecommendationCommand`:
   - `int eventId`
@@ -99,7 +95,7 @@
 - Interfejs repozytorium `RecommendationEventRepository`
 
 ### 3.4 Provider (mock only)
-- `IRecommendationProvider` z metodą `generate(array $inputs, array $excludeTitles): array<RecommendationProposal>`
+- `IRecommendationProvider` z metodą `generate(array $inputs): array<RecommendationProposal>`
 - `MockOpenRouterRecommendationProvider` — deterministycznie zwraca 3 propozycje (każda z `genresId` 1–3 w zakresie 1–15); bez zewnętrznych wywołań
 
 ### 3.5 Repositories (read/support)

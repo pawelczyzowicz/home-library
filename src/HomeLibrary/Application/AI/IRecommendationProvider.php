@@ -10,9 +10,8 @@ interface IRecommendationProvider
 {
     /**
      * @param string[] $inputs
-     * @param string[] $excludeTitles
      *
      * @return RecommendationProposal[]
      */
-    public function generate(array $inputs, array $excludeTitles): array;
+    public function generate(array $inputs): array;
 }
