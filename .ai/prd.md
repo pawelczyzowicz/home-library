@@ -98,18 +98,22 @@ HomeLibrary rozwiązuje te problemy poprzez cyfrowy rejestr książek z przypisa
 3.5.2 Generowanie rekomendacji
 - System wysyła zapytanie do AI provider (OpenAI GPT-4o-mini lub Anthropic Claude) z kontekstem podanych tytułów/autorów
 - Prompt zawiera instrukcje dla AI: analiza podanych pozycji, zwrócenie 3 rekomendacji z uwzględnieniem gatunków, wykluczenie tytułów już obecnych w bibliotece
+ - Do providera przekazywany jest katalog gatunków `{ id, name }` oraz prośba, aby każda rekomendacja zawierała `genresId` (1–3 wartości z zakresu 1–15)
+ - Odpowiedź AI zawiera dla każdej propozycji pole `genresId` (1–3 wartości z zakresu 1–15)
 - System przetwarza odpowiedź AI i wyświetla 3 zaproponowane książki
 
 3.5.3 Wyświetlanie propozycji
 - System wyświetla 3 książki z danymi: tytuł, autor, krótkie uzasadnienie rekomendacji
 - Każda propozycja ma przyciski: "Akceptuj" i "Odrzuć"
 - System wyróżnia propozycje wizualnie (np. karty z ikoną AI)
+ - Karta rekomendacji wyświetla również przypisane gatunki na podstawie `genresId` (chip/tag z nazwami z katalogu gatunków)
 
 3.5.4 Akceptacja propozycji
 - Użytkownik klika "Akceptuj" przy wybranej książce
 - System automatycznie dodaje książkę do regału "Do zakupu"
 - System rejestruje event "book_accepted" w bazie danych (timestamp, user_id, book_id, source='ai_recommendation')
 - System potwierdza dodanie książki
+ - Nowo utworzona książka otrzymuje `genreIds` zgodne z `genresId` z rekomendacji (1–3 gatunki)
 
 3.5.5 Odrzucenie propozycji
 - Użytkownik klika "Odrzuć" przy wybranej książce
@@ -118,7 +122,7 @@ HomeLibrary rozwiązuje te problemy poprzez cyfrowy rejestr książek z przypisa
 
 3.5.6 Tracking rekomendacji
 - System rejestruje event "ai_recommendation_generated" przy każdym wygenerowaniu zestawu rekomendacji
-- Dane eventi: timestamp, user_id, input_titles (podane tytuły/autorzy), recommended_book_ids (ID 3 zaproponowanych książek)
+- Dane eventi: timestamp, user_id, input_titles (podane tytuły/autorzy), recommended_book_ids (JSON: 3 obiekty propozycji zawierające co najmniej: tempId, title, author, genresId, reason)
 
 ### 3.6 Zarządzanie użytkownikami
 
@@ -440,7 +444,9 @@ Kryteria akceptacji:
   - Instrukcję zwrócenia 3 rekomendacji
   - Instrukcję dopasowania gatunków
   - Listę tytułów już obecnych w bibliotece użytkownika (do wykluczenia)
+  - Katalog gatunków `{ id, name }`; AI ma zwrócić dla każdej propozycji pole `genresId` (1–3 wartości 1–15)
 - System przetwarza odpowiedź AI i parsuje dane: tytuł, autor, uzasadnienie dla każdej z 3 książek
+ - System wyświetla na karcie rekomendacji listę gatunków na podstawie `genresId`
 - System wyświetla 3 karty z rekomendacjami, każda zawiera:
   - Tytuł
   - Autor
@@ -465,6 +471,7 @@ Kryteria akceptacji:
 - Zaakceptowana książka znika z listy propozycji lub jest wizualnie oznaczona jako zaakceptowana
 - Książka jest natychmiastowo widoczna w regale "Do zakupu" i na liście wszystkich książek
 - Użytkownik może zaakceptować więcej niż jedną książkę z zestawu
+ - Książka otrzymuje gatunki odpowiadające `genresId` (1–3) z rekomendacji
 
 US-017: Odrzucenie książki z rekomendacji AI
 

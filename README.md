@@ -75,7 +75,6 @@ docker exec -it home-library-backend bash
 docker exec --user www-data home-library-backend bin/console about
 docker exec --user www-data home-library-backend vendor/bin/phpunit tests/Unit
 docker exec --user www-data home-library-backend vendor/bin/phpunit tests/Integration
-docker exec --user www-data home-library-backend vendor/bin/phpunit tests/E2E
 ```
 
 5) Zmienne środowiskowe dla Docker (ustaw w pliku `.env` w katalogu projektu):

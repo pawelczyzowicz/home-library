@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\HomeLibrary\UI\Api;
 
+use App\HomeLibrary\Application\AI\Exception\RecommendationConflictException;
+use App\HomeLibrary\Application\AI\Exception\RecommendationEventNotFoundException;
+use App\HomeLibrary\Application\AI\Exception\RecommendationProviderException;
 use App\HomeLibrary\Application\Exception\ValidationException;
 use App\HomeLibrary\Domain\Book\Exception\BookNotFoundException;
 use App\HomeLibrary\Domain\Genre\Exception\GenreNotFoundException;
@@ -94,11 +97,29 @@ final class ExceptionListener
                 status: Response::HTTP_CONFLICT,
                 detail: $exception->getMessage(),
             ),
+            $exception instanceof RecommendationEventNotFoundException => $this->problemFactory->create(
+                type: 'https://example.com/problems/not-found',
+                title: 'Recommendation event not found',
+                status: Response::HTTP_NOT_FOUND,
+                detail: $exception->getMessage(),
+            ),
+            $exception instanceof RecommendationConflictException => $this->problemFactory->create(
+                type: 'https://example.com/problems/conflict',
+                title: 'Recommendation conflict',
+                status: Response::HTTP_CONFLICT,
+                detail: $exception->getMessage(),
+            ),
             $exception instanceof ValidationException => $this->problemFactory->create(
                 type: 'https://example.com/problems/validation-error',
                 title: 'Validation failed',
                 status: Response::HTTP_UNPROCESSABLE_ENTITY,
                 extensions: ['errors' => $exception->errors()],
+            ),
+            $exception instanceof RecommendationProviderException => $this->problemFactory->create(
+                type: 'https://example.com/problems/provider-error',
+                title: 'Recommendation provider error',
+                status: Response::HTTP_BAD_GATEWAY,
+                detail: $exception->getMessage(),
             ),
             $exception instanceof UserAlreadyExistsException => $this->problemFactory->create(
                 type: 'https://example.com/problems/user-conflict',

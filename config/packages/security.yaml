@@ -31,6 +31,7 @@ security:
         - { path: ^/books, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/shelves, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/auth/me$, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/ai/recommendations, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:
