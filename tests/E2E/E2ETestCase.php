@@ -159,6 +159,38 @@ abstract class E2ETestCase extends PantherTestCase
         }
     }
 
+    protected function loginWithPantherClient(PantherClient $client, string $email, string $password): void
+    {
+        $client->request('GET', '/auth/login');
+        $client->waitFor('meta[name="csrf-token-authenticate"]');
+
+        $csrfToken = (string) $client->executeScript(
+            'return document.querySelector("meta[name=\"csrf-token-authenticate\"]")?.getAttribute("content") ?? "";',
+        );
+
+        self::assertNotSame('', $csrfToken, 'CSRF token must be available on login page.');
+
+        $status = (int) $client->executeScript(
+            'const token = arguments[0];
+             const email = arguments[1];
+             const password = arguments[2];
+             const xhr = new XMLHttpRequest();
+             xhr.open("POST", "/api/auth/login", false);
+             xhr.setRequestHeader("Accept", "application/json");
+             xhr.setRequestHeader("Content-Type", "application/json");
+             xhr.setRequestHeader("X-CSRF-Token", token);
+             xhr.send(JSON.stringify({ email, password }));
+             return xhr.status;',
+            [$csrfToken, $email, $password],
+        );
+
+        self::assertSame(
+            200,
+            $status,
+            \sprintf('Expected successful login, got status %d.', $status),
+        );
+    }
+
     private function compileFrontendAssets(): void
     {
         $projectDir = \dirname(__DIR__, 2);

@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rekomendacje AI{% endblock %}
+
+{% block body %}
+    <main class="ai-recommendations-view" data-controller="ai-recommendations-form">
+        <header class="ai-recommendations-view__header">
+            <div class="ai-recommendations-view__heading">
+                <h1>Rekomendacje AI</h1>
+                <p class="ai-recommendations-view__subtitle">Wpisz tytuły książek lub autorów, aby uzyskać spersonalizowane rekomendacje.</p>
+            </div>
+        </header>
+
+        <section class="ai-recommendations-view__banner" data-ai-recommendations-form-target="banner" aria-live="assertive"></section>
+
+        <section class="ai-recommendations-view__panel">
+            <section class="field-error-summary" role="status" aria-live="assertive" aria-labelledby="ai-reco-error-summary-title" tabindex="-1" data-ai-recommendations-form-target="fieldSummary" hidden>
+                <h2 class="field-error-summary__title" id="ai-reco-error-summary-title">Proszę poprawić poniższe błędy:</h2>
+                <ul class="field-error-summary__list" data-ai-recommendations-form-target="fieldSummaryList"></ul>
+            </section>
+
+            <form class="ai-recommendations-view__form" data-ai-recommendations-form-target="form" data-action="submit->ai-recommendations-form#submit" novalidate data-e2e="ai-reco-form">
+                <p class="form-field__error ai-recommendations-view__error" data-ai-recommendations-form-target="inputsGeneralError" hidden></p>
+
+                <div class="ai-recommendations-view__fields" data-ai-recommendations-form-target="inputsContainer" data-e2e="ai-reco-inputs"></div>
+
+                <section class="ai-recommendations-view__examples" data-ai-recommendations-form-target="exampleSection" aria-labelledby="ai-reco-examples-title">
+                    <h2 class="ai-recommendations-view__examples-title" id="ai-reco-examples-title">Przykładowe dane wejściowe</h2>
+                    <p>Podaj co najmniej jeden tytuł lub autora, aby otrzymać rekomendacje.</p>
+                    <ul class="ai-recommendations-view__examples-list">
+                        <li>„Wiedźmin” Andrzeja Sapkowskiego</li>
+                        <li>„Ziemiomorze” Ursuli K. Le Guin</li>
+                        <li>Andrzej Sapkowski</li>
+                    </ul>
+                </section>
+
+                <input type="hidden" value="submit" data-controller="csrf-protection">
+
+                <div class="ai-recommendations-view__actions">
+                    <button type="submit" class="button button--primary" data-ai-recommendations-form-target="submit" data-e2e="ai-reco-submit">Generuj rekomendacje</button>
+                </div>
+            </form>
+        </section>
+
+        <template data-ai-recommendations-form-target="inputTemplate">
+            <div class="form-field ai-recommendations-view__field" data-ai-recommendations-form-target="inputRow" data-e2e="ai-reco-input-row">
+                <label class="ai-recommendations-view__label"></label>
+                <div class="ai-recommendations-view__input-group">
+                    <input type="text" name="inputs[]" maxlength="255" autocomplete="off" placeholder="Wpisz tytuł książki lub autora" class="ai-recommendations-view__input" data-action="input->ai-recommendations-form#onInputChange blur->ai-recommendations-form#onInputBlur">
+                    <button type="button" class="button button--ghost ai-recommendations-view__remove" data-action="click->ai-recommendations-form#removeInput" data-e2e="ai-reco-remove-input">Usuń</button>
+                </div>
+                <p class="form-field__error" hidden></p>
+            </div>
+        </template>
+    </main>
+{% endblock %}
+
+
