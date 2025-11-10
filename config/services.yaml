@@ -51,6 +51,7 @@ services:
     App\HomeLibrary\Application\AI\ReadModel\BookReadRepository: '@App\HomeLibrary\Infrastructure\AI\DoctrineBookReadRepository'
     App\HomeLibrary\Application\AI\Idempotency\IdempotencyRepository: '@App\HomeLibrary\Infrastructure\AI\DoctrineIdempotencyRepository'
     App\HomeLibrary\Application\AI\IRecommendationProvider: '@App\HomeLibrary\Infrastructure\AI\OpenRouterRecommendationProvider'
+    App\HomeLibrary\Application\Analytics\AiRecommendationSuccessRateCalculatorInterface: '@App\HomeLibrary\Application\Analytics\AiRecommendationSuccessRateCalculator'
 
     App\HomeLibrary\Infrastructure\AI\OpenRouterRecommendationProvider:
         arguments:

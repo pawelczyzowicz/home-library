@@ -121,35 +121,6 @@ docker compose run --rm home-library-backend bash -lc "bash docker/run-e2e.sh"
 - `POST /api/auth/logout` — wylogowanie (CSRF `logout`), status 204.
 - `GET /api/auth/me` — bieżący użytkownik (401 gdy brak sesji).
 
-### API Books (nowe)
-
-- `GET /api/books`
-  - Query params: `q`, `shelfId`, `genreIds`, `limit`, `offset`, `sort` (`title|author|createdAt`), `order` (`asc|desc`).
-  - Walidacja wejścia (Problem Details 400) przy błędnych parametrach.
-  - Odpowiedź 200: `data` (lista książek z osadzonym `shelf` i `genres`) + `meta { total, limit, offset }`.
-
-- `POST /api/books`
-  - Nagłówek: `Content-Type: application/json`.
-  - Body (JSON): `title` (string 1–255), `author` (string 1–255), `shelfId` (UUID), `genreIds` (tablica 1–3 unikalnych intów), opcjonalnie `isbn` (10/13 cyfr), `pageCount` (1–50000).
-  - Wymaga uwierzytelnionego użytkownika (sesja) i zwraca 201 z obiektem `Book` (łącznie z `shelf` i `genres`).
-  - Błędy: 400 (Content-Type/JSON), 404 (brak regału/gatunku), 422 (walidacja — format RFC7807 z kluczem `errors`).
-
-Przykład tworzenia książki (curl, wykorzystuje cookies z wcześniejszego logowania):
-
-```bash
-curl -b cookies.txt \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Wiedźmin",
-    "author": "Andrzej Sapkowski",
-    "shelfId": "<UUID istniejącego regału>",
-    "genreIds": [1, 12],
-    "isbn": "9781234567890",
-    "pageCount": 384
-  }' \
-  http://127.0.0.1:8080/api/books
-```
-
 Przykład (curl):
 
 ```
@@ -226,6 +197,17 @@ vendor/bin/grumphp run --tasks=phpcsfixer,phpmd,phpstan
 # PHPMD (przykład)
 vendor/bin/phpmd src text cleancode,codesize,controversial,design,naming,unusedcode
 ```
+
+### Analytics
+- Raport skuteczności rekomendacji AI (opcjonalne parametry `--from`, `--to`, `--timezone` w formacie ISO 8601):
+```bash
+bin/console app:analytics:ai-success-rate --env=dev
+```
+Przykład z zakresem czasowym:
+```bash
+bin/console app:analytics:ai-success-rate --from=2025-01-01T00:00:00 --to=2025-01-31T23:59:59 --timezone=Europe/Warsaw --env=dev
+```
+Domyślnie komenda analizuje wszystkie zarejestrowane rekomendacje, a brak podanych dat oznacza pełny zakres danych. Date/time są interpretowane w podanej strefie czasowej (UTC domyślnie).
 
 ## Project scope
 

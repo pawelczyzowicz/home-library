@@ -13,4 +13,9 @@ interface RecommendationEventRepository
     public function findById(int $id): ?AiRecommendationEvent;
 
     public function findOwnedBy(int $id, ?UuidInterface $userId): ?AiRecommendationEvent;
+
+    /**
+     * @return array{total_events: int, accepted_events: int}
+     */
+    public function countSuccessRate(?\DateTimeImmutable $from = null, ?\DateTimeImmutable $to = null): array;
 }
