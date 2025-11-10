@@ -296,7 +296,13 @@ export default class extends Controller {
                 this.renderSummary();
                 this.renderStatusMessage(`Zaakceptowano propozycję „${proposal.title}”. Przekierowanie do listy książek…`);
 
-                window.location.assign(`${ACCEPT_REDIRECT_URL}?addedFromAi=true&title=${encodeURIComponent(proposal.title ?? '')}`);
+                const redirectParams = new URLSearchParams({
+                    notice: 'book-created',
+                    addedFromAi: 'true',
+                    title: proposal.title ?? '',
+                });
+
+                window.location.assign(`${ACCEPT_REDIRECT_URL}?${redirectParams.toString()}`);
                 return;
             }
 

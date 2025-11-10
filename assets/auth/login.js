@@ -1,20 +1,25 @@
 import { createFormState } from './form-state.js';
 import { postJson } from './api.js';
 
-const INIT_EVENT = 'DOMContentLoaded';
+const INIT_EVENTS = ['DOMContentLoaded', 'turbo:load'];
 
-if (document.readyState === 'loading') {
-    document.addEventListener(INIT_EVENT, bootstrapLogin, { once: true });
-} else {
+INIT_EVENTS.forEach((eventName) => {
+    document.addEventListener(eventName, bootstrapLogin);
+});
+
+if (document.readyState !== 'loading') {
     bootstrapLogin();
 }
 
 function bootstrapLogin() {
     const form = document.querySelector('#login-form');
 
-    if (form) {
-        initLoginForm(form);
+    if (!form || form.dataset.initialized === 'true') {
+        return;
     }
+
+    form.dataset.initialized = 'true';
+    initLoginForm(form);
 }
 
 function initLoginForm(formElement) {
@@ -106,7 +111,7 @@ function attachLiveValidation(input, fieldName, validator, formState) {
             formState.setFieldErrors({
                 ...formState.state.fieldErrors,
                 [fieldName]: [error],
-            });
+            }, { focusSummary: false });
         } else {
             formState.clearFieldError(fieldName);
         }

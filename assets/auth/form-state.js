@@ -48,7 +48,8 @@ export function createFormState(elements) {
         banner.removeAttribute(hiddenAttribute);
     }
 
-    function setFieldErrors(errorsByField) {
+    function setFieldErrors(errorsByField, options = {}) {
+        const { focusSummary = true } = options;
         const nextErrors = errorsByField ?? {};
 
         Object.entries(fields).forEach(([fieldName, field]) => {
@@ -59,7 +60,7 @@ export function createFormState(elements) {
 
         state.fieldErrors = nextErrors;
 
-        updateFieldSummary(nextErrors);
+        updateFieldSummary(nextErrors, { focusSummary });
     }
 
     function clearFieldError(fieldName) {
@@ -69,7 +70,7 @@ export function createFormState(elements) {
 
         const nextErrors = { ...state.fieldErrors };
         delete nextErrors[fieldName];
-        setFieldErrors(nextErrors);
+        setFieldErrors(nextErrors, { focusSummary: false });
     }
 
     function updateFieldErrorPresentation(field, messages) {
@@ -95,7 +96,9 @@ export function createFormState(elements) {
         input.setAttribute('aria-describedby', messageElement.id);
     }
 
-    function updateFieldSummary(errorsByField) {
+    function updateFieldSummary(errorsByField, options = {}) {
+        const { focusSummary = true } = options;
+
         if (!fieldSummary || !fieldSummaryList) {
             return;
         }
@@ -131,9 +134,11 @@ export function createFormState(elements) {
 
         fieldSummary.removeAttribute(hiddenAttribute);
 
-        setTimeout(() => {
-            fieldSummary.focus();
-        }, 0);
+        if (focusSummary) {
+            setTimeout(() => {
+                fieldSummary.focus();
+            }, 0);
+        }
     }
 
     function focusField(fieldName) {

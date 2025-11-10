@@ -1,20 +1,25 @@
 import { createFormState } from './form-state.js';
 import { postJson } from './api.js';
 
-const INIT_EVENT = 'DOMContentLoaded';
+const INIT_EVENTS = ['DOMContentLoaded', 'turbo:load'];
 
-if (document.readyState === 'loading') {
-    document.addEventListener(INIT_EVENT, bootstrapRegister, { once: true });
-} else {
+INIT_EVENTS.forEach((eventName) => {
+    document.addEventListener(eventName, bootstrapRegister);
+});
+
+if (document.readyState !== 'loading') {
     bootstrapRegister();
 }
 
 function bootstrapRegister() {
     const form = document.querySelector('#register-form');
 
-    if (form) {
-        initRegisterForm(form);
+    if (!form || form.dataset.initialized === 'true') {
+        return;
     }
+
+    form.dataset.initialized = 'true';
+    initRegisterForm(form);
 }
 
 function initRegisterForm(formElement) {
@@ -107,7 +112,7 @@ function attachValidator(input, fieldName, validator, formState) {
             formState.setFieldErrors({
                 ...formState.state.fieldErrors,
                 [fieldName]: [error],
-            });
+            }, { focusSummary: false });
         } else {
             formState.clearFieldError(fieldName);
         }

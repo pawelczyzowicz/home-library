@@ -100,6 +100,9 @@ Skrypt `docker/run-dev.sh` automatycznie:
 - uruchamia `docker compose build` i `docker compose up -d`,
 - wykonuje `composer install` oraz tworzy i migruje bazy `dev` i `test` w kontenerze `home-library-backend`.
 
+6) Ustawienie klucza do OpenRouter:
+W pliku .env pod `OPENROUTER_API_KEY` podać swój klucz API do OpenRoutera.
+
 ## E2E tests (Docker + Panther)
 
 Uruchamianie testów E2E wewnątrz kontenera `home-library-backend` z użyciem headless Chromium:
