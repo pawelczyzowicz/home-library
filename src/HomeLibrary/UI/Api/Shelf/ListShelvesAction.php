@@ -45,7 +45,18 @@ final class ListShelvesAction extends AbstractController
             }
         }
 
-        $result = ($this->handler)(new ListShelvesQuery($searchTerm));
+        $systemOnly = null;
+        $systemParam = $request->query->get('includeSystem', $request->query->get('isSystem'));
+
+        if (null !== $systemParam) {
+            $systemFlag = filter_var($systemParam, \FILTER_VALIDATE_BOOLEAN, \FILTER_NULL_ON_FAILURE);
+
+            if (null !== $systemFlag) {
+                $systemOnly = $systemFlag;
+            }
+        }
+
+        $result = ($this->handler)(new ListShelvesQuery($searchTerm, $systemOnly));
 
         return new JsonResponse(
             [

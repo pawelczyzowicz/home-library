@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\HomeLibrary\Application\Book\Service;
 
 use App\HomeLibrary\Application\Exception\ValidationException;
+use App\HomeLibrary\Domain\Book\BookSource;
 use App\HomeLibrary\UI\Api\Book\Dto\CreateBookPayloadDto;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -25,6 +26,8 @@ final class CreateBookPayloadValidator
      *     genreIds: int[],
      *     isbn: string|null,
      *     pageCount: int|null,
+     *     source: BookSource,
+     *     recommendationId: int|null,
      * }
      */
     public function validate(CreateBookPayloadDto $payload): array
@@ -37,6 +40,16 @@ final class CreateBookPayloadValidator
         $genreIds = $this->validateGenreIds($payload->genreIds(), $issues);
         $isbn = $this->validateIsbn($payload->isbn(), $issues);
         $pageCount = $this->validatePageCount($payload->pageCount(), $issues);
+        $source = $this->validateSource($payload->source(), $issues);
+        $recommendationId = $this->validateRecommendationId($payload->recommendationId(), $issues);
+
+        if (BookSource::AI_RECOMMENDATION === $source && null === $recommendationId) {
+            $issues[] = ['parameter' => 'recommendationId', 'message' => 'This value is required for AI recommendations.'];
+        }
+
+        if (BookSource::AI_RECOMMENDATION !== $source) {
+            $recommendationId = null;
+        }
 
         if ([] !== $issues) {
             throw ValidationException::withIssues($issues);
@@ -49,6 +62,8 @@ final class CreateBookPayloadValidator
             'genreIds' => $genreIds,
             'isbn' => $isbn,
             'pageCount' => $pageCount,
+            'source' => $source,
+            'recommendationId' => $recommendationId,
         ];
     }
 
@@ -190,6 +205,55 @@ final class CreateBookPayloadValidator
 
         if ($value < self::PAGE_COUNT_MIN || $value > self::PAGE_COUNT_MAX) {
             $issues[] = ['parameter' => 'pageCount', 'message' => \sprintf('This value should be between %d and %d.', self::PAGE_COUNT_MIN, self::PAGE_COUNT_MAX)];
+
+            return null;
+        }
+
+        return $value;
+    }
+
+    private function validateSource(mixed $value, array &$issues): BookSource
+    {
+        if (null === $value) {
+            return BookSource::MANUAL;
+        }
+
+        if (!\is_string($value)) {
+            $issues[] = ['parameter' => 'source', 'message' => 'This value should be of type string.'];
+
+            return BookSource::MANUAL;
+        }
+
+        $normalized = strtolower(trim($value));
+        $source = BookSource::tryFrom($normalized);
+
+        if (null === $source) {
+            $issues[] = ['parameter' => 'source', 'message' => 'This value is not valid.'];
+
+            return BookSource::MANUAL;
+        }
+
+        return $source;
+    }
+
+    private function validateRecommendationId(mixed $value, array &$issues): ?int
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        if (\is_string($value) && ctype_digit($value)) {
+            $value = (int) $value;
+        }
+
+        if (!\is_int($value)) {
+            $issues[] = ['parameter' => 'recommendationId', 'message' => 'This value should be an integer.'];
+
+            return null;
+        }
+
+        if ($value <= 0) {
+            $issues[] = ['parameter' => 'recommendationId', 'message' => 'This value should be a positive integer.'];
 
             return null;
         }

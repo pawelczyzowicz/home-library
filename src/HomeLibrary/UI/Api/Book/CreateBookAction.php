@@ -7,7 +7,6 @@ namespace App\HomeLibrary\UI\Api\Book;
 use App\HomeLibrary\Application\Book\Command\CreateBookCommand;
 use App\HomeLibrary\Application\Book\CreateBookHandler;
 use App\HomeLibrary\Application\Book\Service\CreateBookPayloadValidator;
-use App\HomeLibrary\Domain\Book\BookSource;
 use App\HomeLibrary\UI\Api\Book\Dto\CreateBookPayloadDto;
 use App\HomeLibrary\UI\Api\Book\Resource\BookResource;
 use App\HomeLibrary\UI\Api\Problem\ProblemJsonResponseFactory;
@@ -61,6 +60,8 @@ final class CreateBookAction extends AbstractController
             genreIds: $payload['genreIds'] ?? null,
             isbn: $payload['isbn'] ?? null,
             pageCount: $payload['pageCount'] ?? null,
+            source: $payload['source'] ?? null,
+            recommendationId: $payload['recommendationId'] ?? null,
         );
 
         $normalized = $this->validator->validate($dto);
@@ -73,8 +74,8 @@ final class CreateBookAction extends AbstractController
             pageCount: $normalized['pageCount'],
             shelfId: $normalized['shelfId'],
             genreIds: $normalized['genreIds'],
-            source: BookSource::MANUAL,
-            recommendationId: null,
+            source: $normalized['source'],
+            recommendationId: $normalized['recommendationId'],
         );
 
         $book = ($this->handler)($command);

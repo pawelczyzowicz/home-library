@@ -10,3 +10,4 @@ app.register('confirm-delete', () => import('./controllers/confirm_delete_contro
 app.register('books-table', () => import('./controllers/books_table_controller.js'));
 app.register('books-create', () => import('./controllers/books_create_controller.js'));
 app.register('ai-recommendations-form', () => import('./controllers/ai_recommendations_form_controller.js'));
+app.register('ai-recommendations-results', () => import('./controllers/ai_recommendations_results_controller.js'));

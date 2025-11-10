@@ -12,11 +12,12 @@ class ListShelvesHandler
 
     public function __invoke(ListShelvesQuery $query): ListShelvesResult
     {
-        $shelves = $this->repository->search($query->searchTerm());
+        $shelves = $this->repository->search($query->searchTerm(), $query->systemOnly());
+        $total = $this->repository->countBySearchTerm($query->searchTerm(), $query->systemOnly());
 
         return new ListShelvesResult(
             shelves: $shelves,
-            total: $this->repository->countBySearchTerm($query->searchTerm()),
+            total: $total,
         );
     }
 }

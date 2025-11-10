@@ -6,6 +6,7 @@ namespace App\Tests\Unit\HomeLibrary\Application\Book\Service;
 
 use App\HomeLibrary\Application\Book\Service\CreateBookPayloadValidator;
 use App\HomeLibrary\Application\Exception\ValidationException;
+use App\HomeLibrary\Domain\Book\BookSource;
 use App\HomeLibrary\UI\Api\Book\Dto\CreateBookPayloadDto;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -33,6 +34,8 @@ final class CreateBookPayloadValidatorTest extends TestCase
             genreIds: [1, 2],
             isbn: '978-83-1234567-0',
             pageCount: '384',
+            source: 'ai_recommendation',
+            recommendationId: 42,
         );
 
         $result = $this->validator->validate($dto);
@@ -43,6 +46,8 @@ final class CreateBookPayloadValidatorTest extends TestCase
         self::assertSame([1, 2], $result['genreIds']);
         self::assertSame('9788312345670', $result['isbn']);
         self::assertSame(384, $result['pageCount']);
+        self::assertSame(BookSource::AI_RECOMMENDATION, $result['source']);
+        self::assertSame(42, $result['recommendationId']);
     }
 
     #[Test]
@@ -58,6 +63,8 @@ final class CreateBookPayloadValidatorTest extends TestCase
             genreIds: $payload['genreIds'],
             isbn: $payload['isbn'],
             pageCount: $payload['pageCount'],
+            source: $payload['source'],
+            recommendationId: $payload['recommendationId'],
         );
 
         try {
@@ -147,10 +154,44 @@ final class CreateBookPayloadValidatorTest extends TestCase
             ['pageCount' => 0],
             ['pageCount' => ['This value should be between 1 and 50000.']],
         ];
+
+        yield 'source not string' => [
+            ['source' => 123],
+            ['source' => ['This value should be of type string.']],
+        ];
+
+        yield 'source invalid value' => [
+            ['source' => 'invalid'],
+            ['source' => ['This value is not valid.']],
+        ];
+
+        yield 'recommendation missing for ai source' => [
+            ['source' => 'ai_recommendation'],
+            ['recommendationId' => ['This value is required for AI recommendations.']],
+        ];
+
+        yield 'recommendation not integer' => [
+            ['source' => 'ai_recommendation', 'recommendationId' => 'abc'],
+            ['recommendationId' => ['This value should be an integer.', 'This value is required for AI recommendations.']],
+        ];
+
+        yield 'recommendation not positive' => [
+            ['source' => 'ai_recommendation', 'recommendationId' => 0],
+            ['recommendationId' => ['This value should be a positive integer.', 'This value is required for AI recommendations.']],
+        ];
     }
 
     /**
-     * @return array{title: string, author: string, shelfId: string, genreIds: int[], isbn: ?string, pageCount: ?int}
+     * @return array{
+     *     title: string,
+     *     author: string,
+     *     shelfId: string,
+     *     genreIds: int[],
+     *     isbn: ?string,
+     *     pageCount: ?int,
+     *     source: string|null,
+     *     recommendationId: int|string|null
+     * }
      */
     private static function validPayloadData(): array
     {
@@ -161,6 +202,8 @@ final class CreateBookPayloadValidatorTest extends TestCase
             'genreIds' => [1, 2],
             'isbn' => null,
             'pageCount' => null,
+            'source' => null,
+            'recommendationId' => null,
         ];
     }
 }

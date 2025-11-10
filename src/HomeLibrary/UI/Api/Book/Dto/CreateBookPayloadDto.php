@@ -13,6 +13,8 @@ final class CreateBookPayloadDto
         private readonly mixed $genreIds,
         private readonly mixed $isbn,
         private readonly mixed $pageCount,
+        private readonly mixed $source,
+        private readonly mixed $recommendationId,
     ) {}
 
     public function title(): mixed
@@ -43,5 +45,15 @@ final class CreateBookPayloadDto
     public function pageCount(): mixed
     {
         return $this->pageCount;
+    }
+
+    public function source(): mixed
+    {
+        return $this->source;
+    }
+
+    public function recommendationId(): mixed
+    {
+        return $this->recommendationId;
     }
 }

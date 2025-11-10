@@ -246,7 +246,22 @@ Recommendation Event JSON (storage and response):
   "model": "openrouter/openai/gpt-4o-mini"
 }
 ```
-- Response JSON (201): Recommendation Event JSON with exactly 3 `recommended` items.
+- Response JSON (201):
+```json
+{
+  "id": 123,
+  "createdAt": "2025-10-15T12:00:00Z",
+  "userId": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  "inputTitles": ["Wiedźmin Andrzej Sapkowski", "Ursula Le Guin"],
+  "recommended": [
+    { "tempId": "r1", "title": "Diuna", "author": "Frank Herbert", "genresId": [5, 12], "reason": "Kultowa space opera z głęboką polityką i ekologią." },
+    { "tempId": "r2", "title": "Ziemiomorze", "author": "Ursula K. Le Guin", "genresId": [5, 14], "reason": "Klasyka fantasy eksplorująca równowagę i dorastanie." },
+    { "tempId": "r3", "title": "Metro 2033", "author": "Dmitry Glukhovsky", "genresId": [5, 13], "reason": "Postapokaliptyczna wizja z silną atmosferą i napięciem." }
+  ],
+  "acceptedBookIds": []
+}
+```
+- Każdy element `recommended` zawiera `genresId` (1–3 identyfikatory gatunków z `/api/genres`).
 - Errors:
   - 422 (no inputs)
   - 502 Bad Gateway (provider error)

@@ -6,6 +6,7 @@ namespace App\HomeLibrary\Infrastructure\Persistence;
 
 use App\HomeLibrary\Domain\Shelf\Shelf;
 use App\HomeLibrary\Domain\Shelf\ShelfRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Ramsey\Uuid\UuidInterface;
@@ -32,10 +33,15 @@ class DoctrineShelfRepository extends ServiceEntityRepository implements ShelfRe
     /**
      * @return Shelf[]
      */
-    public function search(?string $searchTerm): array
+    public function search(?string $searchTerm, ?bool $systemOnly = null): array
     {
         $qb = $this->createQueryBuilder('s')
             ->orderBy('s.createdAt', 'ASC');
+
+        if (null !== $systemOnly) {
+            $qb->andWhere('s.isSystem.isSystem = :isSystem')
+                ->setParameter('isSystem', $systemOnly, Types::BOOLEAN);
+        }
 
         if (null !== $searchTerm) {
             $qb->andWhere('LOWER(s.name.value) LIKE :searchTerm')
@@ -48,10 +54,15 @@ class DoctrineShelfRepository extends ServiceEntityRepository implements ShelfRe
         return $shelves;
     }
 
-    public function countBySearchTerm(?string $searchTerm): int
+    public function countBySearchTerm(?string $searchTerm, ?bool $systemOnly = null): int
     {
         $qb = $this->createQueryBuilder('s')
             ->select('COUNT(s.id)');
+
+        if (null !== $systemOnly) {
+            $qb->andWhere('s.isSystem.isSystem = :isSystem')
+                ->setParameter('isSystem', $systemOnly, Types::BOOLEAN);
+        }
 
         if (null !== $searchTerm) {
             $qb->andWhere('LOWER(s.name.value) LIKE :searchTerm')

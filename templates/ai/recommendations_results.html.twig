@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rekomendacje AI{% endblock %}
+
+{% block body %}
+    <main
+        class="ai-recommendations-results-view"
+        data-controller="ai-recommendations-results"
+        data-ai-recommendations-results-event-id-value="{{ eventId }}"
+        {% if preloadedEventJson is defined and preloadedEventJson %}
+            data-ai-recommendations-results-preloaded-event-json-value="{{ preloadedEventJson|e('html_attr') }}"
+        {% endif %}
+        {% if genresCatalogJson is defined and genresCatalogJson %}
+            data-ai-recommendations-results-genres-catalog-json-value="{{ genresCatalogJson|e('html_attr') }}"
+        {% endif %}
+        {% if purchaseShelfId is defined and purchaseShelfId %}
+            data-ai-recommendations-results-purchase-shelf-id-value="{{ purchaseShelfId }}"
+        {% endif %}
+        data-e2e="ai-recommendations-results"
+    >
+        <header class="ai-recommendations-results-view__header">
+            <div class="ai-recommendations-results-view__heading">
+                <h1 id="ai-results-title" tabindex="-1">Rekomendacje AI</h1>
+                <p class="ai-recommendations-results-view__subtitle">
+                    Znajdź najlepsze propozycje książek na podstawie ostatniego zdarzenia rekomendacji AI.
+                </p>
+            </div>
+
+            <section class="ai-recommendations-results-view__meta">
+                {% if eventInputTitles is defined and eventInputTitles is iterable and eventInputTitles|length > 0 %}
+                    <div class="ai-recommendations-results-view__inputs">
+                        <span class="ai-recommendations-results-view__inputs-label">Na podstawie:</span>
+                        <ul class="ai-recommendations-results-view__inputs-list">
+                            {% for title in eventInputTitles %}
+                                <li>{{ title }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </section>
+
+            <dl class="ai-recommendations-results-view__summary" data-ai-recommendations-results-target="summary" aria-live="polite">
+                <div class="ai-recommendations-results-view__summary-item">
+                    <dt>Łącznie propozycji</dt>
+                    <dd data-ai-recommendations-results-target="totalCount">0</dd>
+                </div>
+                <div class="ai-recommendations-results-view__summary-item">
+                    <dt>Zaakceptowano</dt>
+                    <dd data-ai-recommendations-results-target="acceptedCount">0</dd>
+                </div>
+                <div class="ai-recommendations-results-view__summary-item">
+                    <dt>Odrzucono</dt>
+                    <dd data-ai-recommendations-results-target="dismissedCount">0</dd>
+                </div>
+            </dl>
+        </header>
+
+        <section class="ai-recommendations-results-view__alerts" aria-live="assertive" data-ai-recommendations-results-target="globalAlertRegion" tabindex="-1">
+            {% include 'components/_banner_alert.html.twig' with { notice: null, problem: null } only %}
+        </section>
+
+        <section class="ai-recommendations-results-view__loader" data-ai-recommendations-results-target="loader" role="status" aria-live="polite" hidden>
+            <div class="ai-recommendations-results-view__loader-content">
+                <span class="ai-recommendations-results-view__spinner" aria-hidden="true"></span>
+                <p>Ładujemy rekomendacje…</p>
+            </div>
+        </section>
+
+        <section class="ai-recommendations-results-view__content" data-ai-recommendations-results-target="content" hidden>
+            <div class="ai-recommendations-results-view__cards" role="list" data-ai-recommendations-results-target="cardsContainer" data-e2e="ai-recommendations-cards"></div>
+
+            <section class="ai-recommendations-results-view__empty" data-ai-recommendations-results-target="emptyState" hidden>
+                <h2>Brak propozycji do wyświetlenia</h2>
+                <p>Wszystkie rekomendacje zostały już odrzucone.</p>
+                <a class="button button--primary" href="{{ path('ai_recommendations_form') }}">Wygeneruj nowe rekomendacje</a>
+            </section>
+        </section>
+
+        <section class="sr-only" aria-live="polite" data-ai-recommendations-results-target="statusRegion"></section>
+
+        <template data-ai-recommendations-results-target="bannerTemplate">
+            <div class="alert alert--info" role="alert" data-testid="banner-alert">
+                <p class="alert__message"></p>
+            </div>
+        </template>
+
+        <template data-ai-recommendations-results-target="cardTemplate">
+            <article class="ai-recommendations-results-card" role="listitem" data-e2e="ai-recommendations-card">
+                <header class="ai-recommendations-results-card__header">
+                    <div>
+                        <h2 class="ai-recommendations-results-card__title"></h2>
+                        <p class="ai-recommendations-results-card__author"></p>
+                    </div>
+                    <div class="ai-recommendations-results-card__status" aria-live="polite"></div>
+                </header>
+
+                <p class="ai-recommendations-results-card__reason"></p>
+
+                <ul class="ai-recommendations-results-card__genres" data-role="genres"></ul>
+
+                <div class="ai-recommendations-results-card__actions">
+                    <button
+                        type="button"
+                        class="button button--primary ai-recommendations-results-card__accept"
+                        data-action="ai-recommendations-results#accept"
+                        data-role="acceptButton"
+                        data-e2e="ai-recommendations-card-accept"
+                    >
+                        <span class="ai-recommendations-results-card__spinner" data-role="spinner" aria-hidden="true"></span>
+                        <span data-role="label">Akceptuj</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="button button--ghost"
+                        data-action="ai-recommendations-results#reject"
+                        data-role="rejectButton"
+                        data-e2e="ai-recommendations-card-reject"
+                    >
+                        Odrzuć
+                    </button>
+                </div>
+            </article>
+        </template>
+    </main>
+{% endblock %}
+
+

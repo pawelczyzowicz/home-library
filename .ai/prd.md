@@ -101,6 +101,21 @@ HomeLibrary rozwiązuje te problemy poprzez cyfrowy rejestr książek z przypisa
  - Do providera przekazywany jest katalog gatunków `{ id, name }` oraz prośba, aby każda rekomendacja zawierała `genresId` (1–3 wartości z zakresu 1–15)
  - Odpowiedź AI zawiera dla każdej propozycji pole `genresId` (1–3 wartości z zakresu 1–15)
 - System przetwarza odpowiedź AI i wyświetla 3 zaproponowane książki
+ - Przykładowa odpowiedź endpointu `/api/ai/recommendations/generate` (201):
+```json
+{
+  "id": 123,
+  "createdAt": "2025-10-15T12:00:00Z",
+  "userId": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  "inputTitles": ["Wiedźmin Andrzej Sapkowski", "Ursula Le Guin"],
+  "recommended": [
+    { "tempId": "r1", "title": "Diuna", "author": "Frank Herbert", "genresId": [5, 12], "reason": "Kultowa space opera z głęboką polityką i ekologią." },
+    { "tempId": "r2", "title": "Ziemiomorze", "author": "Ursula K. Le Guin", "genresId": [5, 14], "reason": "Klasyka fantasy eksplorująca równowagę i dorastanie." },
+    { "tempId": "r3", "title": "Metro 2033", "author": "Dmitry Glukhovsky", "genresId": [5, 13], "reason": "Postapokaliptyczna wizja z silną atmosferą i napięciem." }
+  ],
+  "acceptedBookIds": []
+}
+```
 
 3.5.3 Wyświetlanie propozycji
 - System wyświetla 3 książki z danymi: tytuł, autor, krótkie uzasadnienie rekomendacji

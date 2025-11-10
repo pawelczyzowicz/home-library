@@ -94,10 +94,9 @@ export default class extends Controller {
             const row = clone.querySelector('[data-ai-recommendations-form-target="inputRow"]');
             const label = row?.querySelector('label');
             const input = row?.querySelector('input');
-            const removeButton = row?.querySelector('button[data-action*="removeInput"]');
             const errorElement = row?.querySelector('.form-field__error');
 
-            if (!(row instanceof HTMLElement) || !(input instanceof HTMLInputElement) || !(label instanceof HTMLLabelElement) || !(removeButton instanceof HTMLButtonElement) || !(errorElement instanceof HTMLElement)) {
+            if (!(row instanceof HTMLElement) || !(input instanceof HTMLInputElement) || !(label instanceof HTMLLabelElement) || !(errorElement instanceof HTMLElement)) {
                 return;
             }
 
@@ -114,12 +113,16 @@ export default class extends Controller {
             input.dataset.aiRecommendationsFormIndexParam = String(index);
             input.setAttribute('data-ai-recommendations-form-index-param', String(index));
 
-            removeButton.dataset.aiRecommendationsFormIndexParam = String(index);
-            removeButton.setAttribute('data-ai-recommendations-form-index-param', String(index));
+            const removeButton = row.querySelector('button[data-action*="removeInput"]');
+
+            if (removeButton instanceof HTMLButtonElement) {
+                removeButton.dataset.aiRecommendationsFormIndexParam = String(index);
+                removeButton.setAttribute('data-ai-recommendations-form-index-param', String(index));
+            }
 
             errorElement.id = errorId;
 
-            rowElements.push({ row, input, errorElement, removeButton });
+            rowElements.push({ row, input, errorElement });
             container.appendChild(row);
 
             this.formStateFields[`inputs[${index}]`] = {

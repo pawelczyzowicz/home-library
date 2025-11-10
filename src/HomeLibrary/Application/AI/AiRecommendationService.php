@@ -97,6 +97,11 @@ final class AiRecommendationService
         return $event;
     }
 
+    public function findOwned(int $eventId, ?UuidInterface $userId): AiRecommendationEvent
+    {
+        return $this->loadOwnedEvent($eventId, $userId);
+    }
+
     /**
      * @param array<int, mixed> $values
      *

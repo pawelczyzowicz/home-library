@@ -15,9 +15,9 @@ interface ShelfRepository
     /**
      * @return Shelf[]
      */
-    public function search(?string $searchTerm): array;
+    public function search(?string $searchTerm, ?bool $systemOnly = null): array;
 
-    public function countBySearchTerm(?string $searchTerm): int;
+    public function countBySearchTerm(?string $searchTerm, ?bool $systemOnly = null): int;
 
     public function remove(Shelf $shelf): void;
 }

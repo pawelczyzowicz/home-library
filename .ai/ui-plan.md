@@ -71,6 +71,21 @@ Poniżej zdefiniowane widoki zawierają: ścieżkę, cel, kluczowe informacje, k
 - Kluczowe informacje: min. 1 pole tekstowe (z możliwością dodania kolejnych w przyszłości), przykłady, przycisk „Generuj rekomendacje”.
 - Kluczowe komponenty: AIForm, FieldErrorSummary, BannerAlert (provider 502/504), Submit z prostym spinnerem tekstowym („AI analizuje…”).
 - Akcje API: `POST /api/ai/recommendations/generate`; sukces (201) → redirect do `#/ai/recommendations/{eventId}` (PRG).
+ - Przykładowa odpowiedź (201) zawierająca `genresId`:
+```json
+{
+  "id": 123,
+  "createdAt": "2025-10-15T12:00:00Z",
+  "userId": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  "inputTitles": ["Wiedźmin Andrzej Sapkowski", "Ursula Le Guin"],
+  "recommended": [
+    { "tempId": "r1", "title": "Diuna", "author": "Frank Herbert", "genresId": [5, 12], "reason": "Kultowa space opera z głęboką polityką i ekologią." },
+    { "tempId": "r2", "title": "Ziemiomorze", "author": "Ursula K. Le Guin", "genresId": [5, 14], "reason": "Klasyka fantasy eksplorująca równowagę i dorastanie." },
+    { "tempId": "r3", "title": "Metro 2033", "author": "Dmitry Glukhovsky", "genresId": [5, 13], "reason": "Postapokaliptyczna wizja z silną atmosferą i napięciem." }
+  ],
+  "acceptedBookIds": []
+}
+```
 - UX/A11y/Sec: 422 gdy brak danych; 504/502 komunikat „AI niedostępne, spróbuj ponownie”; CSRF; fokus na nagłówku wyników po redirect.
 - Powiązane US: US‑014, US‑015, US‑021.
 
@@ -84,7 +99,6 @@ Poniżej zdefiniowane widoki zawierają: ścieżkę, cel, kluczowe informacje, k
   2) `POST /api/ai/recommendations/{eventId}/accept` z `bookId` oraz nagłówkiem `Idempotency‑Key` (UUID generowany na serwerze).
   Sukces → PRG redirect do `/books` z komunikatem o dodaniu.
 - UX/A11y/Sec: przy „Akceptuj” dezaktywować przycisk i pokazać spinner tekstowy do czasu zakończenia; 400/404/409 mapować na baner; 502/504 dla providera AI komunikować podczas generowania (formularz).
-- Uwaga: API wymaga `genreIds` przy tworzeniu książki; w MVP UI akceptacja dodaje książkę z minimalnymi danymi (tytuł, autor) – należy doprecyzować walidację po stronie API (poluzowanie lub domyślne gatunki). Kontroler Twig powinien zająć się brakującymi polami zgodnie z decyzją backendu.
 - Powiązane US: US‑015, US‑016, US‑017, US‑018, US‑026.
 
 ## 3. Mapa podróży użytkownika

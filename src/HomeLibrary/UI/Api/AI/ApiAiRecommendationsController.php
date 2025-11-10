@@ -7,6 +7,7 @@ namespace App\HomeLibrary\UI\Api\AI;
 use App\HomeLibrary\Application\AI\AiRecommendationService;
 use App\HomeLibrary\Application\AI\Command\AcceptRecommendationCommand;
 use App\HomeLibrary\Application\AI\Command\GenerateRecommendationsCommand;
+use App\HomeLibrary\Application\AI\Exception\RecommendationEventNotFoundException;
 use App\HomeLibrary\Application\AI\Service\AcceptRecommendationPayloadValidator;
 use App\HomeLibrary\Application\AI\Service\GenerateRecommendationsPayloadValidator;
 use App\HomeLibrary\Domain\User\User;
@@ -64,6 +65,27 @@ final class ApiAiRecommendationsController extends AbstractController
         return new JsonResponse(
             data: $this->resource->toArray($event),
             status: Response::HTTP_CREATED,
+        );
+    }
+
+    #[Route(path: '/{eventId<\d+>}', name: 'show', methods: ['GET'])]
+    #[Route(path: '/{eventId<\d+>}/', name: 'show_slash', methods: ['GET'])]
+    public function show(int $eventId): JsonResponse
+    {
+        try {
+            $event = $this->service->findOwned($eventId, $this->currentUserId());
+        } catch (RecommendationEventNotFoundException) {
+            return $this->problemFactory->create(
+                type: 'https://example.com/problems/recommendation-event-not-found',
+                title: 'Recommendation event not found',
+                status: Response::HTTP_NOT_FOUND,
+                detail: 'Nie znaleziono zestawu rekomendacji.',
+            );
+        }
+
+        return new JsonResponse(
+            data: $this->resource->toArray($event),
+            status: Response::HTTP_OK,
         );
     }
 
