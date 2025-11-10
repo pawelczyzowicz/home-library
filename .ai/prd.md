@@ -458,7 +458,6 @@ Kryteria akceptacji:
   - Podane tytuły/autorów
   - Instrukcję zwrócenia 3 rekomendacji
   - Instrukcję dopasowania gatunków
-  - Listę tytułów już obecnych w bibliotece użytkownika (do wykluczenia)
   - Katalog gatunków `{ id, name }`; AI ma zwrócić dla każdej propozycji pole `genresId` (1–3 wartości 1–15)
 - System przetwarza odpowiedź AI i parsuje dane: tytuł, autor, uzasadnienie dla każdej z 3 książek
  - System wyświetla na karcie rekomendacji listę gatunków na podstawie `genresId`

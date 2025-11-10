@@ -4,6 +4,15 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    env(OPENROUTER_BASE_URL): 'https://openrouter.ai/api/v1'
+    env(OPENROUTER_MODEL): 'openai/gpt-4o-mini'
+    env(OPENROUTER_TEMPERATURE): '0.6'
+    env(OPENROUTER_TOP_P): '0.95'
+    env(OPENROUTER_MAX_TOKENS): '600'
+    env(OPENROUTER_TIMEOUT): '20'
+    env(OPENROUTER_SEED): ''
+    env(OPENROUTER_REFERER): 'http://localhost'
+    env(OPENROUTER_TITLE): 'Home Library'
 
 services:
     # default configuration for services in *this* file
@@ -41,7 +50,23 @@ services:
     App\HomeLibrary\Domain\AI\RecommendationEventRepository: '@App\HomeLibrary\Infrastructure\AI\DoctrineRecommendationEventRepository'
     App\HomeLibrary\Application\AI\ReadModel\BookReadRepository: '@App\HomeLibrary\Infrastructure\AI\DoctrineBookReadRepository'
     App\HomeLibrary\Application\AI\Idempotency\IdempotencyRepository: '@App\HomeLibrary\Infrastructure\AI\DoctrineIdempotencyRepository'
-    App\HomeLibrary\Application\AI\IRecommendationProvider: '@App\HomeLibrary\Infrastructure\AI\MockOpenRouterRecommendationProvider'
+    App\HomeLibrary\Application\AI\IRecommendationProvider: '@App\HomeLibrary\Infrastructure\AI\OpenRouterRecommendationProvider'
+
+    App\HomeLibrary\Infrastructure\AI\OpenRouterRecommendationProvider:
+        arguments:
+            $httpClient: '@http_client'
+            $listGenresHandler: '@App\HomeLibrary\Application\Genre\Query\ListGenresHandler'
+            $apiKey: '%env(OPENROUTER_API_KEY)%'
+            $baseUrl: '%env(string:OPENROUTER_BASE_URL)%'
+            $defaultModel: '%env(string:OPENROUTER_MODEL)%'
+            $defaultParams:
+                temperature: '%env(float:OPENROUTER_TEMPERATURE)%'
+                top_p: '%env(float:OPENROUTER_TOP_P)%'
+                max_tokens: '%env(int:OPENROUTER_MAX_TOKENS)%'
+                seed: '%env(string:OPENROUTER_SEED)%'
+                timeout: '%env(float:OPENROUTER_TIMEOUT)%'
+            $appReferer: '%env(string:OPENROUTER_REFERER)%'
+            $appTitle: '%env(string:OPENROUTER_TITLE)%'
 
     App\HomeLibrary\UI\Api\Auth\RegisterAction:
         arguments:
