@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\HomeLibrary\Domain\User;
 
 use App\HomeLibrary\Domain\Common\TimestampableTrait;
+use App\HomeLibrary\Domain\Library\Library;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -13,6 +14,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity]
 #[ORM\Table(name: 'users')]
 #[ORM\Index(name: 'users_created_at_idx', columns: ['created_at'])]
+#[ORM\Index(name: 'users_library_id_idx', columns: ['library_id'])]
 #[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -31,16 +33,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Embedded(class: UserRoles::class, columnPrefix: false)]
     private UserRoles $roles;
 
+    #[ORM\ManyToOne(targetEntity: Library::class)]
+    #[ORM\JoinColumn(name: 'library_id', referencedColumnName: 'id', nullable: true)]
+    private ?Library $library;
+
     public function __construct(
         UuidInterface $id,
         UserEmail $email,
         UserPasswordHash $passwordHash,
         UserRoles $roles,
+        ?Library $library = null,
     ) {
         $this->id = $id;
         $this->email = $email;
         $this->passwordHash = $passwordHash;
         $this->roles = $roles;
+        $this->library = $library;
     }
 
     public function id(): UuidInterface
@@ -96,6 +104,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // no-op
+    }
+
+    public function library(): ?Library
+    {
+        return $this->library;
+    }
+
+    public function assignToLibrary(Library $library): void
+    {
+        $this->library = $library;
     }
 
     public function getUsername(): string
