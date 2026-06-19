@@ -38,6 +38,8 @@ Po implementacji M1:
 
 - [ ] `bin/console lint:container` passes
 - [ ] No PHPStan errors at configured level
+- [ ] `php-cs-fixer` — no violations (single_blank_line_at_eof, etc.)
+- [ ] `phpmd` — no violations (or suppressed with justification)
 - [ ] Entity unit test for Library (constructor, value objects) passes
 
 ### Notes
@@ -64,6 +66,8 @@ Po implementacji M1:
 
 - [ ] `bin/console doctrine:migrations:migrate` runs without error
 - [ ] `bin/console doctrine:schema:validate` passes
+- [ ] `php-cs-fixer` — no violations
+- [ ] `phpmd` — no violations
 - [ ] Integration test: DoctrineLibraryRepository can save and find a Library
 
 ### Notes
@@ -93,6 +97,8 @@ Po implementacji M1:
 
 - [ ] Unit tests pass: `bin/phpunit tests/Unit/HomeLibrary/Application/Auth/`
 - [ ] Integration tests pass: `bin/phpunit tests/Integration/HomeLibrary/UI/Api/Auth/`
+- [ ] `php-cs-fixer` — no violations
+- [ ] `phpmd` — no violations
 - [ ] Manual test: `curl POST /api/auth/register` with libraryMode "create" creates user+library
 - [ ] Duplicate library name returns 422
 
@@ -121,6 +127,8 @@ Po implementacji M1:
 - [ ] Form submits with library fields
 - [ ] Client-side validation shows errors for empty library fields
 - [ ] Server-side duplicate library name shows error in UI
+- [ ] `php-cs-fixer` — no violations (jeśli zmienione pliki PHP)
+- [ ] `phpmd` — no violations (jeśli zmienione pliki PHP)
 - [ ] E2E smoke: full registration flow works
 
 ### Notes
@@ -134,7 +142,7 @@ Po implementacji M1:
 
 | Phase | Status | Commit SHA | Notes |
 |-------|--------|------------|-------|
-| 1 | done | — | Library entity, value objects, repository interface, exception, User relation — all tests green |
+| 1 | ✅ done | (HEAD) | Library entity, value objects, repo interface, exception, User relation. 129 unit tests green. |
 | 2 | pending | — | — |
 | 3 | pending | — | — |
 | 4 | pending | — | — |

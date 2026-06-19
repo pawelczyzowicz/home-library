@@ -11,6 +11,7 @@ use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/** @SuppressWarnings("PHPMD.TooManyPublicMethods") */
 #[ORM\Entity]
 #[ORM\Table(name: 'users')]
 #[ORM\Index(name: 'users_created_at_idx', columns: ['created_at'])]
