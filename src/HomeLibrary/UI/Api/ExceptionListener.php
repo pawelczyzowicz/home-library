@@ -10,6 +10,7 @@ use App\HomeLibrary\Application\AI\Exception\RecommendationProviderException;
 use App\HomeLibrary\Application\Exception\ValidationException;
 use App\HomeLibrary\Domain\Book\Exception\BookNotFoundException;
 use App\HomeLibrary\Domain\Genre\Exception\GenreNotFoundException;
+use App\HomeLibrary\Domain\Library\Exception\LibraryAlreadyExistsException;
 use App\HomeLibrary\Domain\Shelf\Exception\DuplicateShelfNameException;
 use App\HomeLibrary\Domain\Shelf\Exception\ShelfIsSystemException;
 use App\HomeLibrary\Domain\Shelf\Exception\ShelfNotEmptyException;
@@ -125,6 +126,12 @@ final class ExceptionListener
                 type: 'https://example.com/problems/user-conflict',
                 title: 'User already exists',
                 status: Response::HTTP_CONFLICT,
+                detail: $exception->getMessage(),
+            ),
+            $exception instanceof LibraryAlreadyExistsException => $this->problemFactory->create(
+                type: 'https://example.com/problems/library-conflict',
+                title: 'Library already exists',
+                status: Response::HTTP_UNPROCESSABLE_ENTITY,
                 detail: $exception->getMessage(),
             ),
             default => null,

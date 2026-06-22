@@ -53,6 +53,9 @@ final class AuthApiTest extends WebTestCase
             'email' => 'new-user@example.com',
             'password' => 'SecurePa55',
             'passwordConfirm' => 'SecurePa55',
+            'libraryName' => 'Test Library',
+            'libraryPassword' => 'LibPass123',
+            'libraryMode' => 'create',
         ], 'authenticate');
 
         self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
@@ -83,12 +86,69 @@ final class AuthApiTest extends WebTestCase
             'email' => 'duplicate@example.com',
             'password' => 'password123',
             'passwordConfirm' => 'password123',
+            'libraryName' => 'Dup Library',
+            'libraryPassword' => 'LibPass123',
+            'libraryMode' => 'create',
         ], 'authenticate');
 
         self::assertSame(Response::HTTP_CONFLICT, $response->getStatusCode());
 
         $payload = $this->decodeResponse($response);
         self::assertSame('https://example.com/problems/user-conflict', $payload['type']);
+    }
+
+    #[Test]
+    public function itRejectsRegistrationWhenLibraryNameAlreadyExists(): void
+    {
+        $client = static::createClient();
+
+        // First registration creates the library
+        $this->postJson($client, '/api/auth/register', [
+            'email' => 'first@example.com',
+            'password' => 'SecurePa55',
+            'passwordConfirm' => 'SecurePa55',
+            'libraryName' => 'Shared Library',
+            'libraryPassword' => 'LibPass123',
+            'libraryMode' => 'create',
+        ], 'authenticate');
+
+        self::ensureKernelShutdown();
+        $client = static::createClient();
+
+        // Second registration with same library name should fail
+        $response = $this->postJson($client, '/api/auth/register', [
+            'email' => 'second@example.com',
+            'password' => 'SecurePa55',
+            'passwordConfirm' => 'SecurePa55',
+            'libraryName' => 'Shared Library',
+            'libraryPassword' => 'LibPass123',
+            'libraryMode' => 'create',
+        ], 'authenticate');
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+
+        $payload = $this->decodeResponse($response);
+        self::assertSame('https://example.com/problems/library-conflict', $payload['type']);
+    }
+
+    #[Test]
+    public function itRejectsRegistrationWhenLibraryModeIsMissing(): void
+    {
+        $client = static::createClient();
+
+        $response = $this->postJson($client, '/api/auth/register', [
+            'email' => 'nomode@example.com',
+            'password' => 'SecurePa55',
+            'passwordConfirm' => 'SecurePa55',
+            'libraryName' => 'Some Library',
+            'libraryPassword' => 'LibPass123',
+            'libraryMode' => '',
+        ], 'authenticate');
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+
+        $payload = $this->decodeResponse($response);
+        self::assertSame('https://example.com/problems/validation-error', $payload['type']);
     }
 
     #[Test]
@@ -133,6 +193,7 @@ final class AuthApiTest extends WebTestCase
     private function truncateUsers(): void
     {
         $this->connection->executeStatement('TRUNCATE TABLE users RESTART IDENTITY CASCADE');
+        $this->connection->executeStatement('TRUNCATE TABLE libraries RESTART IDENTITY CASCADE');
     }
 
     private function createUser(string $email, string $plainPassword): void

@@ -143,7 +143,7 @@ Po implementacji M1:
 | Phase | Status | Commit SHA | Notes |
 |-------|--------|------------|-------|
 | 1 | ✅ done | (HEAD) | Library entity, value objects, repo interface, exception, User relation. 129 unit tests green. |
-| 2 | ✅ done | (HEAD) | Migration, DoctrineLibraryRepository, services.yaml binding, integration test. PHPStan/CS/PHPMD clean, 129 unit tests green. |
+| 2 | ✅ done | 8b10dbb | Migration, DoctrineLibraryRepository, services.yaml binding, integration test. PHPStan/CS/PHPMD clean, 129 unit tests green. |
 | 3 | pending | — | — |
 | 4 | pending | — | — |
 

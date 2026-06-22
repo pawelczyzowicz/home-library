@@ -50,6 +50,9 @@ final class RegisterAction extends AbstractController
             email: (string) ($payload['email'] ?? ''),
             password: (string) ($payload['password'] ?? ''),
             passwordConfirm: (string) ($payload['passwordConfirm'] ?? ''),
+            libraryName: (string) ($payload['libraryName'] ?? ''),
+            libraryPassword: (string) ($payload['libraryPassword'] ?? ''),
+            libraryMode: (string) ($payload['libraryMode'] ?? ''),
         );
 
         /** @var User $user */

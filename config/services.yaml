@@ -74,5 +74,12 @@ services:
         arguments:
             $loginAuthenticator: '@security.authenticator.json_login.main'
 
+    app.library_password_hasher:
+        class: Symfony\Component\PasswordHasher\Hasher\NativePasswordHasher
+
+    App\HomeLibrary\Application\Auth\RegisterUserHandler:
+        arguments:
+            $libraryPasswordHasher: '@app.library_password_hasher'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
