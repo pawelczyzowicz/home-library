@@ -112,7 +112,6 @@ final class RegisterUserHandlerTest extends TestCase
                 self::assertSame('user@example.com', $user->email()->value());
                 self::assertSame('$hashed$', $user->passwordHash()->value());
                 self::assertSame(['ROLE_USER'], $user->roles()->values());
-                self::assertNotNull($user->library());
                 self::assertSame('My Library', $user->library()->name()->value());
 
                 return true;

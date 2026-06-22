@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\HomeLibrary\Infrastructure\Persistence;
 
+use App\HomeLibrary\Domain\Library\Library;
+use App\HomeLibrary\Domain\Library\LibraryName;
+use App\HomeLibrary\Domain\Library\LibraryPasswordHash;
 use App\HomeLibrary\Domain\User\User;
 use App\HomeLibrary\Domain\User\UserEmail;
 use App\HomeLibrary\Domain\User\UserPasswordHash;
@@ -32,11 +35,18 @@ final class DoctrineUserRepositoryTest extends KernelTestCase
 
     public function testSaveAndFindByEmail(): void
     {
+        $library = new Library(
+            Uuid::uuid7(),
+            new LibraryName('Test Library'),
+            LibraryPasswordHash::fromString('$2y$13$testhashedpassword000000000000000000000000000000000'),
+        );
+
         $user = new User(
             Uuid::uuid7(),
             UserEmail::fromString('user@example.com'),
             UserPasswordHash::fromString('$hash$'),
             UserRoles::fromArray(['ROLE_USER']),
+            $library,
         );
 
         $this->repository->save($user);
@@ -49,11 +59,18 @@ final class DoctrineUserRepositoryTest extends KernelTestCase
 
     public function testExistsByEmail(): void
     {
+        $library = new Library(
+            Uuid::uuid7(),
+            new LibraryName('Exists Library'),
+            LibraryPasswordHash::fromString('$2y$13$testhashedpassword000000000000000000000000000000000'),
+        );
+
         $user = new User(
             Uuid::uuid7(),
             UserEmail::fromString('exists@example.com'),
             UserPasswordHash::fromString('$hash$'),
             UserRoles::fromArray(['ROLE_USER']),
+            $library,
         );
 
         $this->repository->save($user);

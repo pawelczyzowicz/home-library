@@ -35,15 +35,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private UserRoles $roles;
 
     #[ORM\ManyToOne(targetEntity: Library::class)]
-    #[ORM\JoinColumn(name: 'library_id', referencedColumnName: 'id', nullable: true)]
-    private ?Library $library;
+    #[ORM\JoinColumn(name: 'library_id', referencedColumnName: 'id', nullable: false)]
+    private Library $library;
 
     public function __construct(
         UuidInterface $id,
         UserEmail $email,
         UserPasswordHash $passwordHash,
         UserRoles $roles,
-        ?Library $library = null,
+        Library $library,
     ) {
         $this->id = $id;
         $this->email = $email;
@@ -107,7 +107,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // no-op
     }
 
-    public function library(): ?Library
+    public function library(): Library
     {
         return $this->library;
     }

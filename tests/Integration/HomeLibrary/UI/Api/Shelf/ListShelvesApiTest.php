@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\HomeLibrary\UI\Api\Shelf;
 
+use App\HomeLibrary\Domain\Library\Library;
+use App\HomeLibrary\Domain\Library\LibraryName;
+use App\HomeLibrary\Domain\Library\LibraryPasswordHash;
 use App\HomeLibrary\Domain\Shelf\Shelf;
 use App\HomeLibrary\Domain\Shelf\ShelfFlag;
 use App\HomeLibrary\Domain\Shelf\ShelfName;
@@ -122,11 +125,18 @@ final class ListShelvesApiTest extends WebTestCase
 
     private function createUser(string $email, string $plainPassword): void
     {
+        $library = new Library(
+            Uuid::uuid7(),
+            new LibraryName('Test Library ' . $email),
+            LibraryPasswordHash::fromString('$2y$13$testhashedpassword000000000000000000000000000000000'),
+        );
+
         $user = new User(
             Uuid::uuid7(),
             UserEmail::fromString($email),
             UserPasswordHash::fromString('pre-hash'),
             UserRoles::fromArray(['ROLE_USER']),
+            $library,
         );
 
         $hash = $this->passwordHasher->hashPassword($user, $plainPassword);
