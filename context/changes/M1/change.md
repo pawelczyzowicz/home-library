@@ -3,7 +3,7 @@
 ---
 change-id: M1
 roadmap-ref: M1
-status: planned
+status: done
 created: 2026-06-09
 ---
 
@@ -49,5 +49,10 @@ Nowy użytkownik może zarejestrować się tworząc nową bibliotekę (nazwa + h
 
 ## Progress
 
-<!-- Phases and commits will be tracked here after /10x-plan and /10x-implement -->
+| Phase | Status | Notes |
+|-------|--------|-------|
+| 1 — Domain | ✅ done | Library entity, value objects, repo interface, exception, User relation |
+| 2 — Infrastructure | ✅ done | Migration, DoctrineLibraryRepository, services.yaml binding |
+| 3 — Application | ✅ done | Command + Handler + RegisterAction + ExceptionListener + unit/integration tests |
+| 4 — UI | ✅ done | Fieldset biblioteki, radio create/join, pola name+password, client-side validation, 422 handling |
 

@@ -32,10 +32,14 @@ function initRegisterForm(formElement) {
     const emailInput = formElement.querySelector('[data-view="input-email"]');
     const passwordInput = formElement.querySelector('[data-view="input-password"]');
     const passwordConfirmInput = formElement.querySelector('[data-view="input-password-confirm"]');
+    const libraryNameInput = formElement.querySelector('[data-view="input-library-name"]');
+    const libraryPasswordInput = formElement.querySelector('[data-view="input-library-password"]');
 
     const emailError = formElement.querySelector('[data-view="error-email"]');
     const passwordError = formElement.querySelector('[data-view="error-password"]');
     const passwordConfirmError = formElement.querySelector('[data-view="error-password-confirm"]');
+    const libraryNameError = formElement.querySelector('[data-view="error-libraryName"]');
+    const libraryPasswordError = formElement.querySelector('[data-view="error-libraryPassword"]');
 
     const formState = createFormState({
         form: formElement,
@@ -47,12 +51,16 @@ function initRegisterForm(formElement) {
             email: { input: emailInput, messageElement: emailError },
             password: { input: passwordInput, messageElement: passwordError },
             passwordConfirm: { input: passwordConfirmInput, messageElement: passwordConfirmError },
+            libraryName: { input: libraryNameInput, messageElement: libraryNameError },
+            libraryPassword: { input: libraryPasswordInput, messageElement: libraryPasswordError },
         },
     });
 
     attachValidator(emailInput, 'email', validateEmail, formState);
     attachValidator(passwordInput, 'password', validatePassword, formState);
     attachValidator(passwordConfirmInput, 'passwordConfirm', (value) => validatePasswordConfirm(value, () => passwordInput.value), formState);
+    attachValidator(libraryNameInput, 'libraryName', validateLibraryName, formState);
+    attachValidator(libraryPasswordInput, 'libraryPassword', validateLibraryPassword, formState);
 
     formElement.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -62,6 +70,9 @@ function initRegisterForm(formElement) {
             email: String(formData.get('email') ?? '').trim(),
             password: String(formData.get('password') ?? ''),
             passwordConfirm: String(formData.get('passwordConfirm') ?? ''),
+            libraryName: String(formData.get('libraryName') ?? '').trim(),
+            libraryPassword: String(formData.get('libraryPassword') ?? ''),
+            libraryMode: String(formData.get('libraryMode') ?? 'create'),
         };
 
         const validationErrors = validateRegister(payload);
@@ -151,6 +162,16 @@ function validateRegister(payload) {
         errors.passwordConfirm = [passwordConfirmError];
     }
 
+    const libraryNameError = validateLibraryName(payload.libraryName);
+    if (libraryNameError) {
+        errors.libraryName = [libraryNameError];
+    }
+
+    const libraryPasswordError = validateLibraryPassword(payload.libraryPassword);
+    if (libraryPasswordError) {
+        errors.libraryPassword = [libraryPasswordError];
+    }
+
     return errors;
 }
 
@@ -196,7 +217,33 @@ function validatePasswordConfirm(value, passwordGetter) {
     return undefined;
 }
 
+function validateLibraryName(value) {
+    if (!value) {
+        return 'Nazwa biblioteki jest wymagana.';
+    }
+
+    if (value.length > 255) {
+        return 'Nazwa biblioteki może mieć maksymalnie 255 znaków.';
+    }
+
+    return undefined;
+}
+
+function validateLibraryPassword(value) {
+    if (!value) {
+        return 'Hasło biblioteki jest wymagane.';
+    }
+
+    if (value.length < 8) {
+        return 'Hasło biblioteki musi mieć co najmniej 8 znaków.';
+    }
+
+    return undefined;
+}
+
 function handleFailure(response, json, formState) {
+    const problemType = json?.type ?? '';
+
     switch (response.status) {
         case 409:
             formState.setBanner({
@@ -206,7 +253,15 @@ function handleFailure(response, json, formState) {
             formState.focusField('email');
             break;
         case 422: {
-            const errors = mapViolations(json?.violations ?? []);
+            if (problemType.includes('library-conflict')) {
+                formState.setFieldErrors({
+                    libraryName: [json?.detail ?? 'Biblioteka o takiej nazwie już istnieje.'],
+                });
+                formState.focusField('libraryName');
+                break;
+            }
+
+            const errors = json?.errors ?? mapViolations(json?.violations ?? []);
             formState.setFieldErrors(errors);
             formState.focusFirstError();
             break;

@@ -38,6 +38,35 @@
                     <p class="form-field__error" id="register-password-confirm-error" data-view="error-password-confirm" hidden></p>
                 </div>
 
+                <fieldset class="auth-card__fieldset" data-view="library-section">
+                    <legend class="auth-card__fieldset-legend">Biblioteka</legend>
+
+                    <div class="form-field form-field--radio-group" role="radiogroup" aria-labelledby="library-mode-label">
+                        <span id="library-mode-label" class="form-field__group-label">Tryb biblioteki</span>
+                        <label class="form-field__radio">
+                            <input type="radio" name="libraryMode" value="create" checked data-view="input-library-mode">
+                            Tworzę nową bibliotekę
+                        </label>
+                        <label class="form-field__radio form-field__radio--disabled">
+                            <input type="radio" name="libraryMode" value="join" disabled data-view="input-library-mode">
+                            Dołączam do istniejącej
+                            <span class="form-field__badge">wkrótce</span>
+                        </label>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="register-library-name">Nazwa biblioteki</label>
+                        <input id="register-library-name" name="libraryName" type="text" required maxlength="255" data-view="input-library-name">
+                        <p class="form-field__error" id="register-library-name-error" data-view="error-libraryName" hidden></p>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="register-library-password">Hasło biblioteki</label>
+                        <input id="register-library-password" name="libraryPassword" type="password" required data-view="input-library-password">
+                        <p class="form-field__error" id="register-library-password-error" data-view="error-libraryPassword" hidden></p>
+                    </div>
+                </fieldset>
+
                 <input type="hidden" name="_csrf_token" value="csrf-token-authenticate" data-controller="csrf-protection" data-view="csrf">
 
                 <button type="submit" class="auth-card__submit" data-view="submit">Utwórz konto</button>

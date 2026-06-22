@@ -1,8 +1,9 @@
 # Plan Brief: M1 — Library entity + rejestracja z nową biblioteką
 
 **Change:** M1  
-**Phases:** 4  
-**Risk:** Low
+**Phases:** 4 (all done)  
+**Risk:** Low  
+**Status:** done
 
 ## TL;DR
 

@@ -2,7 +2,7 @@
 
 ---
 change-id: M1
-status: draft
+status: done
 phases: 4
 ---
 
@@ -144,8 +144,8 @@ Po implementacji M1:
 |-------|--------|------------|-------|
 | 1 | ✅ done | (HEAD) | Library entity, value objects, repo interface, exception, User relation. 129 unit tests green. |
 | 2 | ✅ done | 8b10dbb | Migration, DoctrineLibraryRepository, services.yaml binding, integration test. PHPStan/CS/PHPMD clean, 129 unit tests green. |
-| 3 | pending | — | — |
-| 4 | pending | — | — |
+| 3 | ✅ done | — | RegisterUserCommand + Handler rozszerzone o library fields, RegisterAction czyta pola z payload, ExceptionListener mapuje LibraryAlreadyExistsException→422, unit test (RegisterUserHandlerTest) + integration test (AuthApiTest) z library fields. |
+| 4 | ✅ done | — | register.html.twig: fieldset "Biblioteka" z radio create/join (join disabled), pola libraryName + libraryPassword. register.js: payload rozszerzony, client-side validation, handleFailure obsługuje library-conflict 422. CSS: style fieldset, radio, badge. |
 
 ---
 

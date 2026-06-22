@@ -77,6 +77,59 @@ body {
     margin-top: 0.05rem;
 }
 
+.auth-card__fieldset {
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0 0.5rem;
+}
+
+.auth-card__fieldset-legend {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #ffffff;
+    padding: 0 0.5rem;
+}
+
+.form-field--radio-group {
+    gap: 0.5rem;
+}
+
+.form-field__group-label {
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+
+.form-field__radio {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 400;
+    color: rgba(226, 232, 240, 0.9);
+    cursor: pointer;
+}
+
+.form-field__radio input[type="radio"] {
+    width: auto;
+    margin: 0;
+}
+
+.form-field__radio--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.form-field__badge {
+    font-size: 0.7rem;
+    background: rgba(148, 163, 184, 0.3);
+    color: rgba(226, 232, 240, 0.8);
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
 .auth-card__footer {
     margin-top: 2rem;
     text-align: center;
