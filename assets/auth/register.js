@@ -263,7 +263,7 @@ function handleFailure(response, json, formState) {
 
             if (problemType.includes('library-not-found')) {
                 formState.setFieldErrors({
-                    libraryName: [json?.detail ?? 'Biblioteka o podanej nazwie nie istnieje.'],
+                    libraryName: ['Biblioteka o podanej nazwie nie istnieje.'],
                 });
                 formState.focusField('libraryName');
                 break;
@@ -271,7 +271,7 @@ function handleFailure(response, json, formState) {
 
             if (problemType.includes('invalid-library-password')) {
                 formState.setFieldErrors({
-                    libraryPassword: [json?.detail ?? 'Nieprawidłowe hasło biblioteki.'],
+                    libraryPassword: ['Nieprawidłowe hasło biblioteki.'],
                 });
                 formState.focusField('libraryPassword');
                 break;
