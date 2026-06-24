@@ -82,6 +82,15 @@ body {
     border-radius: 0.75rem;
     padding: 1rem 1.25rem;
     margin: 1rem 0 0.5rem;
+    text-align: center;
+}
+
+.auth-card__fieldset .form-field {
+    margin-top: 1rem;
+}
+
+.auth-card__fieldset .form-field--radio-group {
+    margin-top: 0.25rem;
 }
 
 .auth-card__fieldset-legend {
@@ -93,12 +102,18 @@ body {
 
 .form-field--radio-group {
     gap: 0.5rem;
+    align-items: flex-start;
+}
+
+.auth-card__fieldset .form-field--radio-group {
+    align-items: center;
 }
 
 .form-field__group-label {
     font-weight: 600;
     color: #ffffff;
     font-size: 0.9rem;
+    text-align: center;
 }
 
 .form-field__radio {
@@ -108,6 +123,7 @@ body {
     font-weight: 400;
     color: rgba(226, 232, 240, 0.9);
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .form-field__radio input[type="radio"] {

@@ -193,6 +193,95 @@ final class AuthApiTest extends WebTestCase
         self::assertSame('https://example.com/problems/invalid-credentials', $payload['type']);
     }
 
+    #[Test]
+    public function itRegistersUserByJoiningExistingLibrary(): void
+    {
+        $client = static::createClient();
+
+        // First: create the library via a "create" registration
+        $this->postJson($client, '/api/auth/register', [
+            'email' => 'creator@example.com',
+            'password' => 'SecurePa55',
+            'passwordConfirm' => 'SecurePa55',
+            'libraryName' => 'Join Target Library',
+            'libraryPassword' => 'LibPass123',
+            'libraryMode' => 'create',
+        ], 'authenticate');
+
+        self::ensureKernelShutdown();
+        $client = static::createClient();
+
+        // Second: join the library
+        $response = $this->postJson($client, '/api/auth/register', [
+            'email' => 'joiner@example.com',
+            'password' => 'SecurePa55',
+            'passwordConfirm' => 'SecurePa55',
+            'libraryName' => 'Join Target Library',
+            'libraryPassword' => 'LibPass123',
+            'libraryMode' => 'join',
+        ], 'authenticate');
+
+        self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
+
+        $payload = $this->decodeResponse($response);
+        self::assertArrayHasKey('user', $payload);
+        self::assertSame('joiner@example.com', $payload['user']['email']);
+    }
+
+    #[Test]
+    public function itRejectsJoinWhenLibraryDoesNotExist(): void
+    {
+        $client = static::createClient();
+
+        $response = $this->postJson($client, '/api/auth/register', [
+            'email' => 'joiner@example.com',
+            'password' => 'SecurePa55',
+            'passwordConfirm' => 'SecurePa55',
+            'libraryName' => 'Nonexistent Library',
+            'libraryPassword' => 'LibPass123',
+            'libraryMode' => 'join',
+        ], 'authenticate');
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+
+        $payload = $this->decodeResponse($response);
+        self::assertSame('https://example.com/problems/library-not-found', $payload['type']);
+    }
+
+    #[Test]
+    public function itRejectsJoinWhenLibraryPasswordIsWrong(): void
+    {
+        $client = static::createClient();
+
+        // First: create the library
+        $this->postJson($client, '/api/auth/register', [
+            'email' => 'creator@example.com',
+            'password' => 'SecurePa55',
+            'passwordConfirm' => 'SecurePa55',
+            'libraryName' => 'Protected Library',
+            'libraryPassword' => 'CorrectPass1',
+            'libraryMode' => 'create',
+        ], 'authenticate');
+
+        self::ensureKernelShutdown();
+        $client = static::createClient();
+
+        // Second: try to join with wrong password
+        $response = $this->postJson($client, '/api/auth/register', [
+            'email' => 'joiner@example.com',
+            'password' => 'SecurePa55',
+            'passwordConfirm' => 'SecurePa55',
+            'libraryName' => 'Protected Library',
+            'libraryPassword' => 'WrongPass11',
+            'libraryMode' => 'join',
+        ], 'authenticate');
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+
+        $payload = $this->decodeResponse($response);
+        self::assertSame('https://example.com/problems/invalid-library-password', $payload['type']);
+    }
+
     private function truncateUsers(): void
     {
         $this->connection->executeStatement('TRUNCATE TABLE users RESTART IDENTITY CASCADE');

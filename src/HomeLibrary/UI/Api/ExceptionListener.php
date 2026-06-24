@@ -10,7 +10,9 @@ use App\HomeLibrary\Application\AI\Exception\RecommendationProviderException;
 use App\HomeLibrary\Application\Exception\ValidationException;
 use App\HomeLibrary\Domain\Book\Exception\BookNotFoundException;
 use App\HomeLibrary\Domain\Genre\Exception\GenreNotFoundException;
+use App\HomeLibrary\Domain\Library\Exception\InvalidLibraryPasswordException;
 use App\HomeLibrary\Domain\Library\Exception\LibraryAlreadyExistsException;
+use App\HomeLibrary\Domain\Library\Exception\LibraryNotFoundException;
 use App\HomeLibrary\Domain\Shelf\Exception\DuplicateShelfNameException;
 use App\HomeLibrary\Domain\Shelf\Exception\ShelfIsSystemException;
 use App\HomeLibrary\Domain\Shelf\Exception\ShelfNotEmptyException;
@@ -131,6 +133,18 @@ final class ExceptionListener
             $exception instanceof LibraryAlreadyExistsException => $this->problemFactory->create(
                 type: 'https://example.com/problems/library-conflict',
                 title: 'Library already exists',
+                status: Response::HTTP_UNPROCESSABLE_ENTITY,
+                detail: $exception->getMessage(),
+            ),
+            $exception instanceof LibraryNotFoundException => $this->problemFactory->create(
+                type: 'https://example.com/problems/library-not-found',
+                title: 'Library not found',
+                status: Response::HTTP_UNPROCESSABLE_ENTITY,
+                detail: $exception->getMessage(),
+            ),
+            $exception instanceof InvalidLibraryPasswordException => $this->problemFactory->create(
+                type: 'https://example.com/problems/invalid-library-password',
+                title: 'Invalid library password',
                 status: Response::HTTP_UNPROCESSABLE_ENTITY,
                 detail: $exception->getMessage(),
             ),

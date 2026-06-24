@@ -7,8 +7,12 @@ namespace App\Tests\Unit\HomeLibrary\Application\Auth;
 use App\HomeLibrary\Application\Auth\Command\RegisterUserCommand;
 use App\HomeLibrary\Application\Auth\RegisterUserHandler;
 use App\HomeLibrary\Application\Exception\ValidationException;
+use App\HomeLibrary\Domain\Library\Exception\InvalidLibraryPasswordException;
 use App\HomeLibrary\Domain\Library\Exception\LibraryAlreadyExistsException;
+use App\HomeLibrary\Domain\Library\Exception\LibraryNotFoundException;
 use App\HomeLibrary\Domain\Library\Library;
+use App\HomeLibrary\Domain\Library\LibraryName;
+use App\HomeLibrary\Domain\Library\LibraryPasswordHash;
 use App\HomeLibrary\Domain\Library\LibraryRepository;
 use App\HomeLibrary\Domain\User\Exception\UserAlreadyExistsException;
 use App\HomeLibrary\Domain\User\User;
@@ -233,7 +237,7 @@ final class RegisterUserHandlerTest extends TestCase
     }
 
     #[Test]
-    public function itFailsWhenLibraryModeIsNotCreate(): void
+    public function itFailsWhenLibraryModeIsInvalid(): void
     {
         $command = new RegisterUserCommand(
             Uuid::uuid7(),
@@ -242,7 +246,7 @@ final class RegisterUserHandlerTest extends TestCase
             'securePass1',
             'My Library',
             'LibPass123',
-            'join',
+            'invalid',
         );
 
         $this->expectException(ValidationException::class);
@@ -280,6 +284,149 @@ final class RegisterUserHandlerTest extends TestCase
             ->willReturn(false);
 
         $this->expectException(ValidationException::class);
+
+        ($this->handler)($command);
+    }
+
+    #[Test]
+    public function itRegistersUserByJoiningExistingLibrary(): void
+    {
+        $existingLibrary = new Library(
+            Uuid::uuid7(),
+            new LibraryName('Shared Library'),
+            LibraryPasswordHash::fromString('$hashed_lib$'),
+        );
+
+        $command = new RegisterUserCommand(
+            Uuid::uuid7(),
+            'joiner@example.com',
+            'securePass1',
+            'securePass1',
+            'Shared Library',
+            'LibPass123',
+            'join',
+        );
+
+        $this->validator
+            ->method('validate')
+            ->willReturnCallback(static fn () => new ConstraintViolationList());
+
+        $this->userRepository
+            ->expects(self::once())
+            ->method('existsByEmail')
+            ->with('joiner@example.com')
+            ->willReturn(false);
+
+        $this->libraryRepository
+            ->expects(self::once())
+            ->method('findByName')
+            ->with('Shared Library')
+            ->willReturn($existingLibrary);
+
+        $this->libraryPasswordHasher
+            ->expects(self::once())
+            ->method('verify')
+            ->with('$hashed_lib$', 'LibPass123')
+            ->willReturn(true);
+
+        $this->passwordHasher
+            ->expects(self::once())
+            ->method('hashPassword')
+            ->willReturn('$hashed$');
+
+        $this->userRepository
+            ->expects(self::once())
+            ->method('save')
+            ->with(self::callback(function (User $user) use ($command, $existingLibrary): bool {
+                self::assertTrue($command->id()->equals($user->id()));
+                self::assertSame('joiner@example.com', $user->email()->value());
+                self::assertSame($existingLibrary->id(), $user->library()->id());
+                self::assertSame('Shared Library', $user->library()->name()->value());
+
+                return true;
+            }));
+
+        $this->libraryRepository
+            ->expects(self::never())
+            ->method('save');
+
+        ($this->handler)($command);
+    }
+
+    #[Test]
+    public function itFailsWhenJoiningNonExistentLibrary(): void
+    {
+        $command = new RegisterUserCommand(
+            Uuid::uuid7(),
+            'joiner@example.com',
+            'securePass1',
+            'securePass1',
+            'Ghost Library',
+            'LibPass123',
+            'join',
+        );
+
+        $this->validator
+            ->method('validate')
+            ->willReturnCallback(static fn () => new ConstraintViolationList());
+
+        $this->userRepository
+            ->method('existsByEmail')
+            ->willReturn(false);
+
+        $this->libraryRepository
+            ->expects(self::once())
+            ->method('findByName')
+            ->with('Ghost Library')
+            ->willReturn(null);
+
+        $this->expectException(LibraryNotFoundException::class);
+        $this->expectExceptionMessage('Library with name "Ghost Library" not found.');
+
+        ($this->handler)($command);
+    }
+
+    #[Test]
+    public function itFailsWhenJoiningWithInvalidLibraryPassword(): void
+    {
+        $existingLibrary = new Library(
+            Uuid::uuid7(),
+            new LibraryName('Secure Library'),
+            LibraryPasswordHash::fromString('$hashed_lib$'),
+        );
+
+        $command = new RegisterUserCommand(
+            Uuid::uuid7(),
+            'joiner@example.com',
+            'securePass1',
+            'securePass1',
+            'Secure Library',
+            'WrongPass1',
+            'join',
+        );
+
+        $this->validator
+            ->method('validate')
+            ->willReturnCallback(static fn () => new ConstraintViolationList());
+
+        $this->userRepository
+            ->method('existsByEmail')
+            ->willReturn(false);
+
+        $this->libraryRepository
+            ->expects(self::once())
+            ->method('findByName')
+            ->with('Secure Library')
+            ->willReturn($existingLibrary);
+
+        $this->libraryPasswordHasher
+            ->expects(self::once())
+            ->method('verify')
+            ->with('$hashed_lib$', 'WrongPass1')
+            ->willReturn(false);
+
+        $this->expectException(InvalidLibraryPasswordException::class);
+        $this->expectExceptionMessage('Invalid password for library "Secure Library".');
 
         ($this->handler)($command);
     }

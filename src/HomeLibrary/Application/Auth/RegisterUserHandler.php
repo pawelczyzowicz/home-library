@@ -6,7 +6,9 @@ namespace App\HomeLibrary\Application\Auth;
 
 use App\HomeLibrary\Application\Auth\Command\RegisterUserCommand;
 use App\HomeLibrary\Application\Exception\ValidationException;
+use App\HomeLibrary\Domain\Library\Exception\InvalidLibraryPasswordException;
 use App\HomeLibrary\Domain\Library\Exception\LibraryAlreadyExistsException;
+use App\HomeLibrary\Domain\Library\Exception\LibraryNotFoundException;
 use App\HomeLibrary\Domain\Library\Library;
 use App\HomeLibrary\Domain\Library\LibraryName;
 use App\HomeLibrary\Domain\Library\LibraryPasswordHash;
@@ -67,7 +69,9 @@ final class RegisterUserHandler
             throw ValidationException::fromViolations($passwordViolations);
         }
 
-        $library = $this->createLibrary($command);
+        $library = 'create' === $command->libraryMode()
+            ? $this->createLibrary($command)
+            : $this->joinLibrary($command);
 
         $user = new User(
             $command->id(),
@@ -113,12 +117,29 @@ final class RegisterUserHandler
         return $library;
     }
 
+    private function joinLibrary(RegisterUserCommand $command): Library
+    {
+        $this->validateLibraryFields($command);
+
+        $library = $this->libraryRepository->findByName($command->libraryName());
+
+        if (null === $library) {
+            throw LibraryNotFoundException::forName($command->libraryName());
+        }
+
+        if (!$this->libraryPasswordHasher->verify($library->passwordHash()->value(), $command->libraryPassword())) {
+            throw InvalidLibraryPasswordException::forName($command->libraryName());
+        }
+
+        return $library;
+    }
+
     private function validateLibraryMode(RegisterUserCommand $command): void
     {
-        if ('create' !== $command->libraryMode()) {
+        if (!\in_array($command->libraryMode(), ['create', 'join'], true)) {
             throw ValidationException::withMessage(
                 'libraryMode',
-                'Only "create" mode is supported.',
+                'Library mode must be "create" or "join".',
             );
         }
     }

@@ -39,18 +39,17 @@
                 </div>
 
                 <fieldset class="auth-card__fieldset" data-view="library-section">
-                    <legend class="auth-card__fieldset-legend">Biblioteka</legend>
+                    <legend class="auth-card__fieldset-legend">Biblioteka — Tryb biblioteki</legend>
 
                     <div class="form-field form-field--radio-group" role="radiogroup" aria-labelledby="library-mode-label">
-                        <span id="library-mode-label" class="form-field__group-label">Tryb biblioteki</span>
+                        <span id="library-mode-label" class="sr-only">Tryb biblioteki</span>
                         <label class="form-field__radio">
                             <input type="radio" name="libraryMode" value="create" checked data-view="input-library-mode">
                             Tworzę nową bibliotekę
                         </label>
-                        <label class="form-field__radio form-field__radio--disabled">
-                            <input type="radio" name="libraryMode" value="join" disabled data-view="input-library-mode">
+                        <label class="form-field__radio">
+                            <input type="radio" name="libraryMode" value="join" data-view="input-library-mode">
                             Dołączam do istniejącej
-                            <span class="form-field__badge">wkrótce</span>
                         </label>
                     </div>
 
