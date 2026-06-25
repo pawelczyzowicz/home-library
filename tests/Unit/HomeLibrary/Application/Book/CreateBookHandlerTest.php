@@ -13,6 +13,10 @@ use App\HomeLibrary\Domain\Genre\Exception\GenreNotFoundException;
 use App\HomeLibrary\Domain\Genre\Genre;
 use App\HomeLibrary\Domain\Genre\GenreRepository;
 use App\HomeLibrary\Domain\Genre\GenreName;
+use App\HomeLibrary\Domain\Library\Library;
+use App\HomeLibrary\Domain\Library\LibraryName;
+use App\HomeLibrary\Domain\Library\LibraryPasswordHash;
+use App\HomeLibrary\Domain\Library\LibraryRepository;
 use App\HomeLibrary\Domain\Shelf\Exception\ShelfNotFoundException;
 use App\HomeLibrary\Domain\Shelf\Shelf;
 use App\HomeLibrary\Domain\Shelf\ShelfFlag;
@@ -34,18 +38,31 @@ final class CreateBookHandlerTest extends TestCase
     /** @var GenreRepository&MockObject */
     private GenreRepository $genreRepository;
 
+    /** @var LibraryRepository&MockObject */
+    private LibraryRepository $libraryRepository;
+
     private CreateBookHandler $handler;
+
+    private Library $library;
 
     protected function setUp(): void
     {
         $this->bookRepository = $this->createMock(BookRepository::class);
         $this->shelfRepository = $this->createMock(ShelfRepository::class);
         $this->genreRepository = $this->createMock(GenreRepository::class);
+        $this->libraryRepository = $this->createMock(LibraryRepository::class);
+
+        $this->library = new Library(
+            Uuid::uuid7(),
+            new LibraryName('Test Library'),
+            LibraryPasswordHash::fromString('$2y$13$testhashedpassword000000000000000000000000000000000'),
+        );
 
         $this->handler = new CreateBookHandler(
             $this->bookRepository,
             $this->shelfRepository,
             $this->genreRepository,
+            $this->libraryRepository,
         );
     }
 
@@ -55,16 +72,22 @@ final class CreateBookHandlerTest extends TestCase
         $bookId = Uuid::uuid7();
         $shelfId = Uuid::uuid4();
 
-        $shelf = new Shelf($shelfId, new ShelfName('Fantasy Shelf'), ShelfFlag::userDefined());
+        $shelf = new Shelf($shelfId, new ShelfName('Fantasy Shelf'), ShelfFlag::userDefined(), $this->library);
         $genres = [
             new Genre(1, new GenreName('Fantasy')),
             new Genre(2, new GenreName('Adventure')),
         ];
 
+        $this->libraryRepository
+            ->expects(self::once())
+            ->method('findById')
+            ->with($this->library->id())
+            ->willReturn($this->library);
+
         $this->shelfRepository
             ->expects(self::once())
             ->method('findById')
-            ->with($shelfId)
+            ->with($shelfId, $this->library->id())
             ->willReturn($shelf);
 
         $this->genreRepository
@@ -85,6 +108,7 @@ final class CreateBookHandlerTest extends TestCase
 
         $command = new CreateBookCommand(
             id: $bookId,
+            libraryId: $this->library->id(),
             title: 'The Witcher',
             author: 'Andrzej Sapkowski',
             isbn: '9781234567890',
@@ -113,10 +137,16 @@ final class CreateBookHandlerTest extends TestCase
     {
         $shelfId = Uuid::uuid4();
 
+        $this->libraryRepository
+            ->expects(self::once())
+            ->method('findById')
+            ->with($this->library->id())
+            ->willReturn($this->library);
+
         $this->shelfRepository
             ->expects(self::once())
             ->method('findById')
-            ->with($shelfId)
+            ->with($shelfId, $this->library->id())
             ->willReturn(null);
 
         $this->genreRepository
@@ -129,6 +159,7 @@ final class CreateBookHandlerTest extends TestCase
 
         $command = new CreateBookCommand(
             id: Uuid::uuid7(),
+            libraryId: $this->library->id(),
             title: 'The Witcher',
             author: 'Andrzej Sapkowski',
             isbn: null,
@@ -148,12 +179,18 @@ final class CreateBookHandlerTest extends TestCase
     public function itThrowsWhenSomeGenresMissing(): void
     {
         $shelfId = Uuid::uuid4();
-        $shelf = new Shelf($shelfId, new ShelfName('Fantasy Shelf'), ShelfFlag::userDefined());
+        $shelf = new Shelf($shelfId, new ShelfName('Fantasy Shelf'), ShelfFlag::userDefined(), $this->library);
+
+        $this->libraryRepository
+            ->expects(self::once())
+            ->method('findById')
+            ->with($this->library->id())
+            ->willReturn($this->library);
 
         $this->shelfRepository
             ->expects(self::once())
             ->method('findById')
-            ->with($shelfId)
+            ->with($shelfId, $this->library->id())
             ->willReturn($shelf);
 
         $this->genreRepository
@@ -170,6 +207,7 @@ final class CreateBookHandlerTest extends TestCase
 
         $command = new CreateBookCommand(
             id: Uuid::uuid7(),
+            libraryId: $this->library->id(),
             title: 'The Witcher',
             author: 'Andrzej Sapkowski',
             isbn: null,

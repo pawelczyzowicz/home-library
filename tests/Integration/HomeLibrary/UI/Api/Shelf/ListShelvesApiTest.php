@@ -13,7 +13,6 @@ use App\HomeLibrary\Domain\Shelf\ShelfName;
 use App\HomeLibrary\Domain\User\User;
 use App\HomeLibrary\Domain\User\UserEmail;
 use App\HomeLibrary\Domain\User\UserPasswordHash;
-use App\HomeLibrary\Domain\User\UserRepository;
 use App\HomeLibrary\Domain\User\UserRoles;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,8 +32,6 @@ final class ListShelvesApiTest extends WebTestCase
 
     private CsrfTokenManagerInterface $csrfTokenManager;
 
-    private UserRepository $userRepository;
-
     private UserPasswordHasherInterface $passwordHasher;
 
     protected function setUp(): void
@@ -47,12 +44,9 @@ final class ListShelvesApiTest extends WebTestCase
         $this->connection = $container->get(Connection::class);
         $this->entityManager = $container->get(EntityManagerInterface::class);
         $this->csrfTokenManager = $container->get(CsrfTokenManagerInterface::class);
-        $this->userRepository = $container->get(UserRepository::class);
         $this->passwordHasher = $container->get(UserPasswordHasherInterface::class);
 
         $this->truncateTables();
-
-        self::ensureKernelShutdown();
     }
 
     #[Test]
@@ -61,11 +55,12 @@ final class ListShelvesApiTest extends WebTestCase
         $email = 'list-shelves@example.com';
         $password = 'SecurePass123!';
 
-        $this->createUser($email, $password);
+        $user = $this->createUser($email, $password);
+        $library = $user->library();
 
-        $systemShelfA = new Shelf(Uuid::uuid7(), new ShelfName('System Shelf A'), ShelfFlag::system());
-        $systemShelfB = new Shelf(Uuid::uuid7(), new ShelfName('System Shelf B'), ShelfFlag::system());
-        $userShelf = new Shelf(Uuid::uuid7(), new ShelfName('User Shelf'), ShelfFlag::userDefined());
+        $systemShelfA = new Shelf(Uuid::uuid7(), new ShelfName('System Shelf A'), ShelfFlag::system(), $library);
+        $systemShelfB = new Shelf(Uuid::uuid7(), new ShelfName('System Shelf B'), ShelfFlag::system(), $library);
+        $userShelf = new Shelf(Uuid::uuid7(), new ShelfName('User Shelf'), ShelfFlag::userDefined(), $library);
 
         $this->entityManager->persist($systemShelfA);
         $this->entityManager->persist($systemShelfB);
@@ -73,6 +68,7 @@ final class ListShelvesApiTest extends WebTestCase
         $this->entityManager->flush();
         $this->entityManager->clear();
 
+        self::ensureKernelShutdown();
         $client = static::createClient();
         $this->authenticate($client, $email, $password);
 
@@ -121,9 +117,10 @@ final class ListShelvesApiTest extends WebTestCase
         $this->connection->executeStatement('TRUNCATE TABLE books RESTART IDENTITY CASCADE');
         $this->connection->executeStatement('TRUNCATE TABLE shelves RESTART IDENTITY CASCADE');
         $this->connection->executeStatement('TRUNCATE TABLE users RESTART IDENTITY CASCADE');
+        $this->connection->executeStatement('TRUNCATE TABLE libraries RESTART IDENTITY CASCADE');
     }
 
-    private function createUser(string $email, string $plainPassword): void
+    private function createUser(string $email, string $plainPassword): User
     {
         $library = new Library(
             Uuid::uuid7(),
@@ -142,7 +139,10 @@ final class ListShelvesApiTest extends WebTestCase
         $hash = $this->passwordHasher->hashPassword($user, $plainPassword);
         $user->updatePasswordHash(UserPasswordHash::fromString($hash));
 
-        $this->userRepository->save($user);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return $user;
     }
 
     private function authenticate(KernelBrowser $client, string $email, string $password): void

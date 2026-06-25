@@ -31,6 +31,7 @@ final class DoctrineUserRepositoryTest extends KernelTestCase
         $connection = $container->get(Connection::class);
         \assert($connection instanceof Connection);
         $connection->executeStatement('TRUNCATE TABLE users RESTART IDENTITY CASCADE');
+        $connection->executeStatement('TRUNCATE TABLE libraries RESTART IDENTITY CASCADE');
     }
 
     public function testSaveAndFindByEmail(): void

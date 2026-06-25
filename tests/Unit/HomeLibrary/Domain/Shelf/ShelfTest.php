@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\HomeLibrary\Domain\Shelf;
 
+use App\HomeLibrary\Domain\Library\Library;
+use App\HomeLibrary\Domain\Library\LibraryName;
+use App\HomeLibrary\Domain\Library\LibraryPasswordHash;
 use App\HomeLibrary\Domain\Shelf\Shelf;
 use App\HomeLibrary\Domain\Shelf\ShelfFlag;
 use App\HomeLibrary\Domain\Shelf\ShelfName;
@@ -25,7 +28,13 @@ final class ShelfTest extends TestCase
         $this->name = new ShelfName('Art Books');
         $this->systemFlag = ShelfFlag::userDefined();
 
-        $this->shelf = new Shelf($this->id, $this->name, $this->systemFlag);
+        $library = new Library(
+            Uuid::uuid7(),
+            new LibraryName('Test Library'),
+            LibraryPasswordHash::fromString('$2y$13$testhashedpassword000000000000000000000000000000000'),
+        );
+
+        $this->shelf = new Shelf($this->id, $this->name, $this->systemFlag, $library);
     }
 
     #[Test]

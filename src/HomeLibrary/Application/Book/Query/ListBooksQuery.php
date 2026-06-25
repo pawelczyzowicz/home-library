@@ -12,6 +12,7 @@ final class ListBooksQuery
      * @param int[] $genreIds
      */
     public function __construct(
+        private readonly UuidInterface $libraryId,
         private readonly ?string $searchTerm,
         private readonly ?UuidInterface $shelfId,
         private readonly array $genreIds,
@@ -20,6 +21,11 @@ final class ListBooksQuery
         private readonly string $sort,
         private readonly string $order,
     ) {}
+
+    public function libraryId(): UuidInterface
+    {
+        return $this->libraryId;
+    }
 
     public function searchTerm(): ?string
     {

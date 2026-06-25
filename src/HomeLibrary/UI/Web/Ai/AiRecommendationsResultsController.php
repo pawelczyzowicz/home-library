@@ -67,7 +67,13 @@ final class AiRecommendationsResultsController extends AbstractController
 
     private function resolvePurchaseShelfId(): ?string
     {
-        $shelves = $this->shelfRepository->search(null, true);
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return null;
+        }
+
+        $shelves = $this->shelfRepository->search($user->library()->id(), null, true);
 
         if ([] === $shelves) {
             return null;

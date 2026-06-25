@@ -19,7 +19,7 @@ final class DeleteShelfHandler
 
     public function __invoke(DeleteShelfCommand $command): void
     {
-        $shelf = $this->repository->findById($command->id());
+        $shelf = $this->repository->findById($command->id(), $command->libraryId());
 
         if (null === $shelf) {
             throw ShelfNotFoundException::withId($command->id());

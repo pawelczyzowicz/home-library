@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\HomeLibrary\Domain\Shelf;
 
 use App\HomeLibrary\Domain\Common\TimestampableTrait;
+use App\HomeLibrary\Domain\Library\Library;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 
@@ -25,11 +26,16 @@ class Shelf
     #[ORM\Embedded(class: ShelfFlag::class, columnPrefix: false)]
     private ShelfFlag $isSystem;
 
-    public function __construct(UuidInterface $id, ShelfName $name, ShelfFlag $isSystem)
+    #[ORM\ManyToOne(targetEntity: Library::class)]
+    #[ORM\JoinColumn(name: 'library_id', referencedColumnName: 'id', nullable: false)]
+    private Library $library;
+
+    public function __construct(UuidInterface $id, ShelfName $name, ShelfFlag $isSystem, Library $library)
     {
         $this->id = $id;
         $this->name = $name;
         $this->isSystem = $isSystem;
+        $this->library = $library;
     }
 
     public function id(): UuidInterface
@@ -50,6 +56,11 @@ class Shelf
     public function systemFlag(): ShelfFlag
     {
         return $this->isSystem;
+    }
+
+    public function library(): Library
+    {
+        return $this->library;
     }
 
     public function promoteToSystem(): void

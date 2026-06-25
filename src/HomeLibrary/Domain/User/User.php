@@ -34,7 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Embedded(class: UserRoles::class, columnPrefix: false)]
     private UserRoles $roles;
 
-    #[ORM\ManyToOne(targetEntity: Library::class)]
+    #[ORM\ManyToOne(targetEntity: Library::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'library_id', referencedColumnName: 'id', nullable: false)]
     private Library $library;
 

@@ -9,6 +9,7 @@ use App\HomeLibrary\Application\Book\CreateBookHandler;
 use App\HomeLibrary\Application\Book\Service\CreateBookPayloadValidator;
 use App\HomeLibrary\UI\Api\Book\Dto\CreateBookPayloadDto;
 use App\HomeLibrary\UI\Api\Book\Resource\BookResource;
+use App\HomeLibrary\UI\Api\LibraryAwareTrait;
 use App\HomeLibrary\UI\Api\Problem\ProblemJsonResponseFactory;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,6 +24,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 final class CreateBookAction extends AbstractController
 {
+    use LibraryAwareTrait;
+
     public function __construct(
         private readonly CreateBookHandler $handler,
         private readonly CreateBookPayloadValidator $validator,
@@ -68,6 +71,7 @@ final class CreateBookAction extends AbstractController
 
         $command = new CreateBookCommand(
             id: Uuid::uuid7(),
+            libraryId: $this->currentLibraryId(),
             title: $normalized['title'],
             author: $normalized['author'],
             isbn: $normalized['isbn'],

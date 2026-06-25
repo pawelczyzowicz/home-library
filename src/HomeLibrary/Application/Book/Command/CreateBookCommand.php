@@ -7,6 +7,7 @@ namespace App\HomeLibrary\Application\Book\Command;
 use App\HomeLibrary\Domain\Book\BookSource;
 use Ramsey\Uuid\UuidInterface;
 
+/** @SuppressWarnings("PHPMD.ExcessiveParameterList") */
 final class CreateBookCommand
 {
     /**
@@ -14,6 +15,7 @@ final class CreateBookCommand
      */
     public function __construct(
         private readonly UuidInterface $id,
+        private readonly UuidInterface $libraryId,
         private readonly string $title,
         private readonly string $author,
         private readonly ?string $isbn,
@@ -27,6 +29,11 @@ final class CreateBookCommand
     public function id(): UuidInterface
     {
         return $this->id;
+    }
+
+    public function libraryId(): UuidInterface
+    {
+        return $this->libraryId;
     }
 
     public function title(): string

@@ -6,6 +6,7 @@ namespace App\HomeLibrary\UI\Api\Shelf;
 
 use App\HomeLibrary\Application\Shelf\Command\DeleteShelfCommand;
 use App\HomeLibrary\Application\Shelf\DeleteShelfHandler;
+use App\HomeLibrary\UI\Api\LibraryAwareTrait;
 use App\HomeLibrary\UI\Api\Problem\ProblemJsonResponseFactory;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,6 +19,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 final class DeleteShelfAction extends AbstractController
 {
+    use LibraryAwareTrait;
+
     public function __construct(
         private readonly DeleteShelfHandler $handler,
         private readonly ProblemJsonResponseFactory $problemFactory,
@@ -36,7 +39,7 @@ final class DeleteShelfAction extends AbstractController
 
         $uuid = Uuid::fromString($id);
 
-        ($this->handler)(new DeleteShelfCommand($uuid));
+        ($this->handler)(new DeleteShelfCommand($uuid, $this->currentLibraryId()));
 
         return new JsonResponse(status: Response::HTTP_NO_CONTENT);
     }

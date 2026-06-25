@@ -12,6 +12,9 @@ use App\HomeLibrary\Domain\Book\ValueObject\BookAuthor;
 use App\HomeLibrary\Domain\Book\ValueObject\BookIsbn;
 use App\HomeLibrary\Domain\Book\ValueObject\BookPageCount;
 use App\HomeLibrary\Domain\Book\ValueObject\BookTitle;
+use App\HomeLibrary\Domain\Library\Library;
+use App\HomeLibrary\Domain\Library\LibraryName;
+use App\HomeLibrary\Domain\Library\LibraryPasswordHash;
 use App\HomeLibrary\Domain\Shelf\Exception\ShelfNotEmptyException;
 use App\HomeLibrary\Domain\Shelf\Shelf;
 use App\HomeLibrary\Domain\Shelf\ShelfFlag;
@@ -46,8 +49,15 @@ final class DeleteShelfHandlerTest extends KernelTestCase
     #[Test]
     public function itThrowsWhenShelfContainsBooks(): void
     {
+        $library = new Library(
+            Uuid::uuid7(),
+            new LibraryName('Test Library'),
+            LibraryPasswordHash::fromString('$2y$13$testhashedpassword000000000000000000000000000000000'),
+        );
+        $this->entityManager->persist($library);
+
         $shelfId = Uuid::uuid7();
-        $shelf = new Shelf($shelfId, new ShelfName('To Remove'), ShelfFlag::userDefined());
+        $shelf = new Shelf($shelfId, new ShelfName('To Remove'), ShelfFlag::userDefined(), $library);
 
         $this->entityManager->persist($shelf);
 
@@ -60,6 +70,7 @@ final class DeleteShelfHandlerTest extends KernelTestCase
             BookSource::MANUAL,
             null,
             $shelf,
+            $library,
         );
 
         $this->entityManager->persist($book);
@@ -69,7 +80,7 @@ final class DeleteShelfHandlerTest extends KernelTestCase
         $this->expectException(ShelfNotEmptyException::class);
         $this->expectExceptionMessageMatches('/cannot be removed/');
 
-        ($this->handler)(new DeleteShelfCommand($shelfId));
+        ($this->handler)(new DeleteShelfCommand($shelfId, $library->id()));
     }
 
     private function truncateTables(): void
@@ -77,5 +88,6 @@ final class DeleteShelfHandlerTest extends KernelTestCase
         $this->connection->executeStatement('TRUNCATE TABLE book_genre RESTART IDENTITY CASCADE');
         $this->connection->executeStatement('TRUNCATE TABLE books RESTART IDENTITY CASCADE');
         $this->connection->executeStatement('TRUNCATE TABLE shelves RESTART IDENTITY CASCADE');
+        $this->connection->executeStatement('TRUNCATE TABLE libraries RESTART IDENTITY CASCADE');
     }
 }

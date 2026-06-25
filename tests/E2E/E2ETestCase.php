@@ -47,10 +47,19 @@ abstract class E2ETestCase extends PantherTestCase
         return (string) $node->attr('content');
     }
 
-    protected function registerUser(?PantherClient $pantherClient, string $email, string $password): HttpBrowser
-    {
+    protected function registerUser(
+        ?PantherClient $pantherClient,
+        string $email,
+        string $password,
+        ?string $libraryName = null,
+        ?string $libraryPassword = null,
+        string $libraryMode = 'create',
+    ): HttpBrowser {
         $httpClient = $this->createHttpBrowser();
         $csrfToken = $this->fetchCsrfToken($httpClient, 'authenticate');
+
+        $libraryName = $libraryName ?? ('E2E Library ' . bin2hex(random_bytes(4)));
+        $libraryPassword = $libraryPassword ?? 'LibPass123!';
 
         $httpClient->request(
             'POST',
@@ -63,6 +72,9 @@ abstract class E2ETestCase extends PantherTestCase
                 'email' => $email,
                 'password' => $password,
                 'passwordConfirm' => $password,
+                'libraryName' => $libraryName,
+                'libraryPassword' => $libraryPassword,
+                'libraryMode' => $libraryMode,
             ], \JSON_THROW_ON_ERROR),
         );
 

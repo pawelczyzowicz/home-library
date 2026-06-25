@@ -11,6 +11,9 @@ use App\HomeLibrary\Domain\Book\ValueObject\BookAuthor;
 use App\HomeLibrary\Domain\Book\ValueObject\BookIsbn;
 use App\HomeLibrary\Domain\Book\ValueObject\BookPageCount;
 use App\HomeLibrary\Domain\Book\ValueObject\BookTitle;
+use App\HomeLibrary\Domain\Library\Library;
+use App\HomeLibrary\Domain\Library\LibraryName;
+use App\HomeLibrary\Domain\Library\LibraryPasswordHash;
 use App\HomeLibrary\Domain\Shelf\Shelf;
 use App\HomeLibrary\Domain\Shelf\ShelfFlag;
 use App\HomeLibrary\Domain\Shelf\ShelfName;
@@ -19,6 +22,7 @@ use App\HomeLibrary\Domain\Genre\GenreName;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class DoctrineBookRepositoryTest extends KernelTestCase
@@ -26,6 +30,8 @@ final class DoctrineBookRepositoryTest extends KernelTestCase
     private BookRepository $repository;
 
     private EntityManagerInterface $entityManager;
+
+    private UuidInterface $libraryId;
 
     protected function setUp(): void
     {
@@ -41,7 +47,9 @@ final class DoctrineBookRepositoryTest extends KernelTestCase
         $connection->executeStatement('TRUNCATE TABLE books RESTART IDENTITY CASCADE');
         $connection->executeStatement('TRUNCATE TABLE shelves RESTART IDENTITY CASCADE');
         $connection->executeStatement('TRUNCATE TABLE genres RESTART IDENTITY CASCADE');
+        $connection->executeStatement('TRUNCATE TABLE libraries RESTART IDENTITY CASCADE');
 
+        $this->seedLibrary();
         $this->seedGenres();
         $this->seedShelves();
         $this->seedBooks();
@@ -50,6 +58,7 @@ final class DoctrineBookRepositoryTest extends KernelTestCase
     public function testSearchWithoutFiltersReturnsPagedResults(): void
     {
         $result = $this->repository->search(
+            libraryId: $this->libraryId,
             searchTerm: null,
             shelfId: null,
             genreIds: [],
@@ -70,6 +79,7 @@ final class DoctrineBookRepositoryTest extends KernelTestCase
         $shelfId = $this->findShelfId('Półka A');
 
         $result = $this->repository->search(
+            libraryId: $this->libraryId,
             searchTerm: null,
             shelfId: $shelfId,
             genreIds: [1],
@@ -87,6 +97,7 @@ final class DoctrineBookRepositoryTest extends KernelTestCase
     public function testSearchByQueryMatchesTitleOrAuthor(): void
     {
         $result = $this->repository->search(
+            libraryId: $this->libraryId,
             searchTerm: 'gamma author',
             shelfId: null,
             genreIds: [],
@@ -115,11 +126,25 @@ final class DoctrineBookRepositoryTest extends KernelTestCase
         $this->entityManager->flush();
     }
 
+    private function seedLibrary(): void
+    {
+        $library = new Library(
+            Uuid::uuid7(),
+            new LibraryName('Test Library'),
+            LibraryPasswordHash::fromString('$2y$13$testhashedpassword000000000000000000000000000000000'),
+        );
+        $this->entityManager->persist($library);
+        $this->entityManager->flush();
+        $this->libraryId = $library->id();
+    }
+
     private function seedShelves(): void
     {
+        $library = $this->entityManager->getRepository(Library::class)->find($this->libraryId);
+
         $shelves = [
-            new Shelf(Uuid::uuid7(), new ShelfName('Półka A'), ShelfFlag::userDefined()),
-            new Shelf(Uuid::uuid7(), new ShelfName('Półka B'), ShelfFlag::userDefined()),
+            new Shelf(Uuid::uuid7(), new ShelfName('Półka A'), ShelfFlag::userDefined(), $library),
+            new Shelf(Uuid::uuid7(), new ShelfName('Półka B'), ShelfFlag::userDefined(), $library),
         ];
 
         foreach ($shelves as $shelf) {
@@ -135,6 +160,7 @@ final class DoctrineBookRepositoryTest extends KernelTestCase
         \assert([] !== $shelves);
 
         $genres = $this->entityManager->getRepository(Genre::class)->findAll();
+        $library = $this->entityManager->getRepository(Library::class)->find($this->libraryId);
 
         $bookA = new Book(
             Uuid::uuid7(),
@@ -145,6 +171,7 @@ final class DoctrineBookRepositoryTest extends KernelTestCase
             BookSource::MANUAL,
             null,
             $shelves[0],
+            $library,
             [$genres[0]],
         );
 
@@ -157,6 +184,7 @@ final class DoctrineBookRepositoryTest extends KernelTestCase
             BookSource::MANUAL,
             null,
             $shelves[1],
+            $library,
             [$genres[1]],
         );
 
@@ -169,6 +197,7 @@ final class DoctrineBookRepositoryTest extends KernelTestCase
             BookSource::MANUAL,
             null,
             $shelves[1],
+            $library,
             [$genres[2]],
         );
 
@@ -179,7 +208,7 @@ final class DoctrineBookRepositoryTest extends KernelTestCase
         $this->entityManager->flush();
     }
 
-    private function findShelfId(string $name): \Ramsey\Uuid\UuidInterface
+    private function findShelfId(string $name): UuidInterface
     {
         $qb = $this->entityManager->createQueryBuilder()
             ->select('s')

@@ -10,6 +10,7 @@ use App\HomeLibrary\Domain\Book\ValueObject\BookPageCount;
 use App\HomeLibrary\Domain\Book\ValueObject\BookTitle;
 use App\HomeLibrary\Domain\Common\TimestampableTrait;
 use App\HomeLibrary\Domain\Genre\Genre;
+use App\HomeLibrary\Domain\Library\Library;
 use App\HomeLibrary\Domain\Shelf\Shelf;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,7 +18,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 
-/** @SuppressWarnings("PHPMD.TooManyPublicMethods") */
+/** @SuppressWarnings("PHPMD.TooManyPublicMethods") @SuppressWarnings("PHPMD.ExcessiveParameterList") */
 #[ORM\Entity]
 #[ORM\Table(name: 'books')]
 #[ORM\HasLifecycleCallbacks]
@@ -47,6 +48,10 @@ class Book
     #[ORM\Column(name: 'recommendation_id', type: Types::BIGINT, nullable: true)]
     private ?int $recommendationId;
 
+    #[ORM\ManyToOne(targetEntity: Library::class)]
+    #[ORM\JoinColumn(name: 'library_id', referencedColumnName: 'id', nullable: false)]
+    private Library $library;
+
     #[ORM\ManyToOne(targetEntity: Shelf::class)]
     #[ORM\JoinColumn(name: 'shelf_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
     private Shelf $shelf;
@@ -69,6 +74,7 @@ class Book
         BookSource $source,
         ?int $recommendationId,
         Shelf $shelf,
+        Library $library,
         iterable $genres = [],
     ) {
         $this->id = $id;
@@ -79,6 +85,7 @@ class Book
         $this->source = $source;
         $this->recommendationId = $recommendationId;
         $this->shelf = $shelf;
+        $this->library = $library;
         $this->genres = new ArrayCollection();
 
         foreach ($genres as $genre) {
@@ -124,6 +131,11 @@ class Book
     public function shelf(): Shelf
     {
         return $this->shelf;
+    }
+
+    public function library(): Library
+    {
+        return $this->library;
     }
 
     /**

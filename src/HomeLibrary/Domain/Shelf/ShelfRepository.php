@@ -10,14 +10,14 @@ interface ShelfRepository
 {
     public function save(Shelf $shelf): void;
 
-    public function findById(UuidInterface $id): ?Shelf;
+    public function findById(UuidInterface $id, ?UuidInterface $libraryId = null): ?Shelf;
 
     /**
      * @return Shelf[]
      */
-    public function search(?string $searchTerm, ?bool $systemOnly = null): array;
+    public function search(UuidInterface $libraryId, ?string $searchTerm, ?bool $systemOnly = null): array;
 
-    public function countBySearchTerm(?string $searchTerm, ?bool $systemOnly = null): int;
+    public function countBySearchTerm(UuidInterface $libraryId, ?string $searchTerm, ?bool $systemOnly = null): int;
 
     public function remove(Shelf $shelf): void;
 }

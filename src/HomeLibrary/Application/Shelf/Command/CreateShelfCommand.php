@@ -10,6 +10,7 @@ class CreateShelfCommand
 {
     public function __construct(
         private readonly UuidInterface $id,
+        private readonly UuidInterface $libraryId,
         private readonly string $name,
         private readonly bool $isSystem,
     ) {}
@@ -17,6 +18,11 @@ class CreateShelfCommand
     public function id(): UuidInterface
     {
         return $this->id;
+    }
+
+    public function libraryId(): UuidInterface
+    {
+        return $this->libraryId;
     }
 
     public function name(): string

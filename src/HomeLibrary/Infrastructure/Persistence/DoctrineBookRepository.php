@@ -32,15 +32,26 @@ final class DoctrineBookRepository extends ServiceEntityRepository implements Bo
         $entityManager->flush();
     }
 
-    public function findById(UuidInterface $id): ?Book
+    public function findById(UuidInterface $id, ?UuidInterface $libraryId = null): ?Book
     {
-        return parent::find($id);
+        if (null === $libraryId) {
+            return parent::find($id);
+        }
+
+        return $this->createQueryBuilder('b')
+            ->andWhere('b.id = :id')
+            ->andWhere('b.library = :libraryId')
+            ->setParameter('id', $id)
+            ->setParameter('libraryId', $libraryId)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
      * @param int[] $genreIds
      */
     public function search(
+        UuidInterface $libraryId,
         ?string $searchTerm,
         ?UuidInterface $shelfId,
         array $genreIds,
@@ -52,6 +63,8 @@ final class DoctrineBookRepository extends ServiceEntityRepository implements Bo
         $qb = $this->createQueryBuilder('b')
             ->leftJoin('b.shelf', 's')
             ->addSelect('s')
+            ->andWhere('b.library = :libraryId')
+            ->setParameter('libraryId', $libraryId)
             ->orderBy(self::SORT_FIELD_MAP[$sort], 'asc' === $order ? 'ASC' : 'DESC')
             ->setFirstResult($offset)
             ->setMaxResults($limit);

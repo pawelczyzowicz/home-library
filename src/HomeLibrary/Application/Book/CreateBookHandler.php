@@ -14,6 +14,7 @@ use App\HomeLibrary\Domain\Book\ValueObject\BookTitle;
 use App\HomeLibrary\Domain\Genre\Exception\GenreNotFoundException;
 use App\HomeLibrary\Domain\Genre\Genre;
 use App\HomeLibrary\Domain\Genre\GenreRepository;
+use App\HomeLibrary\Domain\Library\LibraryRepository;
 use App\HomeLibrary\Domain\Shelf\Exception\ShelfNotFoundException;
 use App\HomeLibrary\Domain\Shelf\ShelfRepository;
 
@@ -23,11 +24,18 @@ final class CreateBookHandler
         private readonly BookRepository $bookRepository,
         private readonly ShelfRepository $shelfRepository,
         private readonly GenreRepository $genreRepository,
+        private readonly LibraryRepository $libraryRepository,
     ) {}
 
     public function __invoke(CreateBookCommand $command): Book
     {
-        $shelf = $this->shelfRepository->findById($command->shelfId());
+        $library = $this->libraryRepository->findById($command->libraryId());
+
+        if (null === $library) {
+            throw new \RuntimeException(\sprintf('Library "%s" not found.', $command->libraryId()->toString()));
+        }
+
+        $shelf = $this->shelfRepository->findById($command->shelfId(), $command->libraryId());
 
         if (null === $shelf) {
             throw ShelfNotFoundException::withId($command->shelfId());
@@ -45,6 +53,7 @@ final class CreateBookHandler
             $command->source(),
             $command->recommendationId(),
             $shelf,
+            $library,
             $genres,
         );
 

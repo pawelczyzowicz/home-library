@@ -8,6 +8,7 @@ use App\HomeLibrary\Domain\Library\Library;
 use App\HomeLibrary\Domain\Library\LibraryRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Ramsey\Uuid\UuidInterface;
 
 final class DoctrineLibraryRepository extends ServiceEntityRepository implements LibraryRepository
 {
@@ -21,6 +22,11 @@ final class DoctrineLibraryRepository extends ServiceEntityRepository implements
         $em = $this->getEntityManager();
         $em->persist($library);
         $em->flush();
+    }
+
+    public function findById(UuidInterface $id): ?Library
+    {
+        return parent::find($id);
     }
 
     public function existsByName(string $name): bool

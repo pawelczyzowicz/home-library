@@ -25,17 +25,29 @@ class DoctrineShelfRepository extends ServiceEntityRepository implements ShelfRe
         $em->flush();
     }
 
-    public function findById(UuidInterface $id): ?Shelf
+    public function findById(UuidInterface $id, ?UuidInterface $libraryId = null): ?Shelf
     {
-        return parent::find($id);
+        if (null === $libraryId) {
+            return parent::find($id);
+        }
+
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.id = :id')
+            ->andWhere('s.library = :libraryId')
+            ->setParameter('id', $id)
+            ->setParameter('libraryId', $libraryId)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
      * @return Shelf[]
      */
-    public function search(?string $searchTerm, ?bool $systemOnly = null): array
+    public function search(UuidInterface $libraryId, ?string $searchTerm, ?bool $systemOnly = null): array
     {
         $qb = $this->createQueryBuilder('s')
+            ->andWhere('s.library = :libraryId')
+            ->setParameter('libraryId', $libraryId)
             ->orderBy('s.createdAt', 'ASC');
 
         if (null !== $systemOnly) {
@@ -54,10 +66,12 @@ class DoctrineShelfRepository extends ServiceEntityRepository implements ShelfRe
         return $shelves;
     }
 
-    public function countBySearchTerm(?string $searchTerm, ?bool $systemOnly = null): int
+    public function countBySearchTerm(UuidInterface $libraryId, ?string $searchTerm, ?bool $systemOnly = null): int
     {
         $qb = $this->createQueryBuilder('s')
-            ->select('COUNT(s.id)');
+            ->select('COUNT(s.id)')
+            ->andWhere('s.library = :libraryId')
+            ->setParameter('libraryId', $libraryId);
 
         if (null !== $systemOnly) {
             $qb->andWhere('s.isSystem.isSystem = :isSystem')

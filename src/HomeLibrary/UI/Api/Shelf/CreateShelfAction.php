@@ -7,6 +7,7 @@ namespace App\HomeLibrary\UI\Api\Shelf;
 use App\HomeLibrary\Application\Shelf\Command\CreateShelfCommand;
 use App\HomeLibrary\Application\Shelf\CreateShelfHandler;
 use App\HomeLibrary\Domain\Shelf\Shelf;
+use App\HomeLibrary\UI\Api\LibraryAwareTrait;
 use App\HomeLibrary\UI\Api\Problem\ProblemJsonResponseFactory;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,6 +22,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 final class CreateShelfAction extends AbstractController
 {
+    use LibraryAwareTrait;
+
     public function __construct(
         private readonly CreateShelfHandler $handler,
         private readonly ShelfResource $resource,
@@ -52,6 +55,7 @@ final class CreateShelfAction extends AbstractController
 
         $command = new CreateShelfCommand(
             id: Uuid::uuid7(),
+            libraryId: $this->currentLibraryId(),
             name: (string) ($data['name'] ?? ''),
             isSystem: false,
         );

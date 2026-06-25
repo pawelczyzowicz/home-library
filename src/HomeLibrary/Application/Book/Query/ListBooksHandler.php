@@ -13,6 +13,7 @@ final class ListBooksHandler
     public function __invoke(ListBooksQuery $query): ListBooksResult
     {
         return $this->repository->search(
+            libraryId: $query->libraryId(),
             searchTerm: $query->searchTerm(),
             shelfId: $query->shelfId(),
             genreIds: $query->genreIds(),

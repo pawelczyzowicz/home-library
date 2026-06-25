@@ -17,7 +17,6 @@ use App\HomeLibrary\Domain\Shelf\ShelfName;
 use App\HomeLibrary\Domain\User\User;
 use App\HomeLibrary\Domain\User\UserEmail;
 use App\HomeLibrary\Domain\User\UserPasswordHash;
-use App\HomeLibrary\Domain\User\UserRepository;
 use App\HomeLibrary\Domain\User\UserRoles;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,8 +36,6 @@ final class CreateBookApiTest extends WebTestCase
 
     private CsrfTokenManagerInterface $csrfTokenManager;
 
-    private UserRepository $userRepository;
-
     private UserPasswordHasherInterface $passwordHasher;
 
     private BookRepository $bookRepository;
@@ -53,13 +50,10 @@ final class CreateBookApiTest extends WebTestCase
         $this->connection = $container->get(Connection::class);
         $this->entityManager = $container->get(EntityManagerInterface::class);
         $this->csrfTokenManager = $container->get(CsrfTokenManagerInterface::class);
-        $this->userRepository = $container->get(UserRepository::class);
         $this->passwordHasher = $container->get(UserPasswordHasherInterface::class);
         $this->bookRepository = $container->get(BookRepository::class);
 
         $this->truncateTables();
-
-        self::ensureKernelShutdown();
     }
 
     #[Test]
@@ -69,8 +63,9 @@ final class CreateBookApiTest extends WebTestCase
         $password = 'SecurePass123!';
 
         $user = $this->createUser($email, $password);
+        $library = $user->library();
 
-        $shelf = new Shelf(Uuid::uuid7(), new ShelfName('Do zakupu'), ShelfFlag::system());
+        $shelf = new Shelf(Uuid::uuid7(), new ShelfName('Do zakupu'), ShelfFlag::system(), $library);
         $genreOne = new Genre(1, new GenreName('Science Fiction'));
         $genreTwo = new Genre(2, new GenreName('Adventure'));
 
@@ -80,6 +75,7 @@ final class CreateBookApiTest extends WebTestCase
         $this->entityManager->flush();
         $this->entityManager->clear();
 
+        self::ensureKernelShutdown();
         $client = static::createClient();
         $this->authenticate($client, $email, $password);
 
@@ -128,6 +124,7 @@ final class CreateBookApiTest extends WebTestCase
         $this->connection->executeStatement('TRUNCATE TABLE genres RESTART IDENTITY CASCADE');
         $this->connection->executeStatement('TRUNCATE TABLE shelves RESTART IDENTITY CASCADE');
         $this->connection->executeStatement('TRUNCATE TABLE users RESTART IDENTITY CASCADE');
+        $this->connection->executeStatement('TRUNCATE TABLE libraries RESTART IDENTITY CASCADE');
     }
 
     private function createUser(string $email, string $plainPassword): User
@@ -149,7 +146,8 @@ final class CreateBookApiTest extends WebTestCase
         $hash = $this->passwordHasher->hashPassword($user, $plainPassword);
         $user->updatePasswordHash(UserPasswordHash::fromString($hash));
 
-        $this->userRepository->save($user);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
 
         return $user;
     }

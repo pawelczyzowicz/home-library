@@ -6,6 +6,7 @@ namespace App\HomeLibrary\UI\Api\Book;
 
 use App\HomeLibrary\Application\Book\Command\DeleteBookCommand;
 use App\HomeLibrary\Application\Book\DeleteBookHandler;
+use App\HomeLibrary\UI\Api\LibraryAwareTrait;
 use App\HomeLibrary\UI\Api\Problem\ProblemJsonResponseFactory;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,6 +19,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 final class DeleteBookAction extends AbstractController
 {
+    use LibraryAwareTrait;
+
     public function __construct(
         private readonly DeleteBookHandler $handler,
         private readonly ProblemJsonResponseFactory $problemFactory,
@@ -36,7 +39,7 @@ final class DeleteBookAction extends AbstractController
 
         $uuid = Uuid::fromString($id);
 
-        ($this->handler)(new DeleteBookCommand($uuid));
+        ($this->handler)(new DeleteBookCommand($uuid, $this->currentLibraryId()));
 
         return new JsonResponse(status: Response::HTTP_NO_CONTENT);
     }

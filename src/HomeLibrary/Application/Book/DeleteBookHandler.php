@@ -14,7 +14,7 @@ final class DeleteBookHandler
 
     public function __invoke(DeleteBookCommand $command): void
     {
-        $book = $this->repository->findById($command->id());
+        $book = $this->repository->findById($command->id(), $command->libraryId());
 
         if (null === $book) {
             throw BookNotFoundException::withId($command->id());

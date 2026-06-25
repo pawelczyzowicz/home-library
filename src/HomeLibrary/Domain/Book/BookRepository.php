@@ -11,12 +11,13 @@ interface BookRepository
 {
     public function save(Book $book): void;
 
-    public function findById(UuidInterface $id): ?Book;
+    public function findById(UuidInterface $id, ?UuidInterface $libraryId = null): ?Book;
 
     /**
      * @param int[] $genreIds
      */
     public function search(
+        UuidInterface $libraryId,
         ?string $searchTerm,
         ?UuidInterface $shelfId,
         array $genreIds,
