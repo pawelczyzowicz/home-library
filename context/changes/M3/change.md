@@ -3,7 +3,7 @@
 ---
 change-id: M3
 roadmap-ref: M3
-status: in-progress
+status: done
 created: 2026-06-24
 ---
 

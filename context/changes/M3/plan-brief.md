@@ -2,7 +2,7 @@
 
 ---
 change-id: M3
-status: draft
+status: done
 full-plan: context/changes/M3/plan.md
 ---
 
