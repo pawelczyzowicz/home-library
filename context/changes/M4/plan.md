@@ -2,7 +2,7 @@
 
 ---
 change-id: M4
-status: draft
+status: done
 phases: 3
 ---
 
@@ -19,8 +19,8 @@ Po implementacji M4:
 ### Zależności
 
 - **Phase 1** — wymaga M1 + M2 (oba DONE) ✓
-- **Phase 2** — wymaga M3 (data isolation) ✗ BLOCKED
-- **Phase 3** — wymaga M3 (DataFixtures potrzebują library_id w books/shelves) ✗ BLOCKED
+- **Phase 2** — wymaga M3 (data isolation) ✓ DONE
+- **Phase 3** — wymaga M3 (DataFixtures potrzebują library_id w books/shelves) ✓ DONE
 
 ---
 
@@ -40,12 +40,12 @@ Po implementacji M4:
 
 ### Verification
 
-- [ ] `bin/phpunit tests/E2E/AuthFlowTest.php` passes
-- [ ] `bin/phpunit tests/E2E/BookCreateApiTest.php` passes
-- [ ] `bin/phpunit tests/E2E/LibraryRegistrationCreateE2ETest.php` passes
-- [ ] `bin/phpunit tests/E2E/LibraryRegistrationJoinE2ETest.php` passes
-- [ ] `bin/phpunit tests/E2E/LibraryEdgeCasesE2ETest.php` passes
-- [ ] All existing E2E tests green
+- [x] `bin/phpunit tests/E2E/AuthFlowTest.php` passes
+- [x] `bin/phpunit tests/E2E/BookCreateApiTest.php` passes
+- [x] `bin/phpunit tests/E2E/LibraryRegistrationCreateE2ETest.php` passes
+- [x] `bin/phpunit tests/E2E/LibraryRegistrationJoinE2ETest.php` passes
+- [x] `bin/phpunit tests/E2E/LibraryEdgeCasesE2ETest.php` passes
+- [x] All existing E2E tests green
 
 ### Notes
 
@@ -68,9 +68,9 @@ Po implementacji M4:
 
 ### Verification
 
-- [ ] `bin/phpunit tests/E2E/LibraryIsolationE2ETest.php` passes
-- [ ] `bin/phpunit tests/E2E/LibrarySecurityE2ETest.php` passes
-- [ ] Żaden cross-library access nie jest możliwy
+- [x] `bin/phpunit tests/E2E/LibraryIsolationE2ETest.php` passes
+- [x] `bin/phpunit tests/E2E/LibrarySecurityE2ETest.php` passes
+- [x] Żaden cross-library access nie jest możliwy
 
 ### Notes
 
@@ -90,9 +90,9 @@ Po implementacji M4:
 
 ### Verification
 
-- [ ] `bin/console doctrine:fixtures:load --env=test` succeeds
-- [ ] Po załadowaniu fixtures, każda książka/półka ma poprawny library_id
-- [ ] CI pipeline zielony (unit + integration + E2E)
+- [x] `bin/console doctrine:fixtures:load --env=test` succeeds
+- [x] Po załadowaniu fixtures, każda książka/półka ma poprawny library_id
+- [x] CI pipeline zielony (unit + integration + E2E)
 
 ### Notes
 
